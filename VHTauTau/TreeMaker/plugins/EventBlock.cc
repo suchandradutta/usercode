@@ -18,15 +18,15 @@
 
 EventBlock::EventBlock(const edm::ParameterSet& iConfig) :
   _verbosity(iConfig.getParameter<int>("verbosity")),
-  _l1InputTag(iConfig.getParameter<edm::InputTag>("L1InputTag")),
-  _vtxInputTag(iConfig.getParameter<edm::InputTag>("VertexInputTag")),
-  _trkInputTag(iConfig.getParameter<edm::InputTag>("TracksInputTag")),
-  _hcalNoiseInputTag(iConfig.getParameter<edm::InputTag>("HcalNoiseInputTag")),
-  _vtxMinNDOF(iConfig.getParameter<unsigned int>("VertexMinimumNDOF")),
-  _vtxMaxAbsZ(iConfig.getParameter<double>("VertexMaxAbsZ")),
-  _vtxMaxd0(iConfig.getParameter<double>("VertexMaxd0")),
-  _numTracks(iConfig.getParameter<unsigned int>("NumTracks")),
-  _hpTrackThreshold(iConfig.getParameter<double>("HPTrackThreshold"))
+  _l1InputTag(iConfig.getParameter<edm::InputTag>("l1InputTag")),
+  _vtxInputTag(iConfig.getParameter<edm::InputTag>("vertexInputTag")),
+  _trkInputTag(iConfig.getParameter<edm::InputTag>("trkInputTag")),
+  _hcalNoiseInputTag(iConfig.getParameter<edm::InputTag>("hcalNoiseInputTag")),
+  _vtxMinNDOF(iConfig.getParameter<unsigned int>("vertexMinimumNDOF")),
+  _vtxMaxAbsZ(iConfig.getParameter<double>("vertexMaxAbsZ")),
+  _vtxMaxd0(iConfig.getParameter<double>("vertexMaxd0")),
+  _numTracks(iConfig.getParameter<unsigned int>("numTracks")),
+  _hpTrackThreshold(iConfig.getParameter<double>("hpTrackThreshold"))
 {}
 void EventBlock::beginJob() {
   // Get TTree pointer
@@ -129,6 +129,7 @@ void EventBlock::analyze(edm::Event const& iEvent, edm::EventSetup const& iSetup
   else {
     edm::LogError("EventBlock") << "Error! Can't get the product " << _trkInputTag;
   }
+#if 0
   // Hcal Noise Part
   edm::Handle<bool> hbheFilterResult;
   iEvent.getByLabel(_hcalNoiseInputTag, hbheFilterResult);
@@ -139,6 +140,7 @@ void EventBlock::analyze(edm::Event const& iEvent, edm::EventSetup const& iSetup
   else {
     edm::LogError("EventBlock") << "Error! Can't get the product " << _hcalNoiseInputTag;
   }
+#endif
   // Access PU information
   if (!iEvent.isRealData()) {
     //if (isMC) {

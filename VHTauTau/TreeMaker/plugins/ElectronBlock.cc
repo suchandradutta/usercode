@@ -54,8 +54,8 @@ ElectronBlock::ElectronBlock(const edm::ParameterSet& iConfig) :
   _vtxInputTag(iConfig.getParameter<edm::InputTag>("vertexSrc")),
   _electronInputTag(iConfig.getParameter<edm::InputTag>("electronSrc")),
   _pfElectronInputTag(iConfig.getParameter<edm::InputTag>("pfElectronSrc")),
-  _ecalEBInputTag(iConfig.getParameter<edm::InputTag>("EcalEBInputTag")),
-  _ecalEEInputTag(iConfig.getParameter<edm::InputTag>("EcalEEInputTag"))
+  _ecalEBInputTag(iConfig.getParameter<edm::InputTag>("ecalEBInputTag")),
+  _ecalEEInputTag(iConfig.getParameter<edm::InputTag>("ecalEEInputTag"))
 {}
 void ElectronBlock::beginJob() 
 {
@@ -84,6 +84,7 @@ void ElectronBlock::analyze(const edm::Event& iEvent, const edm::EventSetup& iSe
   edm::Handle<DcsStatusCollection> dcsHandle;
   iEvent.getByLabel(_dcsInputTag, dcsHandle);
 
+#if 0
   edm::ESHandle<CaloGeometry> caloGeometry;
   iSetup.get<CaloGeometryRecord>().get(caloGeometry);
 
@@ -133,7 +134,7 @@ void ElectronBlock::analyze(const edm::Event& iEvent, const edm::EventSetup& iSe
   EgammaRecHitIsolation HeepEcalEndcapIsol(HeepConeOutRadius, HeepConeInRadius, HeepEtaWidth, EndcapPtMin, 
                                             EndcapEMin, caloGeometry, &ecalEndcapHits, sevLevel, DetId::Ecal);
   HeepEcalEndcapIsol.setUseNumCrystals(true);
-
+#endif
   double evt_bField = 3.8;
   // need the magnetic field
   //
@@ -268,7 +269,7 @@ void ElectronBlock::analyze(const edm::Event& iEvent, const edm::EventSetup& iSe
       electronB->vtxIndex  = indexVtx;
       electronB->vtxDistZ  = vertexDistZ;
       electronB->pfRelIso  = pfreliso;
-
+#if 0
       // Ecal Spike Cleaning
       double emax    = -1.;
       double e9      = 1/999.;
@@ -337,6 +338,7 @@ void ElectronBlock::analyze(const edm::Event& iEvent, const edm::EventSetup& iSe
       electronB->scHEEPEcalIso = (fabs(eleSCRef->eta()) < 1.48) ? HeepEcalBarrelIsol.getEtSum(&ecalCand)
                                                                 : HeepEcalEndcapIsol.getEtSum(&ecalCand);
       electronB->scHEEPTrkIso = TrackTool.getPtTracks(&ecalCand);
+#endif
     }
   } 
   else {

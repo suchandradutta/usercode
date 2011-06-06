@@ -11,8 +11,8 @@
 #include "DataFormats/METReco/interface/GenMETFwd.h"
 
 GenMETBlock::GenMETBlock(const edm::ParameterSet& iConfig) :
-  _verbosity(iConfig.getUntrackedParameter<int>("verbosity", 0)),
-  _inputTag(iConfig.getUntrackedParameter<edm::InputTag>("genMETSrc"))
+  _verbosity(iConfig.getParameter<int>("verbosity")),
+  _inputTag(iConfig.getParameter<edm::InputTag>("genMETSrc"))
 {}
 void GenMETBlock::beginJob() 
 {
