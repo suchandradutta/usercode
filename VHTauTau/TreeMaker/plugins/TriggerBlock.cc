@@ -21,9 +21,9 @@ static const unsigned int NmaxL1TechBit = 64;
 TriggerBlock::TriggerBlock(const edm::ParameterSet& iConfig) :
   _tree(0),
   _verbosity(iConfig.getParameter<int>("verbosity")),
-  _l1InputTag(iConfig.getParameter<edm::InputTag>("L1InputTag")),
-  _hltInputTag(iConfig.getParameter<edm::InputTag>("HLTInputTag")),
-  _hltPathsOfInterest(iConfig.getParameter<std::vector<std::string> > ("HLTPathsOfInterest"))
+  _l1InputTag(iConfig.getParameter<edm::InputTag>("l1InputTag")),
+  _hltInputTag(iConfig.getParameter<edm::InputTag>("hltInputTag")),
+  _hltPathsOfInterest(iConfig.getParameter<std::vector<std::string> > ("hltPathsOfInterest"))
 {}
 void TriggerBlock::beginJob() 
 {
