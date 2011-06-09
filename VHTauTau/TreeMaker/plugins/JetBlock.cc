@@ -22,6 +22,7 @@ pat::strbitset retpf = pfjetIDLoose.getBitTemplate();
 
 // Constructor
 JetBlock::JetBlock(const edm::ParameterSet& iConfig) :
+  _tree(0),
   _verbosity(iConfig.getParameter<int>("verbosity")),
   _inputTag(iConfig.getParameter<edm::InputTag>("jetSrc")),
   _jecUncPath(iConfig.getParameter<std::string>("jecUncertainty")),
@@ -31,10 +32,10 @@ JetBlock::JetBlock(const edm::ParameterSet& iConfig) :
 void JetBlock::beginJob() 
 {
   std::string tree_name = "vhtree";
-  TTree* tree = Utility::getTree(tree_name);
+  if (!_tree) _tree = Utility::getTree(tree_name);
   cloneJet = new TClonesArray("Jet");
-  tree->Branch("Jet", &cloneJet, 32000, 2);
-  tree->Branch("nJet", &fnJet, "fnJet/I");
+  _tree->Branch("Jet", &cloneJet, 32000, 2);
+  _tree->Branch("nJet", &fnJet, "fnJet/I");
 }
 void JetBlock::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup) {
   // Reset the TClonesArray and the nObj variables

@@ -69,7 +69,7 @@ addTcMET(process, 'TC')
 addPfMET(process, 'PF')
 
 # remove MC matching
-removeMCMatching(process, ['All'])
+#removeMCMatching(process, ['All'])
 
 
 process.p = cms.Path(
@@ -96,6 +96,7 @@ process.p = cms.Path(
 #---------------------------------------
 process.PoolSource.fileNames = [
 #     'rfio:/castor/cern.ch/user/l/lusito/WH/TestA/WH115DIGI2RAWExt.root'
-     '/store/relval/CMSSW_4_2_3/RelValTTbar//GEN-SIM-RECO/START42_V12-v2/0068/30222246-647C-E011-A6A6-00304867C1BC.root'    
+     '/store/relval/CMSSW_4_2_3/RelValTTbar//GEN-SIM-RECO/START42_V12-v2/0064/583198DF-B97B-E011-98F5-0018F3D0970E.root',
+     '/store/relval/CMSSW_4_2_3/RelValTTbar//GEN-SIM-RECO/START42_V12-v2/0068/30222246-647C-E011-A6A6-00304867C1BC.root'
 ]
 

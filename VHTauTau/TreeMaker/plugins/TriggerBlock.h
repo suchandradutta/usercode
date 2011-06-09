@@ -18,6 +18,7 @@
 #include <string>
 #include <vector>
 
+class TTree;
 class TClonesArray;
 class Trigger;
 
@@ -36,6 +37,7 @@ public:
 private:
   TClonesArray* cloneTrigger; 
 
+  TTree* _tree;
   int _verbosity;
   edm::InputTag _inputTag;
 

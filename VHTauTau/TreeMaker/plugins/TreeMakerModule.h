@@ -25,6 +25,7 @@ public:
   virtual ~TreeMakerModule() {}
 
 private:
+  TTree* _tree;
    int _verbosity;
   bool _createTree;
 };

@@ -11,6 +11,7 @@
 #include <string>
 #include <vector>
 
+class TTree;
 class TClonesArray;
 class GenJet;
 
@@ -33,6 +34,7 @@ public:
 private:
   TClonesArray* cloneGenJet; 
   int  fnGenJet;
+  TTree* _tree;
   int _verbosity;
   edm::InputTag _inputTag;
   GenJet* genJetB; 

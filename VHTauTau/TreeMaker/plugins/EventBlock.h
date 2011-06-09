@@ -10,6 +10,7 @@
 #include <string>
 #include <vector>
 
+class TTree;
 class Event;
 
 class EventBlock : public edm::EDAnalyzer 
@@ -26,6 +27,7 @@ public:
 
 private:
   TClonesArray* cloneEvent; 
+  TTree* _tree; 
   int _verbosity;
 
   const edm::InputTag   _l1InputTag;

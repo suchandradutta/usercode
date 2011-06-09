@@ -16,6 +16,7 @@
 #include <string>
 #include <vector>
 
+class TTree;
 class TClonesArray;
 class CaloJet;
 
@@ -38,6 +39,7 @@ private:
   TClonesArray* cloneCaloJet; 
   int fnCaloJet;
 
+  TTree* _tree;
   int _verbosity;
   edm::InputTag _inputTag;
   double _electronPt;

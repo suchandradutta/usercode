@@ -1,3 +1,4 @@
+
 #ifndef ElectronBlock_hh
 #define ElectronBlock_hh
 
@@ -16,6 +17,7 @@
 #include <string>
 #include <vector>
 
+class TTree;
 class TClonesArray;
 class Electron;
 
@@ -38,6 +40,7 @@ private:
   TClonesArray* cloneElectron; 
   int fnElectron;
 
+  TTree* _tree;
   int _verbosity;
   edm::InputTag _trkInputTag;
   edm::InputTag _dcsInputTag;

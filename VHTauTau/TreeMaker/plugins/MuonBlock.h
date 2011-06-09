@@ -11,6 +11,7 @@
 #include <string>
 #include <vector>
 
+class TTree;
 class TClonesArray;
 class Muon;
 
@@ -33,6 +34,7 @@ public:
 private:
   TClonesArray* cloneMuon; 
   int  fnMuon;
+  TTree* _tree; 
   int _verbosity;
 
   edm::InputTag _muonInputTag;

@@ -40,6 +40,7 @@
 
 // Constructor
 SuperClusterBlock::SuperClusterBlock(const edm::ParameterSet& iConfig) :
+  _tree(0), 
   _verbosity(iConfig.getParameter<int>("verbosity")),
   _ebInputTag(iConfig.getParameter<edm::InputTag>("EBInputTag")),
   _eeInputTag(iConfig.getParameter<edm::InputTag>("EEInputTag")),
@@ -51,10 +52,10 @@ SuperClusterBlock::SuperClusterBlock(const edm::ParameterSet& iConfig) :
 void SuperClusterBlock::beginJob() 
 {
   std::string tree_name = "vhtree";
-  TTree* tree = Utility::getTree(tree_name);
+  if (_tree) _tree = Utility::getTree(tree_name);
   cloneSuperCluster = new TClonesArray("SuperCluster");
-  tree->Branch("SuperCluster", &cloneSuperCluster, 32000, 2);
-  tree->Branch("nSuperCluster", &fnSuperCluster,  "fnSuperCluster/I");
+  _tree->Branch("SuperCluster", &cloneSuperCluster, 32000, 2);
+  _tree->Branch("nSuperCluster", &fnSuperCluster,  "fnSuperCluster/I");
 }
 void SuperClusterBlock::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup) {
   // Reset the TClonesArray and the nObj variables

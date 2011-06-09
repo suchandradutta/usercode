@@ -9,6 +9,7 @@
 #include "DataFormats/PatCandidates/interface/Tau.h"
 
 TauBlock::TauBlock(const edm::ParameterSet& iConfig) :
+  _tree(0),
   _verbosity(iConfig.getParameter<int>("verbosity")),
   _inputTag(iConfig.getParameter<edm::InputTag>("patTauSrc"))
 {}
@@ -17,10 +18,10 @@ void TauBlock::beginJob()
   // Get TTree pointer
   //edm::Service<TFileService> fs;
   //TTree* tree = fs->getObject<TTree>("vhtree");
-  TTree* tree = Utility::getTree("vhtree");
+  if (!_tree) _tree = Utility::getTree("vhtree");
   cloneTau = new TClonesArray("Tau");
-  tree->Branch("Tau", &cloneTau, 32000, 2);
-  tree->Branch("nTau", &fnTau, "fnTau/I");
+  _tree->Branch("Tau", &cloneTau, 32000, 2);
+  _tree->Branch("nTau", &fnTau, "fnTau/I");
 }
 void TauBlock::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup) {
   // Reset the TClonesArray and the nObj variables

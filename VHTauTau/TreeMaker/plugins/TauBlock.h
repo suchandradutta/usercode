@@ -11,6 +11,7 @@
 #include <string>
 #include <vector>
 
+class TTree;
 class TClonesArray;
 class Tau;
 
@@ -33,6 +34,7 @@ public:
 private:
   TClonesArray* cloneTau; 
   int  fnTau;
+  TTree* _tree;   
   int _verbosity;
   edm::InputTag _inputTag;
 

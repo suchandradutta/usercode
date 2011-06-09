@@ -10,6 +10,7 @@
 #include <string>
 #include <vector>
 
+class TTree;
 class TClonesArray;
 class GenEvent;
 
@@ -27,6 +28,7 @@ public:
 
 private:
   TClonesArray* cloneGenEvent; 
+  TTree* _tree;
   int _verbosity;
 
   const edm::InputTag   _genEvtInfoInputTag;

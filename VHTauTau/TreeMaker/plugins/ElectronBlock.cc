@@ -48,6 +48,7 @@
 
 // Constructor
 ElectronBlock::ElectronBlock(const edm::ParameterSet& iConfig) :
+  _tree(0),
   _verbosity(iConfig.getParameter<int>("verbosity")),
   _trkInputTag(iConfig.getParameter<edm::InputTag>("trackSrc")),
   _dcsInputTag(iConfig.getParameter<edm::InputTag>("dcsSrc")),
@@ -68,10 +69,10 @@ void ElectronBlock::beginJob()
   //assert(tree);
 
   std::string tree_name = "vhtree";
-  TTree* tree = Utility::getTree(tree_name);
+  if (!_tree) _tree = Utility::getTree(tree_name);
   cloneElectron = new TClonesArray("Electron");
-  tree->Branch("Electron", &cloneElectron, 32000, 2);
-  tree->Branch("nElectron", &fnElectron,  "fnElectron/I");
+  _tree->Branch("Electron", &cloneElectron, 32000, 2);
+  _tree->Branch("nElectron", &fnElectron,  "fnElectron/I");
 }
 void ElectronBlock::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup) {
   // Reset the TClonesArray and the nObj variables

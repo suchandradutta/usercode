@@ -17,6 +17,7 @@
 #include "VHTauTau/TreeMaker/interface/Utility.h"
 
 EventBlock::EventBlock(const edm::ParameterSet& iConfig) :
+  _tree(0),
   _verbosity(iConfig.getParameter<int>("verbosity")),
   _l1InputTag(iConfig.getParameter<edm::InputTag>("l1InputTag")),
   _vtxInputTag(iConfig.getParameter<edm::InputTag>("vertexInputTag")),
@@ -31,11 +32,11 @@ EventBlock::EventBlock(const edm::ParameterSet& iConfig) :
 void EventBlock::beginJob() {
   // Get TTree pointer
   //edm::Service<TFileService> fs;
-  //TTree* tree = fs->getObject<TTree>("vhtree");
-  TTree* tree = Utility::getTree("vhtree");
+  //TTree* _tree = fs->getObject<TTree>("vhtree");
+  if (!_tree) _tree = Utility::getTree("vhtree");
 
   cloneEvent = new TClonesArray("Event");
-  tree->Branch("Event", &cloneEvent, 32000, 2);
+  _tree->Branch("Event", &cloneEvent, 32000, 2);
 }
 void EventBlock::analyze(edm::Event const& iEvent, edm::EventSetup const& iSetup) {
   // Reset the TClonesArray

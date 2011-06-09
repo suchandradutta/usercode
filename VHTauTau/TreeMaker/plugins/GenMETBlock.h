@@ -11,8 +11,9 @@
 #include <string>
 #include <vector>
 
-class GenMET;
+class TTree;
 class TClonesArray;
+class GenMET;
 
 class GenMETBlock : public edm::EDAnalyzer 
 {
@@ -33,6 +34,7 @@ public:
 private:
   TClonesArray* cloneGenMET; 
   int  fnGenMET;
+  TTree* _tree;
   int _verbosity;
   edm::InputTag _inputTag;
 
