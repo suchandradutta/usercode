@@ -14,7 +14,6 @@
 #include "Math/GenVector/VectorUtil.h"
 
 MuonBlock::MuonBlock(const edm::ParameterSet& iConfig) :
-  _tree(0),
   _verbosity(iConfig.getParameter<int>("verbosity")),
   _muonInputTag(iConfig.getParameter<edm::InputTag>("muonSrc")),
   _pfMuonInputTag(iConfig.getParameter<edm::InputTag>("pfMuonSrc")),
@@ -26,12 +25,10 @@ MuonBlock::MuonBlock(const edm::ParameterSet& iConfig) :
 void MuonBlock::beginJob() 
 {
   // Get TTree pointer
-  //edm::Service<TFileService> fs;
-  //TTree* tree = fs->getObject<TTree>("vhtree");
-  if (!_tree) _tree = Utility::getTree("vhtree");
+  TTree* tree = Utility::getTree("vhtree");
   cloneMuon = new TClonesArray("Muon");
-  _tree->Branch("Muon", &cloneMuon, 32000, 2);
-  _tree->Branch("nMuon", &fnMuon,  "fnMuon/I");
+  tree->Branch("Muon", &cloneMuon, 32000, 2);
+  tree->Branch("nMuon", &fnMuon,  "fnMuon/I");
 }
 void MuonBlock::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup) {
   // Reset the TClonesArray and the nObj variables

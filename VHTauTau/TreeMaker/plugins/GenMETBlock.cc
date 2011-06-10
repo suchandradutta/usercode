@@ -11,20 +11,16 @@
 #include "DataFormats/METReco/interface/GenMETFwd.h"
 
 GenMETBlock::GenMETBlock(const edm::ParameterSet& iConfig) :
-  _tree(0),
   _verbosity(iConfig.getParameter<int>("verbosity")),
   _inputTag(iConfig.getParameter<edm::InputTag>("genMETSrc"))
 {}
 void GenMETBlock::beginJob() 
 {
   // Get TTree pointer
-  //edm::Service<TFileService> fs;
-  //TTree* tree = fs->getObject<TTree>("vhtree");
-
-  if (!_tree) _tree = Utility::getTree("vhtree");
+  TTree* tree = Utility::getTree("vhtree");
   cloneGenMET = new TClonesArray("GenMET");
-  _tree->Branch("GenMET", &cloneGenMET, 32000, 2);
-  _tree->Branch("nGenMET", &fnGenMET,  "fnGenMET/I");
+  tree->Branch("GenMET", &cloneGenMET, 32000, 2);
+  tree->Branch("nGenMET", &fnGenMET,  "fnGenMET/I");
 }
 void GenMETBlock::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup) {
   // Reset the TClonesArray and the nObj variables

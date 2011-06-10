@@ -1,6 +1,6 @@
 import FWCore.ParameterSet.Config as cms
 
-caloJetBlock       = cms.EDAnalyzer("CaloJetBlock",
+caloJetBlock = cms.EDAnalyzer("CaloJetBlock",
     verbosity      = cms.int32(0),
     caloJetSrc     = cms.InputTag('cleanPatJets'),
     electronPt     = cms.double(30.),

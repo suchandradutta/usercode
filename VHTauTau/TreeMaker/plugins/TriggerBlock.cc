@@ -19,7 +19,6 @@ static const unsigned int NmaxL1TechBit = 64;
 
 // Constructor
 TriggerBlock::TriggerBlock(const edm::ParameterSet& iConfig) :
-  _tree(0),
   _verbosity(iConfig.getParameter<int>("verbosity")),
   _l1InputTag(iConfig.getParameter<edm::InputTag>("l1InputTag")),
   _hltInputTag(iConfig.getParameter<edm::InputTag>("hltInputTag")),
@@ -28,9 +27,9 @@ TriggerBlock::TriggerBlock(const edm::ParameterSet& iConfig) :
 void TriggerBlock::beginJob() 
 {
   std::string tree_name = "vhtree";
-  if (!_tree) _tree = Utility::getTree(tree_name);
+  TTree* tree = Utility::getTree(tree_name);
   cloneTrigger = new TClonesArray("Trigger");
-  _tree->Branch("Trigger", &cloneTrigger, 32000, 2);
+  tree->Branch("Trigger", &cloneTrigger, 32000, 2);
 }
 void TriggerBlock::beginRun(edm::Run const& iRun, edm::EventSetup const& iSetup) {
   bool changed = true;

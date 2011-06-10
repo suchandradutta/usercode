@@ -16,16 +16,13 @@
 #include "VHTauTau/TreeMaker/plugins/CaloJetBlock.h"
 #include "VHTauTau/TreeMaker/interface/PhysicsObjects.h"
 #include "VHTauTau/TreeMaker/interface/Utility.h"
-JetIDSelectionFunctor jetIDLoose(
-JetIDSelectionFunctor::PURE09, JetIDSelectionFunctor::LOOSE );
-JetIDSelectionFunctor jetIDTight( JetIDSelectionFunctor::PURE09,
- JetIDSelectionFunctor::TIGHT );
+JetIDSelectionFunctor jetIDLoose(JetIDSelectionFunctor::PURE09, JetIDSelectionFunctor::LOOSE);
+JetIDSelectionFunctor jetIDTight(JetIDSelectionFunctor::PURE09, JetIDSelectionFunctor::TIGHT);
 
 pat::strbitset ret = jetIDLoose.getBitTemplate();
 
 // Constructor
 CaloJetBlock::CaloJetBlock(const edm::ParameterSet& iConfig) :
-  _tree(0),
   _verbosity(iConfig.getParameter<int>("verbosity")),
   _inputTag(iConfig.getParameter<edm::InputTag>("caloJetSrc")),
   _electronPt (iConfig.getParameter<double>    ("electronPt")),
@@ -39,10 +36,10 @@ CaloJetBlock::CaloJetBlock(const edm::ParameterSet& iConfig) :
 void CaloJetBlock::beginJob() 
 {
   std::string tree_name = "vhtree";
-  if (!_tree) _tree = Utility::getTree(tree_name);
+  TTree* tree = Utility::getTree(tree_name);
   cloneCaloJet = new TClonesArray("CaloJet");
-  _tree->Branch("CaloJet", &cloneCaloJet, 32000, 2);
-  _tree->Branch("nCaloJet", &fnCaloJet, "fnCaloJet/I");
+  tree->Branch("CaloJet", &cloneCaloJet, 32000, 2);
+  tree->Branch("nCaloJet", &fnCaloJet, "fnCaloJet/I");
 }
 void CaloJetBlock::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup) {
   // Reset the TClonesArray and the nObj variables

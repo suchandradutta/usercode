@@ -1,6 +1,6 @@
 import FWCore.ParameterSet.Config as cms
 
-muonBlock           = cms.EDAnalyzer("MuonBlock",
+muonBlock = cms.EDAnalyzer("MuonBlock",
     verbosity       = cms.int32(0),
     muonSrc         = cms.InputTag('cleanPatMuons'),
     pfMuonSrc       = cms.InputTag('particleFlow'),

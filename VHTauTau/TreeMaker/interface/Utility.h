@@ -2,8 +2,8 @@
 #define Utility_hh
 
 #include <string>
-class Tree;
 
+class Tree;
 class Utility 
 {
 public:

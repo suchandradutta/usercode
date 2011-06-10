@@ -1,6 +1,6 @@
 import FWCore.ParameterSet.Config as cms
 
-jetBlock           = cms.EDAnalyzer("JetBlock",
+jetBlock = cms.EDAnalyzer("JetBlock",
     verbosity      = cms.int32(0),
     jetSrc         = cms.InputTag('selectedPatJetsAK5PF'),
     jecUncertainty = cms.string('CondFormats/JetMETObjects/data/Spring10_Uncertainty_AK5PF.txt'),

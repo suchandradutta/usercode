@@ -21,9 +21,6 @@ GenEventBlock::GenEventBlock(const edm::ParameterSet& iConfig) :
 void GenEventBlock::beginJob() 
 {
   // Get TTree pointer
-  //edm::Service<TFileService> fs;
-  //TTree* tree = fs->getObject<TTree>("vhtree");
-
   TTree* tree = Utility::getTree("vhtree");
   cloneGenEvent = new TClonesArray("GenEvent");
   tree->Branch("GenEvent", &cloneGenEvent, 32000, 2);

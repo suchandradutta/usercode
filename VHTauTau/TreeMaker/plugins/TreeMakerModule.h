@@ -11,7 +11,6 @@
 #include <string>
 #include <vector>
 
-class TTree;
 class TreeMakerModule : public edm::EDAnalyzer 
 {
 private:
@@ -25,7 +24,6 @@ public:
   virtual ~TreeMakerModule() {}
 
 private:
-  TTree* _tree;
    int _verbosity;
   bool _createTree;
 };
