@@ -54,9 +54,6 @@ AnaBase::AnaBase(const string& filename)
 // ----------
 AnaBase::~AnaBase() 
 {
-  cout << resetiosflags(ios::fixed);
-
-  closeFiles();
   clearEvent();
 
   delete eventA;
@@ -105,6 +102,10 @@ void AnaBase::clearEvent()
 // -------------------------------------------------------
 bool AnaBase::beginJob() 
 {
+  // Open the output ROOT file
+  _histf = TFile::Open("pippo.root", "RECREATE");
+  bookHistograms();
+
   setAddresses();
   //enableBranches();
   nEvents = static_cast<int>(_chain->GetEntries()); 
@@ -115,6 +116,14 @@ bool AnaBase::beginJob()
   cout << " ===== # of events to analyse, nEvents = " << nEvents << endl;
 
   return true;
+}
+// ---------------
+// Book histograms
+// ---------------
+void AnaBase::bookHistograms() 
+{
+  //static const double pi = TMath::Pi();
+  new TH1F("muonPt", "Muon Pt Distribution", 100, -0.5, 199.5);
 }
 // -------------------
 // The main event loop
@@ -201,6 +210,7 @@ void AnaBase::eventLoop()
              << setw(8) << muon->trkDz
              << setw(8) << muon->trkDzError
              << endl;
+	fillHist1D("muonPt", muon->pt, 1.0);
       }
     }
   }  
@@ -212,6 +222,14 @@ void AnaBase::eventLoop()
 // ------------------------------------------------------------------
 void AnaBase::endJob() 
 {
+  cout << resetiosflags(ios::fixed);
+
+  closeFiles();
+
+  _histf->cd();
+  _histf->Write();
+  _histf->Close();
+  delete _histf;
 }
 
 // ----------------------------------------------------------

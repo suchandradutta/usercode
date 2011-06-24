@@ -18,7 +18,7 @@
 class AnaBase;
 class TClonesArray;
 class TChain;
-
+class TFile;
 class AnaBase {
     
 public:
@@ -41,6 +41,7 @@ public:
   bool fillProfile(const std::string& hname, float xvalue, float yvalue, double w=1.0);
 
   virtual bool selectEvent();
+  virtual void bookHistograms();
   void clearEvent();
   void enableBranches();
    int getEntry(int lflag) const;
