@@ -200,7 +200,21 @@ public:
   double jetEta;
   double jetPhi;
 
-  ClassDef(Tau,1) 
+  double ecalStripSumEOverPLead;
+  double bremsRecoveryEOverPLead;
+  double hcal3x3OverPLead;
+
+  double etaetaMoment;
+  double phiphiMoment;
+
+  double vx;
+  double vy;
+  double vz;
+
+  double zvertex;
+  double ltsipt;
+
+  ClassDef(Tau,2) 
 };
 class CaloJet: public TObject {
 public:

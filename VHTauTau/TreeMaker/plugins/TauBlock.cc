@@ -32,8 +32,7 @@ void TauBlock::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup) 
     edm::LogInfo("TauBlock") << "Total # PAT Taus: " << taus->size();
     
     for (std::vector<pat::Tau>::const_iterator it = taus->begin(); 
-                                              it != taus->end(); ++it ) {
-      
+                                              it != taus->end(); ++it) {
       if (fnTau == kMaxTau) {
 	edm::LogInfo("TauBlock") << "Too many PAT Taus, fnTau = " << fnTau;
 	break;
@@ -84,10 +83,28 @@ void TauBlock::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup) 
       tauB->jetPt  = it->pfJetRef()->pt();
       tauB->jetEta = it->pfJetRef()->eta();
       tauB->jetPhi = it->pfJetRef()->phi();
+
+      // NEW quantities
+      tauB->ecalStripSumEOverPLead  = it->ecalStripSumEOverPLead();
+      tauB->bremsRecoveryEOverPLead = it->bremsRecoveryEOverPLead();
+      tauB->hcal3x3OverPLead        = it->hcal3x3OverPLead();
+
+      tauB->etaetaMoment = it->etaetaMoment();
+      tauB->phiphiMoment = it->phiphiMoment();
+      
+      // Vertex information
+      const reco::Candidate::Point& vertex = it->vertex();
+      tauB->vx = vertex.x();             
+      tauB->vy = vertex.y();             
+      tauB->vz = vertex.z();             
+
+      tauB->zvertex = it->vz(); // distance from the primary vertex
+      tauB->mass = it->p4().M();
+      tauB->ltsipt = TMath::Abs(it->leadPFChargedHadrCandsignedSipt());
     }
   }
   else {
-    edm::LogError("TauBlock") << "Error! Can't get the product " << _inputTag;
+    edm::LogError("TauBlock") << "Error! Failed to get the product: " << _inputTag;
   }
 }
 #include "FWCore/Framework/interface/MakerMacros.h"
