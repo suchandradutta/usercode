@@ -14,6 +14,7 @@ ClassImp(Jet)
 ClassImp(SuperCluster)
 ClassImp(Vertex)
 ClassImp(Trigger)
+ClassImp(Track)
 
 
 Event::Event() :
@@ -309,3 +310,32 @@ Trigger::Trigger()
   hltresults.clear();
   hltprescales.clear();
 }
+Track::Track()
+  : eta(-999),
+    etaError(-999),
+    theta(-999),
+    thetaError(-999),
+    phi(-999),
+    phiError(-999),
+    p(-999),
+    pt(-999),
+    ptError(-999),
+    qoverp(-999),
+    qoverpError(-999),
+    nValidHits(-1),
+    nLostHits(-1),
+    validFraction(-999),
+    nValidTrackerHits(-1),
+    nValidPixelHits(-1),
+    nValidStripHits(-1),
+    trackerLayersWithMeasurement(-1),
+    pixelLayersWithMeasurement(-1),
+    stripLayersWithMeasurement(-1),
+    dxy(-999),
+    dxyError(-999),
+    dz(-999),
+    dzError(-999),
+    chi2(-999),
+    ndof(-1),
+    vx(-999), vy(-999), vz(-999)
+{}

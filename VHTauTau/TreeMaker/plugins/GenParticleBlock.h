@@ -1,5 +1,5 @@
-#ifndef GenParticleBlock_hh
-#define GenParticleBlock_hh
+#ifndef __TreeMaker_GenParticleBlock_hh
+#define __TreeMaker_GenParticleBlock_hh
 
 #include "FWCore/Framework/interface/Frameworkfwd.h"
 #include "FWCore/Framework/interface/EDAnalyzer.h"

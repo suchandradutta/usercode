@@ -1,5 +1,5 @@
-#ifndef SuperClusterBlock_hh
-#define SuperClusterBlock_hh
+#ifndef __TreeMaker_SuperClusterBlock_hh
+#define __TreeMaker_SuperClusterBlock_hh
 
 #include "FWCore/Framework/interface/Frameworkfwd.h"
 #include "FWCore/Framework/interface/EDAnalyzer.h"

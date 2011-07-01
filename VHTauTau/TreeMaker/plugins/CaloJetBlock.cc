@@ -1,6 +1,9 @@
 #include <iostream>
 #include <algorithm>
 
+#include "TTree.h"
+#include "TClonesArray.h"
+
 #include "FWCore/MessageLogger/interface/MessageLogger.h"
 #include "DataFormats/PatCandidates/interface/Electron.h"
 #include "DataFormats/PatCandidates/interface/Jet.h"
@@ -10,12 +13,11 @@
 #include "CondFormats/JetMETObjects/interface/JetCorrectorParameters.h"
 #include "CondFormats/JetMETObjects/interface/JetCorrectionUncertainty.h"
 #include "CommonTools/UtilAlgos/interface/TFileService.h"
-#include "TTree.h"
-#include "TClonesArray.h"
 
+#include "VHTauTau/TreeMaker/interface/Utility.h"
 #include "VHTauTau/TreeMaker/plugins/CaloJetBlock.h"
 #include "VHTauTau/TreeMaker/interface/PhysicsObjects.h"
-#include "VHTauTau/TreeMaker/interface/Utility.h"
+
 JetIDSelectionFunctor jetIDLoose(JetIDSelectionFunctor::PURE09, JetIDSelectionFunctor::LOOSE);
 JetIDSelectionFunctor jetIDTight(JetIDSelectionFunctor::PURE09, JetIDSelectionFunctor::TIGHT);
 

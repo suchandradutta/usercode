@@ -1,12 +1,13 @@
-#ifndef Utility_hh
-#define Utility_hh
+#ifndef __TreeMaker_Utility_hh
+#define __TreeMaker_Utility_hh
 
 #include <string>
 
-class Tree;
+class TTree;
+
 class Utility 
 {
 public:
-  static TTree* getTree(const std::string& tree_name="vhtree"); 
+  static TTree* getTree(const std::string& tree_name="vhtree");
 };
 #endif

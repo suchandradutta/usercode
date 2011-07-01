@@ -1,5 +1,5 @@
-#ifndef METBlock_hh
-#define METBlock_hh
+#ifndef __TreeMaker_METBlock_hh
+#define __TreeMaker_METBlock_hh
 
 #include "FWCore/Framework/interface/Frameworkfwd.h"
 #include "FWCore/Framework/interface/EDAnalyzer.h"

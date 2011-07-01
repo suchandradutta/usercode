@@ -1,5 +1,5 @@
-#ifndef TriggerBlock_hh
-#define TriggerBlock_hh
+#ifndef __TreeMaker_TriggerBlock_hh
+#define __TreeMaker_TriggerBlock_hh
 
 #include "FWCore/Framework/interface/Frameworkfwd.h"
 #include "FWCore/Framework/interface/EDAnalyzer.h"

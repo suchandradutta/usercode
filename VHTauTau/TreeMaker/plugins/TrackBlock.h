@@ -1,5 +1,5 @@
-#ifndef __TreeMaker_TauBlock_hh
-#define __TreeMaker_TauBlock_hh
+#ifndef __TreeMaker_TrackBlock_hh
+#define __TreeMaker_TrackBlock_hh
 
 #include "FWCore/Framework/interface/Frameworkfwd.h"
 #include "FWCore/Framework/interface/EDAnalyzer.h"
@@ -12,30 +12,33 @@
 #include <vector>
 
 class TClonesArray;
-class Tau;
+class Track;
 
-class TauBlock : public edm::EDAnalyzer 
+class TrackBlock : public edm::EDAnalyzer 
 {
 private:
   virtual void beginJob();
   virtual void beginRun(edm::Run const& iRun, edm::EventSetup const& iSetup) {}
   virtual void analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup);
-  virtual void endJob() {}
+  virtual void endJob(){}
 
 public:
-  explicit TauBlock(const edm::ParameterSet& iConfig);
-  virtual ~TauBlock() {}
+  explicit TrackBlock(const edm::ParameterSet& iConfig);
+  virtual ~TrackBlock() {}
 
   enum {
-    kMaxTau = 100
+    kMaxTrack = 200
   };
 
 private:
-  TClonesArray* cloneTau; 
-  int  fnTau;
-  int _verbosity;
-  edm::InputTag _inputTag;
+  TClonesArray* cloneTrack; 
+  int  fnTrack;
 
-  Tau* tauB;
+  int _verbosity;
+
+  edm::InputTag _inputTag;
+  edm::InputTag _beamSpot;
+
+  Track* trackB;
 };
 #endif

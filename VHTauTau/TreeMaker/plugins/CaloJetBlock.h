@@ -1,5 +1,5 @@
-#ifndef CaloJetBlock_hh
-#define CaloJetBlock_hh
+#ifndef __TreeMaker_CaloJetBlock_hh
+#define __TreeMaker_CaloJetBlock_hh
 
 #include "FWCore/Framework/interface/Frameworkfwd.h"
 #include "FWCore/Framework/interface/EDAnalyzer.h"

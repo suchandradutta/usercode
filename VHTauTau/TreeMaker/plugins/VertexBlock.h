@@ -1,5 +1,5 @@
-#ifndef VertexBlock_hh
-#define VertexBlock_hh
+#ifndef __TreeMaker_VertexBlock_hh
+#define __TreeMaker_VertexBlock_hh
 
 #include "FWCore/Framework/interface/Frameworkfwd.h"
 #include "FWCore/Framework/interface/EDAnalyzer.h"

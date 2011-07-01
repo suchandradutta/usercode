@@ -1,5 +1,5 @@
-#ifndef JetBlock_hh
-#define JetBlock_hh
+#ifndef __TreeMaker_JetBlock_hh
+#define __TreeMaker_JetBlock_hh
 
 #include "FWCore/Framework/interface/Frameworkfwd.h"
 #include "FWCore/Framework/interface/EDAnalyzer.h"

@@ -1,5 +1,5 @@
-#ifndef TreeMakerModule_hh
-#define TreeMakerModule_hh
+#ifndef __TreeMaker_TreeMakerModule_hh
+#define __TreeMaker_TreeMakerModule_hh
 
 #include "FWCore/Framework/interface/Frameworkfwd.h"
 #include "FWCore/Framework/interface/EDAnalyzer.h"

@@ -1,6 +1,6 @@
 
-#ifndef ElectronBlock_hh
-#define ElectronBlock_hh
+#ifndef __TreeMaker_ElectronBlock_hh
+#define __TreeMaker_ElectronBlock_hh
 
 #include "FWCore/Framework/interface/Frameworkfwd.h"
 #include "FWCore/Framework/interface/EDAnalyzer.h"

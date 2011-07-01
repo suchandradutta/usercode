@@ -1,5 +1,5 @@
-#ifndef EventBlock_hh
-#define EventBlock_hh
+#ifndef __TreeMaker_EventBlock_hh
+#define __TreeMaker_EventBlock_hh
 
 #include "FWCore/Framework/interface/Frameworkfwd.h"
 #include "FWCore/Framework/interface/EDAnalyzer.h"

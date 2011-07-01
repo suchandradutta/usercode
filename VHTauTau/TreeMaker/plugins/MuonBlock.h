@@ -1,5 +1,5 @@
-#ifndef MuonBlock_hh
-#define MuonBlock_hh
+#ifndef __TreeMaker_MuonBlock_hh
+#define __TreeMaker_MuonBlock_hh
 
 #include "FWCore/Framework/interface/Frameworkfwd.h"
 #include "FWCore/Framework/interface/EDAnalyzer.h"
