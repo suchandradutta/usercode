@@ -12,7 +12,7 @@ process.source = cms.Source("PoolSource",
                    fileNames = cms.untracked.vstring()
                  )
 process.maxEvents = cms.untracked.PSet(
-                      input = cms.untracked.int32(-1)
+                      input = cms.untracked.int32(50)
                     )
 #-----------------------------
 # Geometry
@@ -26,20 +26,20 @@ process.load('Configuration.StandardSequences.MagneticField_AutoFromDBCurrent_cf
 # Global Tag
 #-------------
 process.load('Configuration.StandardSequences.FrontierConditions_GlobalTag_cff')
-process.GlobalTag.globaltag = 'START42_V12::All'
+process.GlobalTag.globaltag = 'GR_R_42_V14::All'
 #from PhysicsTools.PatAlgos.patTemplate_cfg import *
 #-------------
 # Output ROOT file
 #-------------
 process.TFileService = cms.Service("TFileService",
-     fileName = cms.string('MC_RelValTTbar.root')
-)
+     fileName = cms.string('SingleMu.root')
+     )                                   
 #--------------------------------------------------
 # VHTauTau Tree Specific
 #--------------------------------------------------
 process.load("VHTauTau.TreeMaker.TreeCreator_cfi")
 process.load("VHTauTau.TreeMaker.TreeWriter_cfi")
-process.load("VHTauTau.TreeMaker.TreeContentConfig_cff")
+process.load("VHTauTau.TreeMaker.TreeContentConfig_data_cff")
 
 process.load("RecoTauTag.Configuration.RecoPFTauTag_cff")
 #-------------------------------------------------------
@@ -57,31 +57,34 @@ addJetCollection(process,cms.InputTag('ak5PFJets'),
                      doType1MET   = False,
                      doL1Cleaning = False,
                      doL1Counters = False,
-                     genJetCollection=cms.InputTag("ak5GenJets"),
+                     genJetCollection=cms.InputTag(""),
                      doJetID      = False
                  )
 
+#switchToPFTauHPSpTaNC(process) # For HPS TaNC Taus
 from PhysicsTools.PatAlgos.tools.tauTools import *
 switchToPFTauHPS(process) # For HPS Taus
-#switchToPFTauHPSpTaNC(process) # For HPS TaNC Taus
+
+# create TC and PF METs
 from PhysicsTools.PatAlgos.tools.metTools import *
 addTcMET(process, 'TC')
 addPfMET(process, 'PF')
 
 process.p = cms.Path(
     process.treeCreator +
-    process.PFTau     +
-    process.patDefaultSequence +
+    process.PFTau +
+    process.patDefaultSequence  +   
     process.treeContentSequence +
     process.treeWriter
     )
+
+from VHTauTau.TreeMaker.SwitchToData import switchToData
+switchToData(process)
 
 #--------------------------------------
 # List File names here
 #---------------------------------------
 process.PoolSource.fileNames = [
-#     'rfio:/castor/cern.ch/user/l/lusito/WH/TestA/WH115DIGI2RAWExt.root'
-     '/store/relval/CMSSW_4_2_3/RelValTTbar//GEN-SIM-RECO/START42_V12-v2/0064/583198DF-B97B-E011-98F5-0018F3D0970E.root',
-     '/store/relval/CMSSW_4_2_3/RelValTTbar//GEN-SIM-RECO/START42_V12-v2/0068/30222246-647C-E011-A6A6-00304867C1BC.root'
+     '/store/data/Run2011A/SingleMu/AOD/PromptReco-v4/000/165/620/6AD32415-7888-E011-A499-001D09F292D1.root'
 ]
 
