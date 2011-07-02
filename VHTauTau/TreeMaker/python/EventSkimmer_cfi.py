@@ -1,7 +1,7 @@
 import FWCore.ParameterSet.Config as cms
 
 eventSkimmer = cms.EDFilter("EventSkimmer",
-    verbosity           = cms.int32(1),
+    verbosity           = cms.int32(0),
     muonSrc             = cms.InputTag('muons'),
     electronSrc         = cms.InputTag('pixelMatchGsfElectrons'),
     doMuonSelection     = cms.bool(True),

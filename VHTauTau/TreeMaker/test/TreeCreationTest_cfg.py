@@ -12,7 +12,7 @@ process.source = cms.Source("PoolSource",
                    fileNames = cms.untracked.vstring()
                  )
 process.maxEvents = cms.untracked.PSet(
-                      input = cms.untracked.int32(-1)
+                      input = cms.untracked.int32(5000)
                     )
 #-----------------------------
 # Geometry
@@ -40,6 +40,8 @@ process.TFileService = cms.Service("TFileService",
 process.load("VHTauTau.TreeMaker.TreeCreator_cfi")
 process.load("VHTauTau.TreeMaker.TreeWriter_cfi")
 process.load("VHTauTau.TreeMaker.TreeContentConfig_cff")
+# Event Skim
+process.load("VHTauTau.TreeMaker.EventSkimmer_cfi")
 
 process.load("RecoTauTag.Configuration.RecoPFTauTag_cff")
 #-------------------------------------------------------
@@ -70,6 +72,8 @@ addPfMET(process, 'PF')
 
 process.p = cms.Path(
     process.treeCreator +
+# uncomment if events skimming needed    
+#    process.eventSkimmer +  
     process.PFTau     +
     process.patDefaultSequence +
     process.treeContentSequence +

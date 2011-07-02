@@ -46,8 +46,10 @@ void EventSkimmer::endJob() {
     th->SetBinContent(1, _totalEvents);
     th->SetBinContent(2, _selectedEvents);
   }
-  edm::LogInfo("EventSkimmer") << " Total # of Events "<< _totalEvents;
-  edm::LogInfo("EventSkimmer") << " Selected # Events "<< _selectedEvents;
+  if (_verbosity > 0) {
+    std::cout << "EventSkimmer" << " Total # of Events "<< _totalEvents  << std::endl;
+    std::cout << "EventSkimmer" << " Selected # Events "<< _selectedEvents << std::endl;
+  }
 }
 bool EventSkimmer::checkMuonSelection(const edm::Event& iEvent) {
   edm::Handle<reco::MuonCollection> muons_;
