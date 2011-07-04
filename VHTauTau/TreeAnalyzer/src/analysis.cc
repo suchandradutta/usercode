@@ -14,20 +14,29 @@ using std::string;
 using std::vector;
 
 int main(int argc, char* argv[]) {
+  if (argc < 2) {
+    cerr << "Usage: " << argv[0] << " jobFile " << endl;
+    exit(0);
+  }     
+  string jobFile(argv[1]);
+
    // Create  analysis object 
    AnaBase myana;
 
    // Read job input
-   vector<std::string> fileList;
-   fileList.push_back("DYToMuMu_1_2_T12.root");
-   for (unsigned int i = 0; i < fileList.size(); i++)
-     myana.setInputFile(fileList[i].c_str());
+   int nFiles;
+   bool succeed = myana.readJob(jobFile, nFiles);
+   if (!succeed) exit(1);
+   if (myana.getEntries() <= 0) {
+     cerr << "No events present in the input chain, exiting ...!" << endl;
+     exit(2);
+   }
 
    gROOT->SetBatch(kTRUE);
 
    // Now go
    TStopwatch timer;
-   cout << "Start event loop now with " << fileList.size() << " files" << endl;
+   cout << "Start event loop now with " << nFiles << " files" << endl;
    timer.Start();
    myana.eventLoop();
    timer.Stop();

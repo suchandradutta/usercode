@@ -5,7 +5,7 @@
 #include <iterator>
 #include <functional>
 #include <numeric>
-
+#include <string>
 #include <climits>
 #include <cassert>
 
@@ -103,7 +103,7 @@ void AnaBase::clearEvent()
 bool AnaBase::beginJob() 
 {
   // Open the output ROOT file
-  _histf = TFile::Open("pippo.root", "RECREATE");
+  _histf = TFile::Open(_histFile.c_str(), "RECREATE");
   bookHistograms();
 
   setAddresses();
@@ -347,11 +347,11 @@ bool AnaBase::fillProfile(const string& hname, float xvalue, float yvalue, doubl
 // ------------------------------------------------------
 // Open the output file with a global filehandle, C++ way
 // ------------------------------------------------------
-bool AnaBase::openFiles(const string& filename) 
+bool AnaBase::openFiles() 
 {
-  _fLog.open(filename.c_str(), ios::out);
+  _fLog.open(_logFile.c_str(), ios::out);
   if (!_fLog) {
-    cerr << "File: " << filename << " could not be opened!" << endl;
+    cerr << "File: " << _logFile << " could not be opened!" << endl;
     return false;
   }
   _fLog << setiosflags(ios::fixed);
@@ -486,4 +486,114 @@ void AnaBase::enableBranches()
   _chain->SetBranchStatus("nGenParticle", kTRUE);
   _chain->SetBranchStatus("GenParticle", kTRUE);
   _chain->SetBranchStatus("nGenParticle", kTRUE);
+}
+// -------------------------------------------------------------------------------
+// Poor man's way of a datacard. Each line between the 'START' and 'END' tags
+// is read in turn, split into words, where the first element is the 'key' and
+// the rest the value(s). If more than one values are present they are 
+// stored in a vector. No safety mechanism is in place. Any line with an unknown 
+// key is skipped. Comments lines should start with either '#' or '//', preferably
+// in the first column. Empty lines are skipped. The file containing the datacards 
+// is passed as the only argument of the program, there is no default datacard
+// -------------------------------------------------------------------------------
+bool AnaBase::readJob(const string& jobFile, int& nFiles)
+{
+  // Define parameters and set default values
+  vector<string> fileList;
+  string outputFile("pippo.out");
+
+  static const int BUF_SIZE = 256;
+
+  // Open the file containing the datacards
+  ifstream fin(jobFile.c_str(), ios::in);    
+  if (!fin) {
+    cerr << "Input File: " << jobFile << " could not be opened!" << endl;
+    return false;
+  }
+
+  char buf[BUF_SIZE];
+  vector<string> tokens;
+  while (fin.getline(buf, BUF_SIZE, '\n')) {  // Pops off the newline character
+    string line(buf);
+    if (line.empty() || line == "START") continue;   
+
+    // enable '#' and '//' style comments
+    if (line.substr(0,1) == "#" || line.substr(0,2) == "//") continue;
+    if (line == "END") break;
+
+    // Split the line into words
+    AnaUtil::tokenize(line, tokens);
+
+    if (tokens[0] == "logFile")  _logFile  = tokens[1];
+    if (tokens[0] == "histFile") _histFile = tokens[1];
+    int size = tokens.size();
+
+    // Treat the 'inputFile' key specially
+    // In case the input ntuples files follow a pattern like file_[n].root
+    // we can specify the input file in a much simpler way, like
+    // inputFile start end_index filename omitting '[n][.root]'
+    // Treat the 'inputFile' key specially
+    if (tokens[0] == "inputFile")  {
+      if (size >= 3) {
+	char name[256];
+	int start = (size == 3) ? 1 : atoi(tokens[1].c_str());
+	int   end = (size == 3) ? atoi(tokens[1].c_str()) : atoi(tokens[2].c_str());
+	for (int i = start; i <= end; i++) {
+	  // assumes the file name ends with .root
+	  // e.g topnt_[version]_[dataset]_[n]-[stream].root
+	  // We need to specify [stream]
+          sprintf(name, "%s%d.root", tokens[3].c_str(), i); // assumes the file name ends with .root
+	  fileList.push_back(name);
+	}
+      }
+      else if (size == 2) {
+	fileList.push_back(tokens[1]);
+      }
+      else {
+	cerr << "**** Error in input Root filenames!" << endl;
+	exit(-1);
+      }
+    }
+    if (tokens[0] == "muonCutList") {
+      _muonCutMap.clear();
+      for (int i = 1; i < size; ++i) {
+        vector<string> cutstr;
+        // Split the line into words
+        AnaUtil::tokenize(tokens[i], cutstr, "=");
+        _muonCutMap.insert ( pair<string,double>(cutstr[0], atof(cutstr[1].c_str())));
+      }
+    }
+    tokens.clear();
+  }
+  // Close the file
+  fin.close();
+
+  nFiles = fileList.size();
+  if (!nFiles) {
+    cerr << "Input Root file list is empty! exiting ..." << endl;
+    return false;
+  }
+  // Build the chain of root files
+  for (unsigned int i = 0; i < fileList.size(); i++)
+    setInputFile(fileList[i].c_str());
+
+  printJob(fileList);
+  return true;
+}
+void AnaBase::printJob(vector<string>& fileList, ostream& os)
+{
+  os << "       logFile = " <<  _logFile << endl 
+     << "      histFile = " <<  _histFile << endl;
+
+  os << "inputFiles: Total # = " << fileList.size() << endl; 
+  for (vector<string>::const_iterator pos  = fileList.begin(); 
+       pos != fileList.end(); pos++) 
+    os << *pos << endl; 
+
+  os << "=>>> muonCutList: " << endl; 
+  os << setprecision(1);
+  for (map<string,double> ::const_iterator it  = _muonCutMap.begin(); 
+                                           it != _muonCutMap.end(); ++it)  
+    os << (*it).first << " => " << setw(4) << (*it).second << endl;
+  os << endl; 
 }

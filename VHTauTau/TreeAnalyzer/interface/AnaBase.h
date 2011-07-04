@@ -8,6 +8,7 @@
 #include <fstream>
 #include <string>
 #include <vector>
+#include <map>
 #include <algorithm>
 #include <cmath>
 
@@ -31,9 +32,11 @@ public:
      int getEntries() const;
     void setData(int val);  
      int getRunNumber() const;
-    bool openFiles(const std::string& filename="pippo.out");
+    bool openFiles();
     void closeFiles(); 
-   
+    bool readJob(const std::string& jobFile, int& nFiles);
+    void printJob(std::vector<std::string>& fileList, std::ostream& os=std::cout);
+  
   template <class T>
   bool fillHist1D(const std::string& hname,  T value, double w=1.0);
   template <class T1, class T2>
@@ -87,5 +90,10 @@ public:
 
 protected:
   ofstream _fLog;   
+
+public:
+  std::map<std::string, double> _muonCutMap;
+  std::string _histFile;
+  std::string _logFile;
 };
 #endif

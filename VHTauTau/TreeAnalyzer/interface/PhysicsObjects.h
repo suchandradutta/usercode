@@ -1,5 +1,5 @@
-#ifndef __PhysicsObjects_h
-#define __PhysicsObjects_h
+#ifndef __TreeMaker_PhysicsObjects_h
+#define __TreeMaker_PhysicsObjects_h
 
 #include "vector"
 #include "TObject.h"
@@ -200,7 +200,21 @@ public:
   double jetEta;
   double jetPhi;
 
-  ClassDef(Tau,1) 
+  double ecalStripSumEOverPLead;
+  double bremsRecoveryEOverPLead;
+  double hcal3x3OverPLead;
+
+  double etaetaMoment;
+  double phiphiMoment;
+
+  double vx;
+  double vy;
+  double vz;
+
+  double zvertex;
+  double ltsipt;
+
+  ClassDef(Tau,2) 
 };
 class CaloJet: public TObject {
 public:
@@ -386,5 +400,45 @@ public:
   double sumet;
 
   ClassDef(GenMET, 1)
+};
+class Track: public TObject {
+public:
+  Track();
+  ~Track() {}
+
+  double eta;
+  double etaError;
+  double theta;
+  double thetaError;
+  double phi;
+  double phiError;
+  double p;
+  double pt;
+  double ptError;
+  double qoverp;
+  double qoverpError;
+
+     int nValidHits;
+     int nLostHits;
+  double validFraction;
+     int nValidTrackerHits;
+     int nValidPixelHits;
+     int nValidStripHits;
+     int trackerLayersWithMeasurement;
+     int pixelLayersWithMeasurement;
+     int stripLayersWithMeasurement;
+
+     double dxy;
+     double dxyError;
+     double dz;
+     double dzError;
+
+     double chi2;
+        int ndof;
+     double vx;
+     double vy;
+     double vz;
+
+  ClassDef(Track, 1)
 };
 #endif

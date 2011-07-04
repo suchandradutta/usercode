@@ -1,4 +1,4 @@
-#include "interface/PhysicsObjects.h"
+#include "../interface/PhysicsObjects.h"
 
 #ifdef __CINT__
 
@@ -22,6 +22,6 @@
 #pragma link C++ class SuperCluster+;
 #pragma link C++ class Vertex+;
 #pragma link C++ class Trigger+;
+#pragma link C++ class Track+;
 
 #endif
-
