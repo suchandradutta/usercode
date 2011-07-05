@@ -1,7 +1,0 @@
-START
-histFile  pippo.root
-logFile   pippo.out
-muonCutList pt=20. eta=2.0
-inputFile rfio:/castor/cern.ch/user/s/sarkar/VHTauTau/DYToMuMu/DYToMuMu_35_1_rzy.root
-inputFile rfio:/castor/cern.ch/user/s/sarkar/VHTauTau/DYToMuMu/DYToMuMu_34_1_SSg.root
-END
