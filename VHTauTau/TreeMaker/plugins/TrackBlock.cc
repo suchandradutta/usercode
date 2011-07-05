@@ -42,7 +42,7 @@ void TrackBlock::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup
     edm::LogInfo("TrackBlock") << "Total # of Tracks: " << tracks->size();
     reco::Track::TrackQuality quality = reco::Track::qualityByName("loose");
     for (std::vector<const reco::Track*>::const_iterator it = tracks->begin(); 
-                                                  it != tracks->end(); ++it) {
+                                                        it != tracks->end(); ++it) {
       const reco::Track &track = **it;
       if (!track.quality(quality)) continue;
 

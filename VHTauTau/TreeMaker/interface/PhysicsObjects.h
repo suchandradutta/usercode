@@ -182,30 +182,34 @@ public:
   double ptSumPhotonsIsoCone;
   
   // tau id. discriminators
-     int decayModeFinding;
-     int looseIsolation;
-     int mediumIsolation;
-     int tightIsolation;
+   float decayModeFinding;
+   float looseIsolation;
+   float mediumIsolation;
+   float tightIsolation;
 
   // discriminators against electrons/muons
-     int againstMuonLoose;
-     int againstMuonTight;
-     int againstElectronLoose; 
-     int againstElectronMedium; 
-     int againstElectronTight; 
-  double pfElectronMVA;
+  float againstMuonLoose;
+  float againstMuonTight;
+  float againstElectronLoose; 
+  float againstElectronMedium; 
+  float againstElectronTight; 
+  float pfElectronMVA;
 
   // kinematic variables for PFJet associated to PFTau
   double jetPt;
   double jetEta;
   double jetPhi;
 
-  double ecalStripSumEOverPLead;
-  double bremsRecoveryEOverPLead;
-  double hcal3x3OverPLead;
+  float maximumHCALPFClusterEt;
+  float ecalStripSumEOverPLead;
+  float bremsRecoveryEOverPLead;
+  float hcalTotOverPLead;
+  float hcalMaxOverPLead;
+  float hcal3x3OverPLead;
 
-  double etaetaMoment;
-  double phiphiMoment;
+  float etaetaMoment;
+  float phiphiMoment;
+  float etaphiMoment;
 
   double vx;
   double vy;

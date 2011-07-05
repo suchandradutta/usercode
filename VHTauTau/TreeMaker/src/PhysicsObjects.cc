@@ -159,11 +159,15 @@ Tau::Tau() :
   jetPt(-999),
   jetEta(-999),
   jetPhi(-999),
+  maximumHCALPFClusterEt(-999),
   ecalStripSumEOverPLead(-999),
   bremsRecoveryEOverPLead(-999),
+  hcalTotOverPLead(-999),
+  hcalMaxOverPLead(-999),
   hcal3x3OverPLead(-999),
   etaetaMoment(-999),
   phiphiMoment(-999),
+  etaphiMoment(-999),
   vx(-999), vy(-999), vz(-999),
   zvertex(-999), ltsipt(-999) 
   {}

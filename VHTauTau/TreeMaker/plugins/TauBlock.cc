@@ -91,6 +91,7 @@ void TauBlock::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup) 
 
       tauB->etaetaMoment = it->etaetaMoment();
       tauB->phiphiMoment = it->phiphiMoment();
+      tauB->phiphiMoment = it->etaphiMoment();
       
       // Vertex information
       const reco::Candidate::Point& vertex = it->vertex();
