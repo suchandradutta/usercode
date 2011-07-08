@@ -115,6 +115,7 @@ bool AnaBase::beginJob()
   }
   cout << " ===== # of events to analyse, nEvents = " << nEvents << endl;
 
+  openFiles();
   return true;
 }
 // ---------------
@@ -170,46 +171,60 @@ void AnaBase::eventLoop()
                              << " Events proc. " << setw(8) << ev << endl;
 
     // Let's look at the Tau collection
-    cout << setprecision(3);
+    _fLog << setprecision(3);
     if (n_tau) {
-      cout << "=>> Taus: " << n_tau << endl;
-      cout << "indx     Eta     Phi      Pt  Energy"
-  	   << "   lchPt   lnpPt    lpPt" 
-	   << endl; 
+      _fLog << "=>> Taus: " << n_tau << endl;
+      _fLog << "indx     Eta     Phi      Pt  Energy"
+  	    << "   lchPt   lnpPt    lpPt" 
+	    << endl; 
       for (int indx = 0; indx < n_tau; ++indx) {
         const Tau* tau = dynamic_cast<Tau*>(tauA->At(indx));
         if (!tau) continue;
-        cout << setprecision(2)
-             << setw(4) << indx 
-             << setw(8) << tau->eta
-             << setw(8) << tau->phi
-             << setw(8) << tau->pt
-             << setw(8) << tau->energy
-             << setw(8) << tau->leadChargedParticlePt
-             << setw(8) << tau->leadNeutralParticlePt
-             << setw(8) << tau->leadParticlePt
-             << endl;
+        if (abs(tau->eta) >= _tauCutMap["eta"] ||
+              tau->decayModeFinding <= 0.5 ||            
+              tau->looseIsolation <= 0.5 ||            
+              tau->againstMuonTight <= 0.5 ||            
+              tau->againstElectronLoose <= 0.5
+	    ) continue;
+        _fLog << setprecision(2)
+              << setw(4) << indx 
+              << setw(8) << tau->eta
+              << setw(8) << tau->phi
+              << setw(8) << tau->pt
+              << setw(8) << tau->energy
+              << setw(8) << tau->leadChargedParticlePt
+              << setw(8) << tau->leadNeutralParticlePt
+              << setw(8) << tau->leadParticlePt
+              << endl;
       }
     }
     // Let's look at the Muon collection
     if (n_muon) {
-      cout << "=>> Muons: " << n_muon << endl;
-      cout << "indx     Eta     Phi      Pt       P"
-  	   << "      D0   D0Err      Dz   DzErr" 
-	   << endl; 
+      _fLog << "=>> Muons: " << n_muon << endl;
+      _fLog << "indx     Eta     Phi      Pt       P"
+  	    << "      D0   D0Err      Dz   DzErr" 
+	    << endl; 
       for (int indx = 0; indx < n_muon; ++indx) {
         const Muon* muon = dynamic_cast<Muon*>(muonA->At(indx));
         if (!muon) continue;
-        cout << setw(4) << indx 
-             << setw(8) << muon->eta
-             << setw(8) << muon->phi
-             << setw(8) << muon->pt
-             << setw(8) << muon->p
-             << setw(8) << muon->trkD0
-             << setw(8) << muon->trkD0Error
-             << setw(8) << muon->trkDz
-             << setw(8) << muon->trkDzError
-             << endl;
+        // Now apply cuts
+        if (!muon->isTrackerMuon                  ||
+            fabs(muon->eta) >= _muonCutMap["eta"] || 
+            muon->relIso >= _muonCutMap["relIso"] ||
+            (muon->pixHits + muon->trkHits) <= _muonCutMap["ptHits"] ||
+            muon->globalChi2 >= _muonCutMap["globalChi2"] ||
+            fabs(muon->trkD0) >= _muonCutMap["trkD0"]
+	   ) continue;
+        _fLog << setw(4) << indx 
+              << setw(8) << muon->eta
+              << setw(8) << muon->phi
+              << setw(8) << muon->pt
+              << setw(8) << muon->p
+              << setw(8) << muon->trkD0
+              << setw(8) << muon->trkD0Error
+              << setw(8) << muon->trkDz
+              << setw(8) << muon->trkDzError
+              << endl;
 	fillHist1D("muonPt", muon->pt, 1.0);
       }
     }
@@ -523,17 +538,18 @@ bool AnaBase::readJob(const string& jobFile, int& nFiles)
 
     // Split the line into words
     AnaUtil::tokenize(line, tokens);
-
-    if (tokens[0] == "logFile")  _logFile  = tokens[1];
-    if (tokens[0] == "histFile") _histFile = tokens[1];
     int size = tokens.size();
-
-    // Treat the 'inputFile' key specially
-    // In case the input ntuples files follow a pattern like file_[n].root
-    // we can specify the input file in a much simpler way, like
-    // inputFile start end_index filename omitting '[n][.root]'
-    // Treat the 'inputFile' key specially
-    if (tokens[0] == "inputFile")  {
+    string key = tokens[0];
+    if (key == "logFile")
+      _logFile  = tokens[1];
+    else if (key == "histFile") 
+      _histFile = tokens[1];
+    else if (key == "inputFile")  {
+      // Treat the 'inputFile' key specially
+      // In case the input ntuples files follow a pattern like file_[n].root
+      // we can specify the input file in a much simpler way, like
+      // inputFile start end_index filename omitting '[n][.root]'
+      // Treat the 'inputFile' key specially
       if (size >= 3) {
 	char name[256];
 	int start = (size == 3) ? 1 : atoi(tokens[1].c_str());
@@ -554,13 +570,24 @@ bool AnaBase::readJob(const string& jobFile, int& nFiles)
 	exit(-1);
       }
     }
-    if (tokens[0] == "muonCutList") {
+    else if (key == "muonCutList") {
+      // Muon Cuts
       _muonCutMap.clear();
       for (int i = 1; i < size; ++i) {
         vector<string> cutstr;
         // Split the line into words
         AnaUtil::tokenize(tokens[i], cutstr, "=");
         _muonCutMap.insert ( pair<string,double>(cutstr[0], atof(cutstr[1].c_str())));
+      }
+    }
+    else if (key == "tauCutList") {
+      // Tau Cuts
+      _tauCutMap.clear();
+      for (int i = 1; i < size; ++i) {
+        vector<string> cutstr;
+        // Split the line into words
+        AnaUtil::tokenize(tokens[i], cutstr, "=");
+        _tauCutMap.insert ( pair<string,double>(cutstr[0], atof(cutstr[1].c_str())));
       }
     }
     tokens.clear();
@@ -586,14 +613,20 @@ void AnaBase::printJob(vector<string>& fileList, ostream& os)
      << "      histFile = " <<  _histFile << endl;
 
   os << "inputFiles: Total # = " << fileList.size() << endl; 
-  for (vector<string>::const_iterator pos  = fileList.begin(); 
-       pos != fileList.end(); pos++) 
-    os << *pos << endl; 
+  for (vector<string>::const_iterator it  = fileList.begin(); 
+                                      it != fileList.end(); ++it) 
+    os << *it << endl; 
 
   os << "=>>> muonCutList: " << endl; 
-  os << setprecision(1);
+  os << setprecision(2);
   for (map<string,double> ::const_iterator it  = _muonCutMap.begin(); 
                                            it != _muonCutMap.end(); ++it)  
-    os << (*it).first << " => " << setw(4) << (*it).second << endl;
+    os << (*it).first << " => " << setw(7) << (*it).second << endl;
+  os << endl; 
+
+  os << "=>>> tauCutList: " << endl; 
+  for (map<string,double> ::const_iterator it  = _tauCutMap.begin(); 
+                                           it != _tauCutMap.end(); ++it)  
+    os << (*it).first << " => " << setw(7) << (*it).second << endl;
   os << endl; 
 }

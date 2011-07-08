@@ -93,6 +93,7 @@ protected:
 
 public:
   std::map<std::string, double> _muonCutMap;
+  std::map<std::string, double> _tauCutMap;
   std::string _histFile;
   std::string _logFile;
 };
