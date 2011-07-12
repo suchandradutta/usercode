@@ -12,7 +12,7 @@ process.source = cms.Source("PoolSource",
                    fileNames = cms.untracked.vstring()
                  )
 process.maxEvents = cms.untracked.PSet(
-                      input = cms.untracked.int32(50)
+                      input = cms.untracked.int32(1000)
                     )
 #-----------------------------
 # Geometry
