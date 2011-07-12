@@ -8,7 +8,7 @@ from VHTauTau.TreeMaker.ElectronBlock_cfi import *
 from VHTauTau.TreeMaker.METBlock_cfi import *
 from VHTauTau.TreeMaker.MuonBlock_cfi import *
 from VHTauTau.TreeMaker.TauBlock_cfi import *
-
+from VHTauTau.TreeMaker.TriggerBlock_cfi import *
 
 treeContentSequence = cms.Sequence(
    eventBlock
@@ -19,4 +19,5 @@ treeContentSequence = cms.Sequence(
  + metBlock
  + muonBlock
  + tauBlock
+ + triggerBlock  
 )

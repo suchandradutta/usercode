@@ -6,15 +6,8 @@ triggerBlock = cms.EDAnalyzer("TriggerBlock",
   hltInputTag = cms.InputTag('TriggerResults','','HLT'),
   hltPathsOfInterest = cms.vstring(
                                          #Mu
-                                         'HLT_Mu12',
-                                         'HLT_Mu15',
-                                         'HLT_Mu20',
-                                         'HLT_Mu24',
-                                         'HLT_Mu30',
-                                         'HLT_IsoMu12',
-                                         'HLT_IsoMu15',
-                                         'HLT_IsoMu20',
-                                         'HLT_IsoMu24',
-                                         'HLT_isoMu30'
+                                         'HLT_Mu',
+                                         'HLT_IsoMu',
+                                         'HLT_Ele'
                                   )       
 )
