@@ -388,11 +388,11 @@ public:
 
   std::vector<int> l1physbits;
   std::vector<int> l1techbits;
-  std::vector<int> hltbits;
+  std::vector<std::string> hltpaths;
   std::vector<int> hltresults;
   std::vector<int> hltprescales;
 
-  ClassDef(Trigger, 1)
+  ClassDef(Trigger, 2)
 };
 class GenMET: public TObject {
 public:

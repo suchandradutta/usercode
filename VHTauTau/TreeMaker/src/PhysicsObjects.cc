@@ -310,7 +310,7 @@ Trigger::Trigger()
 {
   l1physbits.clear();
   l1techbits.clear();
-  hltbits.clear();
+  hltpaths.clear();
   hltresults.clear();
   hltprescales.clear();
 }

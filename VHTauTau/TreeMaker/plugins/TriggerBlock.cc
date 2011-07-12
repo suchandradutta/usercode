@@ -6,6 +6,7 @@
 
 #include "TTree.h"
 #include "TClonesArray.h"
+#include "TPRegexp.h"
 
 #include "VHTauTau/TreeMaker/plugins/TriggerBlock.h"
 #include "VHTauTau/TreeMaker/interface/PhysicsObjects.h"
@@ -72,20 +73,28 @@ void TriggerBlock::analyze(const edm::Event& iEvent, const edm::EventSetup& iSet
   iEvent.getByLabel(_hltInputTag, triggerResults);
   if (triggerResults.isValid()) {
     edm::LogInfo("TriggerBlock") << "Successfully obtained " << _hltInputTag;
-    for (unsigned int i = 0; i < triggerResults->size(); i++) {
-      triggerB->hltbits.push_back(triggerResults->at(i).accept() ? 1 : 0);
-    }
-    for (std::vector<std::string>::const_iterator it = _hltPathsOfInterest.begin();
-                                                 it != _hltPathsOfInterest.end(); ++it) {
+    const std::vector<std::string>& pathList = hltConfig.triggerNames();
+    for (std::vector<std::string>::const_iterator it = pathList.begin();
+                                                 it != pathList.end(); ++it) {
+      if (_hltPathsOfInterest.size()) {
+        int nmatch = 0;
+        for (std::vector<std::string>::const_iterator kt = _hltPathsOfInterest.begin();
+                                                     kt != _hltPathsOfInterest.end(); ++kt) {
+	  nmatch += TPRegexp(*kt).Match(*it);
+        }
+        if (!nmatch) continue; 
+      }
+      triggerB->hltpaths.push_back(*it);
+
       int fired = 0;
       unsigned int index = hltConfig.triggerIndex(*it);
       if (index < triggerResults->size()) {
         if (triggerResults->accept(index)) fired = 1;
-      } 
+      }
       else {
 	edm::LogInfo("TriggerBlock") << "Requested HLT path \"" << (*it) << "\" does not exist";
       }
-      triggerB->hltresults.push_back(fired) ;
+      triggerB->hltresults.push_back(fired);
 
       int prescale = -1;
       if (hltConfig.prescaleSet(iEvent, iSetup) < 0) {
