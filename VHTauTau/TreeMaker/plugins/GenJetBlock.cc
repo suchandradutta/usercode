@@ -43,9 +43,10 @@ void GenJetBlock::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
         genJetB->phi    = it->phi();
         genJetB->p      = it->p();
         genJetB->pt     = it->pt();
-        genJetB->energy = it->energy();
-        genJetB->emf    = it->emEnergy()/it->energy();
-        genJetB->hadf   = it->hadEnergy()/it->energy();
+        double energy   = it->energy();
+        genJetB->energy = energy;
+        genJetB->emf    = (energy>0) ? it->emEnergy()/energy : 0;
+        genJetB->hadf   = (energy>0) ? it->hadEnergy()/energy : 0;
       }
     } 
     else {

@@ -1,7 +1,8 @@
 #ifndef __TreeMaker_PhysicsObjects_h
 #define __TreeMaker_PhysicsObjects_h
 
-#include "vector"
+#include <vector>
+#include <string>
 #include "TObject.h"
 
 class Event: public TObject {
@@ -48,10 +49,12 @@ public:
   double eta;
   double phi;
   double pt;
+    bool hasGsfTrack;
   double trackPt;
   double energy;
   double caloEnergy;
      int charge;
+   float simpleEleId95cIso;
 
   // ID variables
   double hoe;
@@ -91,6 +94,9 @@ public:
   double vtxDistZ;
   double pfRelIso;
 
+  double dB;
+  double edB;
+
   double scE1E9;
   double scS4S1;
   double sckOutOfTime;
@@ -98,7 +104,7 @@ public:
   double scHEEPEcalIso;
   double scHEEPTrkIso;
 
-  ClassDef(Electron,1) 
+  ClassDef(Electron,2) 
 };
 class GenParticle: public TObject {
 public:
@@ -117,11 +123,13 @@ public:
   double vx;
   double vy;
   double vz;
-     int numDaught;
      int status;
-     int motherIndex;
+     int numDaught;
+     int numMother;
+     std::vector<int> motherIndices;
+     std::vector<int> daughtIndices;
 
-  ClassDef(GenParticle,1) 
+  ClassDef(GenParticle,2) 
 };
 class GenJet: public TObject {
 public:
@@ -279,11 +287,14 @@ public:
   double vtxDistZ;
      int pixHits;
      int trkHits;
+     int muoHits;
      int matches;
   double pfRelIso;
-     int isTrackerMuon;
+    bool isTrackerMuon;
+  double dB;  // PV2D
+  double edB;   
 
-  ClassDef(Muon, 1)
+  ClassDef(Muon, 2)
 };
 class Jet: public TObject {
 public:

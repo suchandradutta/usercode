@@ -97,19 +97,19 @@ void CaloJetBlock::analyze(const edm::Event& iEvent, const edm::EventSetup& iSet
           double tiso = electron->trackIso() + electron->ecalIso() + electron->hcalIso();
           double pt   = electron->pt();
           double ratio = (pt > 0) ? tiso/pt : 0;
-	  if (electron->electronID("eidRobustLoose")>0. 
+	  if (electron->electronID("simpleEleId70cIso")>0. 
                 && ratio < _electronIso
 	        && pt >_electronPt) ovrlps |= 1<<0;
-          if (electron->electronID("eidRobustTight")>0. 
+          if (electron->electronID("simpleEleId80cIso")>0. 
                 && ratio < _electronIso
 	        && pt >_electronPt) ovrlps |= 1<<1;
-          if (electron->electronID("eidLoose")>0.       
+          if (electron->electronID("simpleEleId85cIso")>0.       
                 && ratio < _electronIso
 	        && pt >_electronPt) ovrlps |= 1<<2;
-          if (electron->electronID("eidTight")>0.       
+          if (electron->electronID("simpleEleId90cIso")>0.       
                 && ratio <  _electronIso
 	        && pt >_electronPt) ovrlps |= 1<<3;
-          if (electron->electronID("eidRobustHighEnergy")>0. 
+          if (electron->electronID("simpleEleId95cIso")>0. 
                 && ratio < _electronIso
 	        && pt >_electronPt) ovrlps |= 1<<4;
           if (electron->userInt("HEEPId")==0

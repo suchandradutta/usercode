@@ -44,6 +44,9 @@
 #include "DataFormats/EcalDetId/interface/EcalSubdetector.h"
 #include "RecoLocalCalo/EcalRecAlgos/interface/EcalSeverityLevelAlgo.h"
 #include "RecoLocalCalo/EcalRecAlgos/interface/EcalSeverityLevelAlgoRcd.h"
+
+//#include "PhysicsTools/SelectorUtils/interface/SimpleCutBasedElectronIDSelectionFunctor.h"
+
 #include "TVector3.h"
 
 // Constructor
@@ -204,7 +207,7 @@ void ElectronBlock::analyze(const edm::Event& iEvent, const edm::EventSetup& iSe
         for (reco::VertexCollection::const_iterator v_it = primaryVertices->begin() ; 
                                                    v_it != primaryVertices->end() ; ++v_it) {
           double dist3D = sqrt(pow(it->gsfTrack()->dxy(v_it->position()),2) + pow(it->gsfTrack()->dz(v_it->position()),2));
-          if (dist3D<minVtxDist3D) {
+          if (dist3D < minVtxDist3D) {
             minVtxDist3D = dist3D;
             indexVtx = int(std::distance(primaryVertices->begin(),v_it));
             vertexDistZ = it->gsfTrack()->dz(v_it->position());
@@ -217,13 +220,19 @@ void ElectronBlock::analyze(const edm::Event& iEvent, const edm::EventSetup& iSe
       double pfreliso = it->userFloat("pfLooseIsoPt04")/it->pt();
 
       electronB = new ((*cloneElectron)[fnElectron++]) Electron();
-      electronB->eta        = it->eta();
-      electronB->phi        = it->phi();
-      electronB->pt         = it->pt();
-      electronB->trackPt    = it->gsfTrack()->pt();
-      electronB->energy     = it->energy();
-      electronB->caloEnergy = it->caloEnergy();
-      electronB->charge     = it->charge();
+      electronB->eta         = it->eta();
+      electronB->phi         = it->phi();
+      electronB->pt          = it->pt();
+      electronB->hasGsfTrack = it->gsfTrack().isNonnull() ? true : false;
+      electronB->trackPt     = it->gsfTrack()->pt();
+      electronB->energy      = it->energy();
+      electronB->caloEnergy  = it->caloEnergy();
+      electronB->charge      = it->charge();
+      electronB->simpleEleId95cIso 
+                             = it->electronID("simpleEleId95cIso");
+      // define your function for  WP95 using relative isolations
+      //      SimpleCutBasedElectronIDSelectionFunctor patSele95(SimpleCutBasedElectronIDSelectionFunctor::relIso95, evt_bField, tracks);
+      // bool pass = patSele95(*it);
 
       // ID variables
       electronB->hoe           = it->hadronicOverEm();
@@ -239,9 +248,9 @@ void ElectronBlock::analyze(const edm::Event& iEvent, const edm::EventSetup& iSe
       electronB->isoEcal03 = it->dr03EcalRecHitSumEt();
       electronB->isoHcal03 = it->dr03HcalTowerSumEt();
       electronB->isoTrk03  = it->dr03TkSumPt();
-      electronB->isoEcal04 = it->dr04EcalRecHitSumEt();
-      electronB->isoHcal04 = it->dr04HcalTowerSumEt();
-      electronB->isoTrk04  = it->dr04TkSumPt();
+      electronB->isoEcal04 = it->dr04EcalRecHitSumEt(); // ecalIso
+      electronB->isoHcal04 = it->dr04HcalTowerSumEt(); // hcalIso
+      electronB->isoTrk04  = it->dr04TkSumPt(); // trackIso
       electronB->isoRel03  = (it->dr03EcalRecHitSumEt()+it->dr03HcalTowerSumEt()+it->dr03TkSumPt())/it->pt();
       electronB->isoRel04  = (it->dr04EcalRecHitSumEt()+it->dr04HcalTowerSumEt()+it->dr04TkSumPt())/it->pt();
 
@@ -262,6 +271,10 @@ void ElectronBlock::analyze(const edm::Event& iEvent, const edm::EventSetup& iSe
       electronB->vtxIndex  = indexVtx;
       electronB->vtxDistZ  = vertexDistZ;
       electronB->pfRelIso  = pfreliso;
+
+      // IP information
+      electronB->dB  = it->dB(pat::Electron::PV2D);
+      electronB->edB = it->edB(pat::Electron::PV2D);
 #if 0
       // Ecal Spike Cleaning
       double emax    = -1.;

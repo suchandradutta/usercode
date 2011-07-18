@@ -48,18 +48,32 @@ void GenParticleBlock::analyze(const edm::Event& iEvent, const edm::EventSetup& 
         genParticleB->vx        = it->vx();
         genParticleB->vy        = it->vy();
         genParticleB->vz        = it->vz();
-        genParticleB->numDaught = it->numberOfDaughters();
         genParticleB->status    = it->status();
+        genParticleB->numDaught = it->numberOfDaughters();
+        genParticleB->numMother = it->numberOfMothers();
 
-        int idx = -1;
-        for (reco::GenParticleCollection::const_iterator mit = genParticles->begin(); 
-                                                        mit != genParticles->end(); ++mit) {
-          if (it->mother() == &(*mit)) {
-	    idx = std::distance(genParticles->begin(), mit);
-	    break;
-          }
+        for (size_t j = 0; j < it->numberOfMothers(); ++j) {
+	  const reco::Candidate* m = it->mother(j);
+          for (reco::GenParticleCollection::const_iterator mit = genParticles->begin(); 
+                                                          mit != genParticles->end(); ++mit) {
+            if (m == &(*mit) && m->pdgId() != mit->pdgId() ) {
+	      int idx = std::distance(genParticles->begin(), mit);
+              genParticleB->motherIndices.push_back(idx);
+              break;
+            }
+          } 
         }
-        genParticleB->motherIndex = idx;
+        for (size_t j = 0; j < it->numberOfDaughters(); ++j) {
+	  const reco::Candidate* d = it->daughter(j);
+          for (reco::GenParticleCollection::const_iterator mit = genParticles->begin(); 
+                                                          mit != genParticles->end(); ++mit) {
+            if (d == &(*mit) && d->pdgId() != mit->pdgId() ) {
+	      int idx = std::distance(genParticles->begin(), mit);
+              genParticleB->daughtIndices.push_back(idx);
+              break;
+            }
+          } 
+        }
       }
     } 
     else {

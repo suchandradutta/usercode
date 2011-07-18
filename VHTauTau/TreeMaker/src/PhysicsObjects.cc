@@ -47,10 +47,12 @@ Electron::Electron() :
   eta(-999),
   phi(-999),
   pt(-999),
+  hasGsfTrack(false),
   trackPt(-999),
   energy(-999),
   caloEnergy(-999),
   charge(-9),
+  simpleEleId95cIso(-999),
   hoe(-999),
   sigmaEtaEta(-999),
   sigmaIEtaIEta(-999),
@@ -79,6 +81,8 @@ Electron::Electron() :
   vtxIndex(-1),
   vtxDistZ(-999),
   pfRelIso(-999), 
+  dB(-999),
+  edB(-999),
   scE1E9(-999),
   scS4S1(-999),
   sckOutOfTime(-999),
@@ -100,9 +104,13 @@ GenParticle::GenParticle() :
   vx(-999),
   vy(-999),
   vz(-999),
-  numDaught(-1),
   status(-999),
-  motherIndex(-999) {}
+  numDaught(-1),
+  numMother(-1)
+{
+  motherIndices.clear();
+  daughtIndices.clear();
+}
 
 GenJet::GenJet() :
   eta(-999),
@@ -217,15 +225,18 @@ Muon::Muon() :
   hcalIso(-999),
   hoIso(-999),
   relIso(-999),
-  passID(-1),
+  passID(false),
   vtxDist3D(-999),
   vtxIndex(-1),
   vtxDistZ(-999),
   pixHits(-1),
   trkHits(-1),
+  muoHits(-1),
   matches(-1),
   pfRelIso(-999),
-  isTrackerMuon(-1) {}
+  isTrackerMuon(false),
+  dB(-999), 
+  edB(-999) {}
 
 Jet::Jet() :
   eta(-999),

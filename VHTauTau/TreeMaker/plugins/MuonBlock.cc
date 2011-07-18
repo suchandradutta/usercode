@@ -8,6 +8,7 @@
 #include "FWCore/MessageLogger/interface/MessageLogger.h"
 #include "CommonTools/UtilAlgos/interface/TFileService.h"
 #include "DataFormats/PatCandidates/interface/Muon.h"
+#include "DataFormats/TrackReco/interface/HitPattern.h"
 #include "DataFormats/BeamSpot/interface/BeamSpot.h"
 #include "DataFormats/VertexReco/interface/Vertex.h"
 #include "DataFormats/VertexReco/interface/VertexFwd.h"
@@ -56,9 +57,6 @@ void MuonBlock::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
     for (std::vector<pat::Muon>::const_iterator it = muons->begin(); it != muons->end(); ++it) {
       // if muon is not global muon, continue
       if (!it->isGlobalMuon()) continue;
-
-      //      if(!it->isTrackerMuon())
-      //        continue;
 
       if (fnMuon == kMaxMuon) {
 	edm::LogInfo("MuonBlock") << "Too many PAT Muons, fnMuon = " << fnMuon; 
@@ -114,16 +112,22 @@ void MuonBlock::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
       muonB->hcalIso    = it->hcalIso();
       muonB->hoIso      = it->isolationR03().hoEt;
       muonB->relIso     = reliso;
-      muonB->passID     = (it->muonID(_muonID)) ? 1 : 0;
+      muonB->passID     = (it->muonID(_muonID)) ? true : false;
       muonB->vtxDist3D  = minVtxDist3D;
       muonB->vtxIndex   = indexVtx;
       muonB->vtxDistZ   = vertexDistZ;
-      muonB->pixHits    = tk->hitPattern().numberOfValidPixelHits();
-      muonB->trkHits    = tk->hitPattern().numberOfValidTrackerHits();
+      const reco::HitPattern& hitp = tk->hitPattern(); 
+      muonB->pixHits    = hitp.numberOfValidPixelHits();
+      muonB->trkHits    = hitp.numberOfValidTrackerHits();
+      muonB->muoHits    = hitp.numberOfValidMuonHits();
       muonB->matches    = it->numberOfMatches();
       muonB->pfRelIso   = pfreliso;
 
-      muonB->isTrackerMuon = (it->isTrackerMuon()) ? 1 : 0;
+      muonB->isTrackerMuon = (it->isTrackerMuon()) ? true : false;
+
+      // IP information
+      muonB->dB  = it->dB(pat::Muon::PV2D);
+      muonB->edB = it->edB(pat::Muon::PV2D);
     }
   } 
   else {
