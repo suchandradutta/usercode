@@ -79,6 +79,15 @@ void TauBlock::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup) 
       tauB->againstElectronTight  = it->tauID("againstElectronTight");
       tauB->pfElectronMVA         = it->leadPFCand().isNonnull() ? it->leadPFCand()->mva_e_pi() : 1.;
 
+      tauB->byVLooseCombinedIsolationDeltaBetaCorr = it->tauID("byVLooseCombinedIsolationDeltaBetaCorr");
+      tauB->byLooseCombinedIsolationDeltaBetaCorr  = it->tauID("byLooseCombinedIsolationDeltaBetaCorr");
+      tauB->byMediumCombinedIsolationDeltaBetaCorr = it->tauID("byMediumCombinedIsolationDeltaBetaCorr");
+      tauB->byTightCombinedIsolationDeltaBetaCorr  = it->tauID("byTightCombinedIsolationDeltaBetaCorr");
+      tauB->byVLooseIsolationDeltaBetaCorr = it->tauID("byVLooseIsolationDeltaBetaCorr");
+      tauB->byLooseIsolationDeltaBetaCorr  = it->tauID("byLooseIsolationDeltaBetaCorr");
+      tauB->byMediumIsolationDeltaBetaCorr = it->tauID("byMediumIsolationDeltaBetaCorr");
+      tauB->byTightIsolationDeltaBetaCorr  = it->tauID("byTightIsolationDeltaBetaCorr");
+
       // kinematic variables for PFJet associated to PFTau
       tauB->jetPt  = it->pfJetRef()->pt();
       tauB->jetEta = it->pfJetRef()->eta();

@@ -164,6 +164,14 @@ Tau::Tau() :
   againstElectronMedium(-1), 
   againstElectronTight(-1), 
   pfElectronMVA(-999),
+  byVLooseCombinedIsolationDeltaBetaCorr(-1),
+  byLooseCombinedIsolationDeltaBetaCorr(-1),
+  byMediumCombinedIsolationDeltaBetaCorr(-1),
+  byTightCombinedIsolationDeltaBetaCorr(-1),
+  byVLooseIsolationDeltaBetaCorr(-1),
+  byLooseIsolationDeltaBetaCorr(-1),
+  byMediumIsolationDeltaBetaCorr(-1),
+  byTightIsolationDeltaBetaCorr(-1),
   jetPt(-999),
   jetEta(-999),
   jetPhi(-999),
@@ -315,7 +323,9 @@ Vertex::Vertex() :
   ndf(-1),
   ntracks(-1),
   ntracksw05(-1),
-  isfake(true) {}
+  isfake(true),
+  isvalid(false),
+  sumPt(-999) {}
 
 Trigger::Trigger() 
 {

@@ -93,6 +93,7 @@ void JetBlock::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup) 
       jetB->jecUnc     = jecUnc->getUncertainty(true);
       jetB->resJEC     = corr;
       jetB->partonFlavour               = it->partonFlavour();
+
       jetB->chargedEmEnergyFraction     = it->chargedEmEnergyFraction();
       jetB->chargedHadronEnergyFraction = it->chargedHadronEnergyFraction();
       jetB->chargedMuEnergyFraction     = it->chargedMuEnergyFraction();
@@ -101,6 +102,7 @@ void JetBlock::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup) 
       jetB->neutralEmEnergyFraction     = it->neutralEmEnergyFraction();
       jetB->neutralHadronEnergyFraction = it->neutralHadronEnergyFraction();
       jetB->photonEnergyFraction        = it->photonEnergyFraction();
+
       jetB->chargedHadronMultiplicity   = it->chargedHadronMultiplicity();
       jetB->chargedMultiplicity         = it->chargedMultiplicity();
       jetB->electronMultiplicity        = it->electronMultiplicity();
@@ -108,6 +110,7 @@ void JetBlock::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup) 
       jetB->neutralHadronMultiplicity   = it->neutralHadronMultiplicity();
       jetB->neutralMultiplicity         = it->neutralMultiplicity();
       jetB->photonMultiplicity          = it->photonMultiplicity();
+
       jetB->nConstituents               = it->numberOfDaughters();
       jetB->trackCountingHighEffBTag    = it->bDiscriminator("trackCountingHighEffBJetTags");
       jetB->trackCountingHighPurBTag    = it->bDiscriminator("trackCountingHighPurBJetTags");

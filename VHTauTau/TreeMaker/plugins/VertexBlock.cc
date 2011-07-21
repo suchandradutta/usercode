@@ -50,6 +50,8 @@ void VertexBlock::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
       vertexB->ntracks = int(it->tracksSize());
       vertexB->ntracksw05 = it->nTracks(0.5); // number of tracks in the vertex with weight above 0.5
       vertexB->isfake = it->isFake();
+      vertexB->isvalid = it->isValid();
+      vertexB->sumPt = it->p4().pt();
     }
   } 
   else {

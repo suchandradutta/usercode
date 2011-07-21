@@ -203,6 +203,15 @@ public:
   float againstElectronTight; 
   float pfElectronMVA;
 
+  float byVLooseCombinedIsolationDeltaBetaCorr;
+  float byLooseCombinedIsolationDeltaBetaCorr;
+  float byMediumCombinedIsolationDeltaBetaCorr;
+  float byTightCombinedIsolationDeltaBetaCorr;
+  float byVLooseIsolationDeltaBetaCorr;
+  float byLooseIsolationDeltaBetaCorr;
+  float byMediumIsolationDeltaBetaCorr;
+  float byTightIsolationDeltaBetaCorr;
+
   // kinematic variables for PFJet associated to PFTau
   double jetPt;
   double jetEta;
@@ -226,7 +235,7 @@ public:
   double zvertex;
   double ltsipt;
 
-  ClassDef(Tau,2) 
+  ClassDef(Tau,3) 
 };
 class CaloJet: public TObject {
 public:
@@ -389,8 +398,10 @@ public:
      int ntracks;
      int ntracksw05;
     bool isfake;
+    bool isvalid;
+  double sumPt;
 
-  ClassDef(Vertex, 1)
+  ClassDef(Vertex, 2)
 };
 class Trigger: public TObject {
 public:
