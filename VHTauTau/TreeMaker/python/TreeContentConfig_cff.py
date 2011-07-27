@@ -12,7 +12,8 @@ from VHTauTau.TreeMaker.GenParticleBlock_cfi import *
 from VHTauTau.TreeMaker.GenJetBlock_cfi import *
 from VHTauTau.TreeMaker.GenMETBlock_cfi import *
 from VHTauTau.TreeMaker.TriggerBlock_cfi import *
-
+from VHTauTau.TreeMaker.SuperClusterBlock_cfi import *
+from VHTauTau.TreeMaker.PhotonBlock_cfi import *
 
 treeContentSequence = cms.Sequence(
    eventBlock
@@ -26,5 +27,6 @@ treeContentSequence = cms.Sequence(
  + genParticleBlock
  + genJetBlock
  + genMETBlock  
- + triggerBlock  
+ + triggerBlock
+ + photonBlock
 )

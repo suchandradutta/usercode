@@ -41,12 +41,12 @@
 // Constructor
 SuperClusterBlock::SuperClusterBlock(const edm::ParameterSet& iConfig) :
   _verbosity(iConfig.getParameter<int>("verbosity")),
-  _ebInputTag(iConfig.getParameter<edm::InputTag>("EBInputTag")),
-  _eeInputTag(iConfig.getParameter<edm::InputTag>("EEInputTag")),
-  _ecalEBInputTag(iConfig.getParameter<edm::InputTag>("EcalEBInputTag")),
-  _ecalEEInputTag(iConfig.getParameter<edm::InputTag>("EcalEEInputTag")),
-  _trkInputTag(iConfig.getParameter<edm::InputTag>("TracksInputTag")),
-  _eleInputTag(iConfig.getParameter<edm::InputTag>("ElectronsInputTag"))
+  _ebInputTag(iConfig.getParameter<edm::InputTag>("ebInputTag")),
+  _eeInputTag(iConfig.getParameter<edm::InputTag>("eeInputTag")),
+  _ecalEBInputTag(iConfig.getParameter<edm::InputTag>("ecalEBInputTag")),
+  _ecalEEInputTag(iConfig.getParameter<edm::InputTag>("ecalEEInputTag")),
+  _trkInputTag(iConfig.getParameter<edm::InputTag>("tracksInputTag")),
+  _eleInputTag(iConfig.getParameter<edm::InputTag>("electronsInputTag"))
 {}
 void SuperClusterBlock::beginJob() 
 {
@@ -84,9 +84,11 @@ void SuperClusterBlock::analyze(const edm::Event& iEvent, const edm::EventSetup&
   edm::Handle<reco::TrackCollection> trackHandle;
   iEvent.getByLabel(_trkInputTag, trackHandle);
   const reco::TrackCollection* tracks = trackHandle.product();
+
   edm::Handle<reco::BeamSpot> BeamSpotHandle;
   iEvent.getByLabel("offlineBeamSpot", BeamSpotHandle);
   const reco::BeamSpot* spot = BeamSpotHandle.product();
+
   PhotonTkIsolation TrackTool(0.3,0.04,0.7,0.2,9999,tracks,math::XYZPoint(spot->x0(),spot->y0(),spot->z0()));
 
   edm::ESHandle<EcalSeverityLevelAlgo> sevlv;
@@ -169,7 +171,7 @@ void SuperClusterBlock::analyze(const edm::Event& iEvent, const edm::EventSetup&
         nextTrk = *trk;
       }
     }
-    scB->trackMatch = (closestTrkDr < 0.04) ? 1 : 0;  // 1=true, 0=false
+    scB->trackMatch = (closestTrkDr < 0.04) ? 1 : false;
     scB->dRTrack1 = closestTrkDr;
     scB->dRTrack2 = nextTrkDr;
     scB->track1Eta = closestTrk.eta();
@@ -200,7 +202,6 @@ void SuperClusterBlock::analyze(const edm::Event& iEvent, const edm::EventSetup&
           && recHit->checkFlag(EcalRecHit::kOutOfTime)) flaggedRecHitCounter++;
       }
     }
-
     scB->kOutOfTime = (flaggedRecHitCounter > 0) ? 1 : 0;
   }
   for (reco::SuperClusterCollection::const_iterator it = superClustersEEHandle->begin(); 
@@ -217,7 +218,6 @@ void SuperClusterBlock::analyze(const edm::Event& iEvent, const edm::EventSetup&
     scB->pt = it->energy()*(sc_vec.Perp()/sc_vec.Mag());
     scB->rawEnergy = it->rawEnergy();
     scB->clustersSize = it->clustersSize();
-
     const reco::SuperCluster* pnt_sc = &(*it);
     HoECalculator calc_HoE; // requires HCAL RecHits that are only available in RECO files
     double schoe = calc_HoE(pnt_sc,iEvent,iSetup);

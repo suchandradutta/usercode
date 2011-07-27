@@ -15,6 +15,7 @@ ClassImp(SuperCluster)
 ClassImp(Vertex)
 ClassImp(Trigger)
 ClassImp(Track)
+ClassImp(Photon)
 
 
 Event::Event() :
@@ -106,7 +107,8 @@ GenParticle::GenParticle() :
   vz(-999),
   status(-999),
   numDaught(-1),
-  numMother(-1)
+  numMother(-1),
+  motherIndex(-1)
 {
   motherIndices.clear();
   daughtIndices.clear();
@@ -363,4 +365,77 @@ Track::Track()
     chi2(-999),
     ndof(-1),
     vx(-999), vy(-999), vz(-999)
+{}
+Photon::Photon() :
+  et(-999),
+  eta(-999),
+  phi(-999),
+  energy(-999),
+  theta(-999),
+  vx(-999),
+  vy(-999),
+  vz(-999),
+  scEnergy(-999),
+  scEta(-999),
+  scPhi(-999),
+  scSize(-999),
+  scEtaWidth(-999),
+  scPhiWidth(-999),
+  scEt(-999),
+  scRawEnergy(-999),
+  scx(-999),
+  scy(-999),
+  scz(-999),
+  isoEcalRecHit03(-999),
+  isoHcalRecHit03(-999),
+  isoSolidTrkCone03(-999),
+  isoHollowTrkCone03(-999),
+  nTrkSolidCone03(-1),
+  nTrkHollowCone03(-1),
+  isoEcalRecHit04(-999),
+  isoHcalRecHit04(-999),
+  isoSolidTrkCone04(-999),
+  isoHollowTrkCone04(-999),
+  nTrkSolidCone04(-1),
+  nTrkHollowCone04(-1),
+  isEB(false),
+  isEE(false),
+  isEBGap(false),
+  isEEGap(false),
+  isEBEEGap(false),
+  hasPixelSeed(false),
+  ecalIso(-9999),
+  hcalIso(-999),
+  trackIso(-999),
+  chargedHadIso(-999),
+  neutralHadIso(-999),
+  photonIso(-999),
+  r9(-999),
+  hoe(-999),
+  sigmaEtaEta(-999),
+  sigmaIEtaIEta(-999),
+  e1x5(-999),
+  e2x5(-999), 
+  e3x3(-999),
+  e5x5(-999), 
+  r1x5(-999), 
+  r2x5(-999), 
+  maxEnergyXtal(-999),
+  hasConversionTracks(false),
+  nTracks(-1),
+  isConverted(false),
+  pairInvMass(-999),
+  pairCotThetaSeparation(-999),
+  pairPx(-999),
+  pairPy(-999),
+  pairPz(-999),
+  conv_vx(-999),
+  conv_vy(-999),
+  conv_vz(-999),
+  eovp(-999),
+  zpv(-999),
+  distOfMinApproach(-999),
+  dPhiTracksAtVtx(-999),
+  dPhiTracksAtEcal(-999),
+  dEtaTracksAtEcal(-999)  
 {}

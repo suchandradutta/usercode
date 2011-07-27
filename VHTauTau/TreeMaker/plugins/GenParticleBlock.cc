@@ -52,12 +52,24 @@ void GenParticleBlock::analyze(const edm::Event& iEvent, const edm::EventSetup& 
         genParticleB->numDaught = it->numberOfDaughters();
         genParticleB->numMother = it->numberOfMothers();
 
+        int idx = -1;
+        for (reco::GenParticleCollection::const_iterator mit = genParticles->begin(); 
+                                                        mit != genParticles->end(); ++mit ) {
+          if ( it->mother() == &(*mit) ) {
+	    idx = std::distance(genParticles->begin(),mit);
+	    break;
+          }
+        }
+        genParticleB->motherIndex = idx;
+
+	if (_verbosity > 0) std::cout << "pdgId=" << it->pdgId() << std::endl;
         for (size_t j = 0; j < it->numberOfMothers(); ++j) {
 	  const reco::Candidate* m = it->mother(j);
           for (reco::GenParticleCollection::const_iterator mit = genParticles->begin(); 
                                                           mit != genParticles->end(); ++mit) {
-            if (m == &(*mit) && m->pdgId() != mit->pdgId() ) {
+            if (m == &(*mit) ) { // -- keep all the entries && it->pdgId() != mit->pdgId() ) {
 	      int idx = std::distance(genParticles->begin(), mit);
+	      if (_verbosity > 0) std::cout << "mother index/pdgId: " << idx << "/" << mit->pdgId() << std::endl;
               genParticleB->motherIndices.push_back(idx);
               break;
             }
@@ -67,13 +79,17 @@ void GenParticleBlock::analyze(const edm::Event& iEvent, const edm::EventSetup& 
 	  const reco::Candidate* d = it->daughter(j);
           for (reco::GenParticleCollection::const_iterator mit = genParticles->begin(); 
                                                           mit != genParticles->end(); ++mit) {
-            if (d == &(*mit) && d->pdgId() != mit->pdgId() ) {
+            if (d == &(*mit) ) { // -- keep all the entries  && it->pdgId() != mit->pdgId() ) {
 	      int idx = std::distance(genParticles->begin(), mit);
+	      if (_verbosity > 0) std::cout << "daughter index/pdgId: " << idx << "/" << mit->pdgId() << std::endl;
               genParticleB->daughtIndices.push_back(idx);
               break;
             }
           } 
         }
+        if (_verbosity > 0) std::cout << "# of mother/daughter: "  
+                  << genParticleB->motherIndices.size() << "/" 
+		  << genParticleB->daughtIndices.size() << std::endl;
       }
     } 
     else {

@@ -6,6 +6,7 @@
 #include "TTree.h"
 #include "TROOT.h"
 #include "TClonesArray.h"
+#include "TVector3.h"
 
 #include "VHTauTau/TreeMaker/plugins/ElectronBlock.h"
 #include "VHTauTau/TreeMaker/interface/PhysicsObjects.h"
@@ -22,32 +23,6 @@
 #include "RecoEgamma/EgammaTools/interface/ConversionFinder.h"
 #include "DataFormats/VertexReco/interface/Vertex.h"
 #include "DataFormats/VertexReco/interface/VertexFwd.h"
-
-#include "DataFormats/EgammaReco/interface/SuperCluster.h"
-#include "DataFormats/EgammaReco/interface/SuperClusterFwd.h"
-#include "DataFormats/EcalRecHit/interface/EcalRecHitCollections.h"
-#include "DataFormats/HcalRecHit/interface/HcalRecHitCollections.h"
-#include "DataFormats/TrackReco/interface/Track.h"
-#include "DataFormats/TrackReco/interface/TrackFwd.h"
-#include "DataFormats/BeamSpot/interface/BeamSpot.h"
-#include "DataFormats/PatCandidates/interface/Electron.h"
-#include "DataFormats/RecoCandidate/interface/RecoEcalCandidate.h"
-#include "Geometry/Records/interface/CaloGeometryRecord.h"
-#include "Geometry/CaloGeometry/interface/CaloGeometry.h"
-#include "Geometry/CaloEventSetup/interface/CaloTopologyRecord.h"
-#include "Geometry/CaloTopology/interface/CaloTopology.h"
-#include "RecoEcal/EgammaCoreTools/interface/EcalClusterLazyTools.h"
-#include "RecoEgamma/EgammaIsolationAlgos/interface/PhotonTkIsolation.h"
-#include "RecoEgamma/EgammaIsolationAlgos/interface/EgammaRecHitIsolation.h"
-#include "RecoEgamma/EgammaTools/interface/HoECalculator.h"
-#include "RecoEcal/EgammaCoreTools/interface/EcalClusterTools.h"
-#include "DataFormats/EcalDetId/interface/EcalSubdetector.h"
-#include "RecoLocalCalo/EcalRecAlgos/interface/EcalSeverityLevelAlgo.h"
-#include "RecoLocalCalo/EcalRecAlgos/interface/EcalSeverityLevelAlgoRcd.h"
-
-//#include "PhysicsTools/SelectorUtils/interface/SimpleCutBasedElectronIDSelectionFunctor.h"
-
-#include "TVector3.h"
 
 // Constructor
 ElectronBlock::ElectronBlock(const edm::ParameterSet& iConfig) :
@@ -80,57 +55,6 @@ void ElectronBlock::analyze(const edm::Event& iEvent, const edm::EventSetup& iSe
   edm::Handle<DcsStatusCollection> dcsHandle;
   iEvent.getByLabel(_dcsInputTag, dcsHandle);
 
-#if 0
-  edm::ESHandle<CaloGeometry> caloGeometry;
-  iSetup.get<CaloGeometryRecord>().get(caloGeometry);
-
-  edm::ESHandle<CaloTopology> caloTopology;
-  iSetup.get<CaloTopologyRecord>().get(caloTopology);
-
-  edm::Handle<EcalRecHitCollection> ecalBarrelRecHitHandle;
-  iEvent.getByLabel(_ecalEBInputTag, ecalBarrelRecHitHandle);
-
-  edm::Handle<EcalRecHitCollection> ecalEndcapRecHitHandle;
-  iEvent.getByLabel(_ecalEEInputTag, ecalEndcapRecHitHandle);
-
-  //  edm::Handle<reco::TrackCollection> trackHandle;
-  //iEvent.getByLabel(trkInputTag, trackHandle);
-  //const reco::TrackCollection* trackColl = tracks.product();
-  edm::Handle<reco::BeamSpot> BeamSpotHandle;
-  iEvent.getByLabel("offlineBeamSpot",BeamSpotHandle);
-  const reco::BeamSpot* spot = BeamSpotHandle.product();
-  PhotonTkIsolation TrackTool(0.3, 0.04, 0.7, 0.2, 9999, tracks.product(), math::XYZPoint(spot->x0(),spot->y0(),spot->z0()));
-
-  EcalClusterLazyTools EcalTool(iEvent,iSetup,_ecalEBInputTag,_ecalEEInputTag);
-
-  edm::ESHandle<EcalSeverityLevelAlgo> sevlv;
-  iSetup.get<EcalSeverityLevelAlgoRcd>().get(sevlv);
-  const EcalSeverityLevelAlgo* sevLevel = sevlv.product();
-
-  double ConeOutRadius = 0.4;  // these are all needed to make an instance of EgammaRecHitIsolation
-  double ConeInRadius = 0.045;
-  double EtaWidth = 0.02;
-  double PtMin = 0.;
-  double EMin = 0.08;
-  double EndcapConeInRadius = 0.07; // note that this is in number-of-crystal units
-  double EndcapPtMin = 0.;
-  double EndcapEMin = 0.1;
-  double HeepConeOutRadius = 0.3;  // HEEP uses different iso values than Egamma/PAT default
-  double HeepConeInRadius = 3.; // note that this is in num of crystals
-  double HeepEtaWidth = 1.5;  // note that this is in num of crystals
-  EcalRecHitMetaCollection ecalBarrelHits(*ecalBarrelRecHitHandle); // these are all needed to make an instance of EgammaRecHitIsolation
-  EgammaRecHitIsolation ecalBarrelIsol(ConeOutRadius, ConeInRadius, EtaWidth, PtMin, EMin, 
-                                            caloGeometry, &ecalBarrelHits, sevLevel, DetId::Ecal);
-  EgammaRecHitIsolation HeepEcalBarrelIsol(HeepConeOutRadius, HeepConeInRadius, HeepEtaWidth, 
-                                            PtMin, EMin, caloGeometry, &ecalBarrelHits, sevLevel, DetId::Ecal);
-  HeepEcalBarrelIsol.setUseNumCrystals(true);
-  EcalRecHitMetaCollection ecalEndcapHits(*ecalEndcapRecHitHandle);
-  EgammaRecHitIsolation ecalEndcapIsol(ConeOutRadius, EndcapConeInRadius, EtaWidth, EndcapPtMin, EndcapEMin, 
-                                            caloGeometry, &ecalEndcapHits, sevLevel, DetId::Ecal);
-  EgammaRecHitIsolation HeepEcalEndcapIsol(HeepConeOutRadius, HeepConeInRadius, HeepEtaWidth, EndcapPtMin, 
-                                            EndcapEMin, caloGeometry, &ecalEndcapHits, sevLevel, DetId::Ecal);
-  HeepEcalEndcapIsol.setUseNumCrystals(true);
-#endif
   double evt_bField = 3.8;
   // need the magnetic field
   //
@@ -230,9 +154,6 @@ void ElectronBlock::analyze(const edm::Event& iEvent, const edm::EventSetup& iSe
       electronB->charge      = it->charge();
       electronB->simpleEleId95cIso 
                              = it->electronID("simpleEleId95cIso");
-      // define your function for  WP95 using relative isolations
-      //      SimpleCutBasedElectronIDSelectionFunctor patSele95(SimpleCutBasedElectronIDSelectionFunctor::relIso95, evt_bField, tracks);
-      // bool pass = patSele95(*it);
 
       // ID variables
       electronB->hoe           = it->hadronicOverEm();
@@ -275,76 +196,6 @@ void ElectronBlock::analyze(const edm::Event& iEvent, const edm::EventSetup& iSe
       // IP information
       electronB->dB  = it->dB(pat::Electron::PV2D);
       electronB->edB = it->edB(pat::Electron::PV2D);
-#if 0
-      // Ecal Spike Cleaning
-      double emax    = -1.;
-      double e9      = 1/999.;
-      double eright  = 999.;
-      double eleft   = 0.;
-      double etop    = 0.;
-      double ebottom = 0.;
-      int ekoutoftime = -1;
-
-      if (it->superCluster()->seed()->seed().subdetId() == EcalBarrel) {
-        emax    = EcalClusterTools::eMax( *(it->superCluster()), &(*ecalBarrelRecHitHandle) );
-        e9      = EcalClusterTools::e3x3( *(it->superCluster()), &(*ecalBarrelRecHitHandle), &(*caloTopology) );
-        eright  = EcalClusterTools::eRight( *(it->superCluster()), &(*ecalBarrelRecHitHandle), &(*caloTopology) );
-        eleft   = EcalClusterTools::eLeft( *(it->superCluster()), &(*ecalBarrelRecHitHandle), &(*caloTopology) ) ;
-        etop    = EcalClusterTools::eTop( *(it->superCluster()), &(*ecalBarrelRecHitHandle), &(*caloTopology) ) ;
-        ebottom = EcalClusterTools::eBottom( *(it->superCluster()), &(*ecalBarrelRecHitHandle), &(*caloTopology) );
-
-        int flaggedRecHitCounter = 0;
-        const std::vector<std::pair<DetId, float> > & hitsAndFractions = it->superCluster()->seed()->hitsAndFractions();
-	std::vector<std::pair<DetId, float> >::const_iterator hitIter;
-        for (hitIter = hitsAndFractions.begin(); hitIter != hitsAndFractions.end(); ++hitIter) {
-	  EcalRecHitCollection::const_iterator recHit = ecalBarrelRecHitHandle->find(hitIter->first);
-          if (recHit != ecalBarrelRecHitHandle->end()) {
-            if ( (hitIter->second*recHit->energy()/it->superCluster()->rawEnergy() > 0.05)
-		&& recHit->checkFlag(EcalRecHit::kOutOfTime) ) flaggedRecHitCounter++;
-          }
-        }
-        ekoutoftime = (flaggedRecHitCounter > 0) ? 1 : 0;
-      } 
-      else {
-        emax    = EcalClusterTools::eMax( *(it->superCluster()), &(*ecalEndcapRecHitHandle) );
-        e9      = EcalClusterTools::e3x3( *(it->superCluster()), &(*ecalEndcapRecHitHandle), &(*caloTopology) );
-        eright  = EcalClusterTools::eRight( *(it->superCluster()), &(*ecalEndcapRecHitHandle), &(*caloTopology) );
-        eleft   = EcalClusterTools::eLeft( *(it->superCluster()), &(*ecalEndcapRecHitHandle), &(*caloTopology) ) ;
-        etop    = EcalClusterTools::eTop( *(it->superCluster()), &(*ecalEndcapRecHitHandle), &(*caloTopology) ) ;
-        ebottom = EcalClusterTools::eBottom( *(it->superCluster()), &(*ecalEndcapRecHitHandle), &(*caloTopology) );
-
-        int flaggedRecHitCounter = 0;
-        const std::vector<std::pair<DetId, float> > & hitsAndFractions = it->superCluster()->seed()->hitsAndFractions();
-	std::vector<std::pair<DetId, float> >::const_iterator hitIter;
-        for (hitIter = hitsAndFractions.begin(); hitIter != hitsAndFractions.end(); ++hitIter) {
-	  EcalRecHitCollection::const_iterator recHit = ecalEndcapRecHitHandle->find(hitIter->first);
-          if (recHit != ecalEndcapRecHitHandle->end()) {
-            if ( (hitIter->second*recHit->energy()/it->superCluster()->rawEnergy()) > 0.05 
-		 && recHit->checkFlag(EcalRecHit::kOutOfTime) ) flaggedRecHitCounter++;
-          }
-        }
-        ekoutoftime = (flaggedRecHitCounter>0) ? 1 : 0;
-      }
-
-      electronB->scE1E9 = emax/e9;
-      electronB->scS4S1 = (eright+eleft+etop+ebottom)/emax; // 
-      electronB->sckOutOfTime = ekoutoftime;
-
-      reco::SuperClusterRef eleSCRef = it->superCluster();  // get SCRef to use to make ele candidate
-      TVector3 sc_vec;
-      sc_vec.SetXYZ(eleSCRef->x(),eleSCRef->y(),eleSCRef->z());
-      double eleSCRefpt = eleSCRef->energy()*(sc_vec.Perp()/sc_vec.Mag());
-      reco::RecoEcalCandidate ecalCand;  // make ele candidate to use Iso algorithm
-      ecalCand.setSuperCluster(eleSCRef);
-      const reco::Candidate::PolarLorentzVector photon_vec(eleSCRefpt, eleSCRef->eta(), eleSCRef->phi(), 0.0);
-      ecalCand.setP4(photon_vec);
-
-      electronB->scEcalIso = (fabs(eleSCRef->eta()) < 1.48) ? ecalBarrelIsol.getEtSum(&ecalCand)
-                                                            : ecalEndcapIsol.getEtSum(&ecalCand);
-      electronB->scHEEPEcalIso = (fabs(eleSCRef->eta()) < 1.48) ? HeepEcalBarrelIsol.getEtSum(&ecalCand)
-                                                                : HeepEcalEndcapIsol.getEtSum(&ecalCand);
-      electronB->scHEEPTrkIso = TrackTool.getPtTracks(&ecalCand);
-#endif
     }
   } 
   else {

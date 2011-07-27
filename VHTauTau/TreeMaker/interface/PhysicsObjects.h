@@ -126,10 +126,11 @@ public:
      int status;
      int numDaught;
      int numMother;
-     std::vector<int> motherIndices;
-     std::vector<int> daughtIndices;
+     int motherIndex;
+  std::vector<int> motherIndices;
+  std::vector<int> daughtIndices;
 
-  ClassDef(GenParticle,2) 
+  ClassDef(GenParticle,3) 
 };
 class GenJet: public TObject {
 public:
@@ -466,5 +467,90 @@ public:
      double vz;
 
   ClassDef(Track, 1)
+};
+class Photon : public TObject {
+public:
+  Photon();
+  ~Photon() {}
+
+  double et;
+  double eta;
+  double phi;
+  double energy;
+  double theta; 
+  double vx;
+  double vy;
+  double vz;
+
+  double scEnergy;
+  double scEta;
+  double scPhi;
+  double scSize;
+  double scEtaWidth;
+  double scPhiWidth;
+  double scEt;
+  double scRawEnergy;
+  double scx;
+  double scy;
+  double scz; 
+  double isoEcalRecHit03;
+  double isoHcalRecHit03;
+  double isoSolidTrkCone03;
+  double isoHollowTrkCone03;
+     int nTrkSolidCone03;
+     int nTrkHollowCone03;
+
+  double isoEcalRecHit04;
+  double isoHcalRecHit04;
+  double isoSolidTrkCone04;
+  double isoHollowTrkCone04;
+     int nTrkSolidCone04;
+     int nTrkHollowCone04;
+
+    bool isEB;
+    bool isEE; 
+    bool isEBGap;
+    bool isEEGap;
+    bool isEBEEGap;
+
+    bool hasPixelSeed;
+  double ecalIso;
+  double hcalIso;
+  double trackIso;
+  double chargedHadIso;
+  double neutralHadIso;
+  double photonIso;
+
+  double r9;
+  double hoe;
+  double sigmaEtaEta;
+  double sigmaIEtaIEta;
+  double e1x5;
+  double e2x5; 
+  double e3x3;
+  double e5x5;
+  double r1x5;
+  double r2x5;
+  double maxEnergyXtal;
+
+    bool hasConversionTracks;
+     int nTracks;
+    bool isConverted;
+  double pairInvMass;
+  double pairCotThetaSeparation;
+  double pairPx;
+  double pairPy;
+  double pairPz;
+  double conv_vx;
+  double conv_vy;
+  double conv_vz;
+  double eovp;
+  double zpv;
+  double distOfMinApproach;
+  double dPhiTracksAtVtx;
+  double dPhiTracksAtEcal;
+  double dEtaTracksAtEcal;  
+
+  ClassDef(Photon, 1)
 };
 #endif
