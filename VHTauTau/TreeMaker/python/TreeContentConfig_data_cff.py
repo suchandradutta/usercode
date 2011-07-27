@@ -9,6 +9,7 @@ from VHTauTau.TreeMaker.METBlock_cfi import *
 from VHTauTau.TreeMaker.MuonBlock_cfi import *
 from VHTauTau.TreeMaker.TauBlock_cfi import *
 from VHTauTau.TreeMaker.TriggerBlock_cfi import *
+from VHTauTau.TreeMaker.PhotonBlock_cfi import *
 
 treeContentSequence = cms.Sequence(
    eventBlock
@@ -20,4 +21,5 @@ treeContentSequence = cms.Sequence(
  + muonBlock
  + tauBlock
  + triggerBlock  
+ + photonBlock
 )
