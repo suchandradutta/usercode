@@ -1,7 +1,8 @@
 #ifndef __TreeMaker_PhysicsObjects_h
 #define __TreeMaker_PhysicsObjects_h
 
-#include "vector"
+#include <vector>
+#include <string>
 #include "TObject.h"
 
 class Event: public TObject {
@@ -48,10 +49,12 @@ public:
   double eta;
   double phi;
   double pt;
+    bool hasGsfTrack;
   double trackPt;
   double energy;
   double caloEnergy;
      int charge;
+   float simpleEleId95cIso;
 
   // ID variables
   double hoe;
@@ -91,6 +94,9 @@ public:
   double vtxDistZ;
   double pfRelIso;
 
+  double dB;
+  double edB;
+
   double scE1E9;
   double scS4S1;
   double sckOutOfTime;
@@ -98,7 +104,7 @@ public:
   double scHEEPEcalIso;
   double scHEEPTrkIso;
 
-  ClassDef(Electron,1) 
+  ClassDef(Electron,2) 
 };
 class GenParticle: public TObject {
 public:
@@ -117,11 +123,14 @@ public:
   double vx;
   double vy;
   double vz;
-     int numDaught;
      int status;
+     int numDaught;
+     int numMother;
      int motherIndex;
+  std::vector<int> motherIndices;
+  std::vector<int> daughtIndices;
 
-  ClassDef(GenParticle,1) 
+  ClassDef(GenParticle,2) 
 };
 class GenJet: public TObject {
 public:
@@ -195,6 +204,15 @@ public:
   float againstElectronTight; 
   float pfElectronMVA;
 
+  float byVLooseCombinedIsolationDeltaBetaCorr;
+  float byLooseCombinedIsolationDeltaBetaCorr;
+  float byMediumCombinedIsolationDeltaBetaCorr;
+  float byTightCombinedIsolationDeltaBetaCorr;
+  float byVLooseIsolationDeltaBetaCorr;
+  float byLooseIsolationDeltaBetaCorr;
+  float byMediumIsolationDeltaBetaCorr;
+  float byTightIsolationDeltaBetaCorr;
+
   // kinematic variables for PFJet associated to PFTau
   double jetPt;
   double jetEta;
@@ -218,7 +236,7 @@ public:
   double zvertex;
   double ltsipt;
 
-  ClassDef(Tau,2) 
+  ClassDef(Tau,3) 
 };
 class CaloJet: public TObject {
 public:
@@ -279,11 +297,14 @@ public:
   double vtxDistZ;
      int pixHits;
      int trkHits;
+     int muoHits;
      int matches;
   double pfRelIso;
-     int isTrackerMuon;
+    bool isTrackerMuon;
+  double dB;  // PV2D
+  double edB;   
 
-  ClassDef(Muon, 1)
+  ClassDef(Muon, 2)
 };
 class Jet: public TObject {
 public:
@@ -378,8 +399,10 @@ public:
      int ntracks;
      int ntracksw05;
     bool isfake;
+    bool isvalid;
+  double sumPt;
 
-  ClassDef(Vertex, 1)
+  ClassDef(Vertex, 2)
 };
 class Trigger: public TObject {
 public:
@@ -388,11 +411,11 @@ public:
 
   std::vector<int> l1physbits;
   std::vector<int> l1techbits;
-  std::vector<int> hltbits;
+  std::vector<std::string> hltpaths;
   std::vector<int> hltresults;
   std::vector<int> hltprescales;
 
-  ClassDef(Trigger, 1)
+  ClassDef(Trigger, 2)
 };
 class GenMET: public TObject {
 public:
@@ -444,5 +467,90 @@ public:
      double vz;
 
   ClassDef(Track, 1)
+};
+class Photon : public TObject {
+public:
+  Photon();
+  ~Photon() {}
+
+  double et;
+  double eta;
+  double phi;
+  double energy;
+  double theta; 
+  double vx;
+  double vy;
+  double vz;
+
+  double scEnergy;
+  double scEta;
+  double scPhi;
+  double scSize;
+  double scEtaWidth;
+  double scPhiWidth;
+  double scEt;
+  double scRawEnergy;
+  double scx;
+  double scy;
+  double scz; 
+  double isoEcalRecHit03;
+  double isoHcalRecHit03;
+  double isoSolidTrkCone03;
+  double isoHollowTrkCone03;
+     int nTrkSolidCone03;
+     int nTrkHollowCone03;
+
+  double isoEcalRecHit04;
+  double isoHcalRecHit04;
+  double isoSolidTrkCone04;
+  double isoHollowTrkCone04;
+     int nTrkSolidCone04;
+     int nTrkHollowCone04;
+
+    bool isEB;
+    bool isEE; 
+    bool isEBGap;
+    bool isEEGap;
+    bool isEBEEGap;
+
+    bool hasPixelSeed;
+  double ecalIso;
+  double hcalIso;
+  double trackIso;
+  double chargedHadIso;
+  double neutralHadIso;
+  double photonIso;
+
+  double r9;
+  double hoe;
+  double sigmaEtaEta;
+  double sigmaIEtaIEta;
+  double e1x5;
+  double e2x5; 
+  double e3x3;
+  double e5x5;
+  double r1x5;
+  double r2x5;
+  double maxEnergyXtal;
+
+    bool hasConversionTracks;
+     int nTracks;
+    bool isConverted;
+  double pairInvMass;
+  double pairCotThetaSeparation;
+  double pairPx;
+  double pairPy;
+  double pairPz;
+  double conv_vx;
+  double conv_vy;
+  double conv_vz;
+  double eovp;
+  double zpv;
+  double distOfMinApproach;
+  double dPhiTracksAtVtx;
+  double dPhiTracksAtEcal;
+  double dEtaTracksAtEcal;  
+
+  ClassDef(Photon, 1)
 };
 #endif

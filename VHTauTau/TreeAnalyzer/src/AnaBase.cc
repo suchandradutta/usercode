@@ -172,6 +172,33 @@ void AnaBase::eventLoop()
 
     // Let's look at the Tau collection
     _fLog << setprecision(3);
+    if (n_genparticle) {
+      for (int indx = 0; indx < n_genparticle; ++indx) {
+        const GenParticle* gp = dynamic_cast<GenParticle*>(genParticleA->At(indx));
+        if (!gp) continue;
+        _fLog << "pdgId: " << gp->pdgId << endl;
+
+	std::vector<int> m = gp->motherIndices;
+	_fLog << "# of mother: "  << m.size() << endl;
+        for (size_t i = 0; i < m.size(); ++i) {
+          int mi = m[i];
+          _fLog << "index: " << mi << endl;
+          if (mi >= n_genparticle) continue;
+          const GenParticle* mgp = dynamic_cast<GenParticle*>(genParticleA->At(mi));
+          _fLog << "\tpdgId: " << mgp->pdgId << endl; 
+        }
+
+	std::vector<int> d = gp->daughtIndices;
+	_fLog << "# of daughter: " << d.size() << endl;
+        for (size_t i = 0; i < d.size(); ++i) {
+	  int di = d[i];
+          _fLog << "index: " << di << endl;
+          if (di >= n_genparticle) continue;
+          const GenParticle* dgp = dynamic_cast<GenParticle*>(genParticleA->At(di));
+          _fLog << "\tpdgId: " << dgp->pdgId << endl; 
+        }
+      }
+    }
     if (n_tau) {
       _fLog << "=>> Taus: " << n_tau << endl;
       _fLog << "indx     Eta     Phi      Pt  Energy"
@@ -428,6 +455,14 @@ void AnaBase::setAddresses()
   branch = _chain->GetBranch("Jet");
   assert(branch);
   _chain->SetBranchAddress("Jet", &jetA);
+
+  branch = _chain->GetBranch("nGenParticle");
+  assert(branch);
+  _chain->SetBranchAddress("nGenParticle", &n_genparticle);
+
+  branch = _chain->GetBranch("GenParticle");
+  assert(branch);
+  _chain->SetBranchAddress("GenParticle", &genParticleA);
 }
 int AnaBase::getEntry(int lflag) const
 {
@@ -468,6 +503,14 @@ int AnaBase::getEntry(int lflag) const
   nbytes += branch->GetEntry(lflag);
 
   branch = _chain->GetBranch("nMuon");
+  assert(branch);
+  nbytes += branch->GetEntry(lflag);
+
+  branch = _chain->GetBranch("GenParticle");
+  assert(branch);
+  nbytes += branch->GetEntry(lflag);
+
+  branch = _chain->GetBranch("nGenParticle");
   assert(branch);
   nbytes += branch->GetEntry(lflag);
 
