@@ -22,13 +22,17 @@ def switchToData(process):
 
   process.patDefaultSequence.remove(process.patJetPartonMatch)
   process.patDefaultSequence.remove(process.patJetPartonMatchAK5PF)
-  process.patDefaultSequence.remove(process.patJetGenJetMatchAK5PF)	
+  process.patDefaultSequence.remove(process.patJetPartonMatchAK5Calo)
+  process.patDefaultSequence.remove(process.patJetGenJetMatchAK5PF)
+  process.patDefaultSequence.remove(process.patJetGenJetMatchAK5Calo)
   process.patDefaultSequence.remove(process.patJetFlavourId)
   process.patDefaultSequence.remove(process.patJetPartons)
   process.patDefaultSequence.remove(process.patJetPartonAssociation)
   process.patDefaultSequence.remove(process.patJetPartonAssociationAK5PF)
+  process.patDefaultSequence.remove(process.patJetPartonAssociationAK5Calo)  
   process.patDefaultSequence.remove(process.patJetFlavourAssociation)
   process.patDefaultSequence.remove(process.patJetFlavourAssociationAK5PF)
-  
+  process.patDefaultSequence.remove(process.patJetFlavourAssociationAK5Calo)  
+
 #runOnData(process, ["Jets"], outputInProcess = False)      
 

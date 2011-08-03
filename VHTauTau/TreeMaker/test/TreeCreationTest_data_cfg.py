@@ -12,7 +12,7 @@ process.source = cms.Source("PoolSource",
                    fileNames = cms.untracked.vstring()
                  )
 process.maxEvents = cms.untracked.PSet(
-                      input = cms.untracked.int32(1000)
+                      input = cms.untracked.int32(50)
                     )
 #-----------------------------
 # Geometry
@@ -26,51 +26,105 @@ process.load('Configuration.StandardSequences.MagneticField_AutoFromDBCurrent_cf
 # Global Tag
 #-------------
 process.load('Configuration.StandardSequences.FrontierConditions_GlobalTag_cff')
-process.GlobalTag.globaltag = 'GR_R_42_V14::All'
+process.GlobalTag.globaltag = 'GR_R_42_V19::All'
 #from PhysicsTools.PatAlgos.patTemplate_cfg import *
-
 #-------------
 # Output ROOT file
 #-------------
 process.TFileService = cms.Service("TFileService",
-     fileName = cms.string('SingleMu.root')
-     )                                   
+     fileName = cms.string('DoubleMu.root')
+)
 #--------------------------------------------------
 # VHTauTau Tree Specific
 #--------------------------------------------------
 process.load("VHTauTau.TreeMaker.TreeCreator_cfi")
 process.load("VHTauTau.TreeMaker.TreeWriter_cfi")
-process.load("VHTauTau.TreeMaker.TreeContentConfig_data_cff")
+process.load("VHTauTau.TreeMaker.TreeContentConfig_cff")
+process.triggerBlock.hltPathsOfInterest=cms.vstring ("HLT_DoubleMu", "HLT_L1DoubleMu", "HLT_Mu","HLT_TripleMu")
 
 process.load("RecoTauTag.Configuration.RecoPFTauTag_cff")
 #-------------------------------------------------------
 # PAT 
 #------------------------------------------------------
 process.load("PhysicsTools.PatAlgos.patSequences_cff")
-process.patJetCorrFactors.useRho=False
 
-# Add PF jets
+from PhysicsTools.PatAlgos.tools.tauTools import *
 from PhysicsTools.PatAlgos.tools.jetTools import *
-addJetCollection(process,cms.InputTag('ak5PFJets'),
-    'AK5', 'PF',
-    doJTA        = True,
-    doBTagging   = True,
-    jetCorrLabel = ('AK5PF', cms.vstring(['L2Relative', 'L3Absolute', 'L5Flavor', 'L7Parton'])),
-    doType1MET   = False,
-    doL1Cleaning = False,
-    doL1Counters = False,
-    genJetCollection=cms.InputTag(""),
-    doJetID      = False
+
+jec = [ 'L1FastJet', 'L1Offset', 'L2Relative', 'L3Absolute' ]
+#if not isMC:
+#        jec.extend([ 'L2L3Residual' ])
+addJetCollection(process, cms.InputTag('ak5PFJets'),
+                     'AK5', 'PF',
+                     doJTA            = False,
+                     doBTagging       = False,
+                     jetCorrLabel     = ('AK5PF', cms.vstring(jec)),
+                     doType1MET       = False,
+                     genJetCollection = cms.InputTag("ak5GenJets"),
+                     doJetID          = True,
+                     jetIdLabel       = "ak5",
+                     outputModule     = ''
 )
 
-#switchToPFTauHPSpTaNC(process) # For HPS TaNC Taus
+addJetCollection(process, cms.InputTag('ak5CaloJets'),
+                     'AK5', 'Calo',
+                     doJTA            = False,
+                     doBTagging       = False,
+                     jetCorrLabel     = ('AK5Calo', cms.vstring(jec)),
+                     doType1MET       = False,
+                     genJetCollection = cms.InputTag("ak5GenJets"),
+                     doJetID          = True,
+                     jetIdLabel       = "ak5",
+                     outputModule     = ''
+)
+
+#--------------------------------------------------------------------------------
+    #
+    # configure Jet Energy Corrections
+    #
+process.load("CondCore.DBCommon.CondDBCommon_cfi")
+process.jec = cms.ESSource("PoolDBESSource",
+        DBParameters = cms.PSet(
+            messageLevel = cms.untracked.int32(0)
+        ),
+        timetype = cms.string('runnumber'),
+        toGet = cms.VPSet(
+            cms.PSet(
+                record = cms.string('JetCorrectionsRecord'),
+                tag    = cms.string('JetCorrectorParametersCollection_Jec11V2_AK5PF'),
+                label  = cms.untracked.string('AK5PF')
+            ),
+            cms.PSet(
+                record = cms.string('JetCorrectionsRecord'),
+                tag    = cms.string('JetCorrectorParametersCollection_Jec11V2_AK5Calo'),
+                label  = cms.untracked.string('AK5Calo')
+            )
+        ),
+        connect = cms.string('sqlite_fip:TauAnalysis/Configuration/data/Jec11V2.db')
+)
+process.es_prefer_jec = cms.ESPrefer('PoolDBESSource', 'jec')
+#-------------------------------------------------------------------------------------------------------------------------
+##-------------------- Import the JEC services -----------------------
+process.load('JetMETCorrections.Configuration.DefaultJEC_cff')
+##-------------------- Import the Jet RECO modules -----------------------
+process.load('RecoJets.Configuration.RecoPFJets_cff')
+##-------------------- Turn-on the FastJet density calculation
+
+process.kt6PFJets.doRhoFastjet = True
+##-------------------- Turn-on the FastJet jet area calculation for your favorite algorithm 
+process.ak5PFJets.doAreaFastjet = True
+
+
+
 from PhysicsTools.PatAlgos.tools.tauTools import *
 switchToPFTauHPS(process) # For HPS Taus
-
-# create TC and PF METs
+#switchToPFTauHPSpTaNC(process) # For HPS TaNC Taus
 from PhysicsTools.PatAlgos.tools.metTools import *
 addTcMET(process, 'TC')
 addPfMET(process, 'PF')
+
+process.load("RecoEgamma.EgammaIsolationAlgos.egammaIsolationSequence_cff")
+#process.patElectronIsolation = cms.Sequence(process.egammaIsolationSequence)
 
 process.patElectrons.isoDeposits = cms.PSet()
 process.patElectrons.userIsolation = cms.PSet()
@@ -112,13 +166,15 @@ process.simpleEleId60cIso.dataMagneticFieldSetUp = cms.bool(True)
 process.patElectronIDs = cms.Sequence(process.simpleEleIdSequence)
 process.makePatElectrons = cms.Sequence(process.patElectronIDs*process.patElectrons) 
 
+
 process.p = cms.Path(
-    process.treeCreator
-    +process.PFTau
-    #+process.patseq
-    +process.patDefaultSequence
-    +process.treeContentSequence
-    +process.treeWriter
+    process.treeCreator +
+    process.kt6PFJets +
+    process.ak5PFJets +
+    process.PFTau     +
+    process.patDefaultSequence +
+    process.treeContentSequence +
+    process.treeWriter
     )
 
 from VHTauTau.TreeMaker.SwitchToData import switchToData
@@ -128,6 +184,8 @@ switchToData(process)
 # List File names here
 #---------------------------------------
 process.PoolSource.fileNames = [
-     '/store/data/Run2011A/SingleMu/AOD/PromptReco-v4/000/165/620/6AD32415-7888-E011-A499-001D09F292D1.root'
+       '/store/data/Run2011A/DoubleMu/AOD/PromptReco-v4/000/165/620/44B9765C-9288-E011-9693-003048F117EA.root'
+#       '/store/data/Run2011A/TauPlusX/AOD/PromptReco-v4/000/165/620/BA59FB16-9288-E011-831B-003048F11C28.root'
 ]
+
 
