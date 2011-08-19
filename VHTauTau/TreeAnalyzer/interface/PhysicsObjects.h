@@ -15,8 +15,8 @@ public:
   unsigned int lumis;
   unsigned int bunch;
   unsigned int orbit;
-        double time;
-          bool isdata;
+  double time;
+  bool isdata;
 
   bool isPhysDeclared;
   bool isBPTX0;
@@ -46,6 +46,7 @@ class Electron: public TObject {
 public:
   Electron();
   ~Electron() {}
+
   double eta;
   double phi;
   double pt;
@@ -197,37 +198,37 @@ public:
    float tightIsolation;
 
   // discriminators against electrons/muons
-  float againstMuonLoose;
-  float againstMuonTight;
-  float againstElectronLoose; 
-  float againstElectronMedium; 
-  float againstElectronTight; 
-  float pfElectronMVA;
+   float againstMuonLoose;
+   float againstMuonTight;
+   float againstElectronLoose; 
+   float againstElectronMedium; 
+   float againstElectronTight; 
+   float pfElectronMVA;
 
-  float byVLooseCombinedIsolationDeltaBetaCorr;
-  float byLooseCombinedIsolationDeltaBetaCorr;
-  float byMediumCombinedIsolationDeltaBetaCorr;
-  float byTightCombinedIsolationDeltaBetaCorr;
-  float byVLooseIsolationDeltaBetaCorr;
-  float byLooseIsolationDeltaBetaCorr;
-  float byMediumIsolationDeltaBetaCorr;
-  float byTightIsolationDeltaBetaCorr;
+   float byVLooseCombinedIsolationDeltaBetaCorr;
+   float byLooseCombinedIsolationDeltaBetaCorr;
+   float byMediumCombinedIsolationDeltaBetaCorr;
+   float byTightCombinedIsolationDeltaBetaCorr;
+   float byVLooseIsolationDeltaBetaCorr;
+   float byLooseIsolationDeltaBetaCorr;
+   float byMediumIsolationDeltaBetaCorr;
+   float byTightIsolationDeltaBetaCorr;
 
   // kinematic variables for PFJet associated to PFTau
   double jetPt;
   double jetEta;
   double jetPhi;
 
-  float maximumHCALPFClusterEt;
-  float ecalStripSumEOverPLead;
-  float bremsRecoveryEOverPLead;
-  float hcalTotOverPLead;
-  float hcalMaxOverPLead;
-  float hcal3x3OverPLead;
+   float maximumHCALPFClusterEt;
+   float ecalStripSumEOverPLead;
+   float bremsRecoveryEOverPLead;
+   float hcalTotOverPLead;
+   float hcalMaxOverPLead;
+   float hcal3x3OverPLead;
 
-  float etaetaMoment;
-  float phiphiMoment;
-  float etaphiMoment;
+   float etaetaMoment;
+   float phiphiMoment;
+   float etaphiMoment;
 
   double vx;
   double vy;
@@ -242,6 +243,7 @@ class CaloJet: public TObject {
 public:
   CaloJet();
   ~CaloJet() {}
+
   double eta;
   double phi;
   double pt;
@@ -275,6 +277,7 @@ class Muon: public TObject {
 public:
   Muon();
   ~Muon() {}
+
   double eta;
   double phi;
   double pt;
@@ -310,6 +313,7 @@ class Jet: public TObject {
 public:
   Jet();
   ~Jet() {}
+
   double eta;
   double phi;
   double pt;
@@ -455,16 +459,16 @@ public:
      int pixelLayersWithMeasurement;
      int stripLayersWithMeasurement;
 
-     double dxy;
-     double dxyError;
-     double dz;
-     double dzError;
+  double dxy;
+  double dxyError;
+  double dz;
+  double dzError;
 
-     double chi2;
-        int ndof;
-     double vx;
-     double vy;
-     double vz;
+  double chi2;
+     int ndof;
+  double vx;
+  double vy;
+  double vz;
 
   ClassDef(Track, 1)
 };

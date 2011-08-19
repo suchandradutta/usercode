@@ -1,8 +1,13 @@
 START
 histFile  pippo.root
 logFile   pippo.out
-muonCutList eta=2.1 relIso=0.1 ptHits=10 globalChi2=10.0 trkD0=0.02 
+logOption 1
+vtxCutList ndf=4 dxy=2 z=24
+muonCutList eta=2.1 relIso=0.1 ptHits=10 globalChi2=10.0 trkD0=0.02 dB=0.02
+electronCutList pt=10.0 eta=2.1 eleId=6.5 dB=0.02 scEtaLow=1.442 scEtaUp=1.560 
 tauCutList eta=2.2
-inputFile rfio:/castor/cern.ch/user/s/sarkar/VHTauTau/DYToMuMu/DYToMuMu_10_2_OTb.root
-inputFile rfio:/castor/cern.ch/user/s/sarkar/VHTauTau/DYToMuMu/DYToMuMu_11_2_b3H.root
+bjetCutList eta=2.5 pt=20. trackCount=3.3
+#inputFile rfio:/castor/cern.ch/user/s/sarkar/VHTauTau/DYToMuMu/DYToMuMu_10_2_OTb.root
+#inputFile rfio:/castor/cern.ch/user/s/sarkar/VHTauTau/DYToMuMu/DYToMuMu_11_2_b3H.root
+inputFile MC_RelValTTbar.root
 END

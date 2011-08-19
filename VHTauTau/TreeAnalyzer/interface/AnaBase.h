@@ -20,6 +20,7 @@ class AnaBase;
 class TClonesArray;
 class TChain;
 class TFile;
+
 class AnaBase {
     
 public:
@@ -62,39 +63,45 @@ private:
 public:
   // The tree branches
   TClonesArray* eventA;
+  TClonesArray* triggerA;
+  TClonesArray* vertexA;
   TClonesArray* genEventA;
-  TClonesArray* electronA;
-  TClonesArray* genParticleA;
-  TClonesArray* getJetA;
-  TClonesArray* genMETA;
-  TClonesArray* metA;
   TClonesArray* tauA;
+  TClonesArray* electronA;
   TClonesArray* muonA;
   TClonesArray* jetA;
-  TClonesArray* vertexA;
-  TClonesArray* triggerA;
+  TClonesArray* metA;
+  TClonesArray* genParticleA;
+  TClonesArray* genJetA;
+  TClonesArray* genMetA;
 
   // Number of objects in each event (and each TClonesArray)
+  int n_vertex;
+  int n_tau;
   int n_electron;
   int n_muon;
-  int n_met;  
-  int n_tau;
   int n_jet;
-  int n_vertex;
+  int n_met;  
   int n_genjet;
   int n_genparticle;
   int n_genmet;
 
 public:
   int nEvents;
+  int nEvt[10];
 
 protected:
   ofstream _fLog;   
 
 public:
+  int _logOption;
+  std::map<std::string, double> _vtxCutMap;
   std::map<std::string, double> _muonCutMap;
+  std::map<std::string, double> _electronCutMap;
   std::map<std::string, double> _tauCutMap;
+  std::map<std::string, double> _bjetCutMap;
   std::string _histFile;
   std::string _logFile;
+  int _maxEvt;
 };
 #endif

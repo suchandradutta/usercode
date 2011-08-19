@@ -31,6 +31,7 @@ void AnaUtil::bit_print(int value, int pos, ostream& os) {
   for (i = 1; i <= (INT_BIT - pos); ++i) { 
     value <<= 1; 
   } 
+  os.put(' ');
   for (i = 1; i <= pos; ++i) { 
     os.put(((value & mask) == 0) ? '0' : '1'); 
     value <<= 1; 
