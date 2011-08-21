@@ -40,7 +40,14 @@ process.TFileService = cms.Service("TFileService",
 process.load("VHTauTau.TreeMaker.TreeCreator_cfi")
 process.load("VHTauTau.TreeMaker.TreeWriter_cfi")
 process.load("VHTauTau.TreeMaker.TreeContentConfig_cff")
+# Selection for DoubleElectron PD
+# process.triggerBlock.hltPathsOfInterest=cms.vstring ("HLT_DoubleEle", "HLT_Ele", "HLT_TripleEle")
+# Selection for DoubleMu PD
 process.triggerBlock.hltPathsOfInterest=cms.vstring ("HLT_DoubleMu", "HLT_L1DoubleMu", "HLT_Mu","HLT_TripleMu")
+# Selection for MuEG PD
+# process.triggerBlock.hltPathsOfInterest=cms.vstring ("HLT_DoubleMu", "HLT_Mu")
+# Selection for TauPlusX PD
+# process.triggerBlock.hltPathsOfInterest=cms.vstring ("LooseIsoPFTau", "TightIsoPFTau", "DoubleIsoPFTau", "TrkIsoT")
 
 process.load("RecoTauTag.Configuration.RecoPFTauTag_cff")
 #-------------------------------------------------------
@@ -55,33 +62,35 @@ jec = [ 'L1FastJet', 'L1Offset', 'L2Relative', 'L3Absolute' ]
 #if not isMC:
 #        jec.extend([ 'L2L3Residual' ])
 addJetCollection(process, cms.InputTag('ak5PFJets'),
-                     'AK5', 'PF',
-                     doJTA            = False,
-                     doBTagging       = False,
-                     jetCorrLabel     = ('AK5PF', cms.vstring(jec)),
-                     doType1MET       = False,
-                     genJetCollection = cms.InputTag("ak5GenJets"),
-                     doJetID          = True,
-                     jetIdLabel       = "ak5",
-                     outputModule     = ''
+     'AK5', 'PF',
+     doJTA            = True,
+     doBTagging       = True,
+     jetCorrLabel     = ('AK5PF', cms.vstring(jec)),
+     doType1MET       = False,
+     doL1Cleaning     = True,
+     doL1Counters     = False,
+     genJetCollection = cms.InputTag("ak5GenJets"),
+     doJetID          = True,
+     jetIdLabel       = "ak5",
+     outputModule     = ''
 )
-
 addJetCollection(process, cms.InputTag('ak5CaloJets'),
-                     'AK5', 'Calo',
-                     doJTA            = False,
-                     doBTagging       = False,
-                     jetCorrLabel     = ('AK5Calo', cms.vstring(jec)),
-                     doType1MET       = False,
-                     genJetCollection = cms.InputTag("ak5GenJets"),
-                     doJetID          = True,
-                     jetIdLabel       = "ak5",
-                     outputModule     = ''
+     'AK5', 'Calo',
+     doJTA            = True,
+     doBTagging       = True,
+     jetCorrLabel     = ('AK5Calo', cms.vstring(jec)),
+     doType1MET       = True,
+     doL1Cleaning     = True,
+     doL1Counters     = False,
+     genJetCollection = cms.InputTag("ak5GenJets"),
+     doJetID          = True,
+     jetIdLabel       = "ak5",
+     outputModule     = ''
 )
-
 #--------------------------------------------------------------------------------
-    #
-    # configure Jet Energy Corrections
-    #
+#
+# configure Jet Energy Corrections
+#
 process.load("CondCore.DBCommon.CondDBCommon_cfi")
 process.jec = cms.ESSource("PoolDBESSource",
         DBParameters = cms.PSet(
@@ -113,8 +122,6 @@ process.load('RecoJets.Configuration.RecoPFJets_cff')
 process.kt6PFJets.doRhoFastjet = True
 ##-------------------- Turn-on the FastJet jet area calculation for your favorite algorithm 
 process.ak5PFJets.doAreaFastjet = True
-
-
 
 from PhysicsTools.PatAlgos.tools.tauTools import *
 switchToPFTauHPS(process) # For HPS Taus
@@ -166,7 +173,7 @@ process.simpleEleId60cIso.dataMagneticFieldSetUp = cms.bool(True)
 process.patElectronIDs = cms.Sequence(process.simpleEleIdSequence)
 process.makePatElectrons = cms.Sequence(process.patElectronIDs*process.patElectrons) 
 
-
+process.jetBlock.verbosity = cms.int32(1)
 process.p = cms.Path(
     process.treeCreator +
     process.kt6PFJets +
@@ -175,7 +182,7 @@ process.p = cms.Path(
     process.patDefaultSequence +
     process.treeContentSequence +
     process.treeWriter
-    )
+)
 
 from VHTauTau.TreeMaker.SwitchToData import switchToData
 switchToData(process)
@@ -184,8 +191,7 @@ switchToData(process)
 # List File names here
 #---------------------------------------
 process.PoolSource.fileNames = [
-       '/store/data/Run2011A/DoubleMu/AOD/PromptReco-v4/000/165/620/44B9765C-9288-E011-9693-003048F117EA.root'
-#       '/store/data/Run2011A/TauPlusX/AOD/PromptReco-v4/000/165/620/BA59FB16-9288-E011-831B-003048F11C28.root'
+     '/store/data/Run2011A/SingleMu/AOD/PromptReco-v4/000/165/620/6AD32415-7888-E011-A499-001D09F292D1.root',
+     '/store/data/Run2011A/DoubleMu/AOD/PromptReco-v4/000/165/620/44B9765C-9288-E011-9693-003048F117EA.root'
+#    '/store/data/Run2011A/TauPlusX/AOD/PromptReco-v4/000/165/620/BA59FB16-9288-E011-831B-003048F11C28.root'
 ]
-
-

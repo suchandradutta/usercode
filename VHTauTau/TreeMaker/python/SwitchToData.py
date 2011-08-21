@@ -19,6 +19,7 @@ def switchToData(process):
   removeMCMatching(process, ["All"], outputInProcess = False)
   removeMCMatching(process, ['METs'], "TC", outputInProcess = False)
   removeMCMatching(process, ['METs'], "PF", outputInProcess = False)
+  removeMCMatching(process, ['METs'], "AK5Calo", outputInProcess = False)
 
   process.patDefaultSequence.remove(process.patJetPartonMatch)
   process.patDefaultSequence.remove(process.patJetPartonMatchAK5PF)
@@ -34,5 +35,6 @@ def switchToData(process):
   process.patDefaultSequence.remove(process.patJetFlavourAssociationAK5PF)
   process.patDefaultSequence.remove(process.patJetFlavourAssociationAK5Calo)  
 
+  
 #runOnData(process, ["Jets"], outputInProcess = False)      
 

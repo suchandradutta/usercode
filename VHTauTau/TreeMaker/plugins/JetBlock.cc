@@ -120,6 +120,12 @@ void JetBlock::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup) 
       jetB->jetBProbabilityBTag              = it->bDiscriminator("jetBProbabilityBJetTags");
       jetB->passLooseID = passjetLoose;
       jetB->passTightID = passjetTight;
+      if (_verbosity > 0) 
+      std::cout << "JetBlock: trackCountingHighEffBJetTag = " << jetB->trackCountingHighEffBTag
+                << ", trackCountingHighPurBJetTag = " << jetB->trackCountingHighPurBTag
+                << ", jetProbabilityBTag = " << jetB->jetProbabilityBTag  
+                << ", jetBProbabilityBTag = " << jetB->jetBProbabilityBTag  
+                << std::endl;
     }
   } 
   else {
