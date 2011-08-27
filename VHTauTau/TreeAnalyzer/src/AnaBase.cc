@@ -33,6 +33,10 @@ using std::endl;
 using std::string;
 using std::vector;
 using std::map;
+using std::abs;
+using std::max;
+using std::sqrt;
+using std::sort;
 
 #define NEL(x) (sizeof((x))/sizeof((x)[0]))
 
@@ -166,7 +170,7 @@ void AnaBase::eventLoop()
   // Initialize analysis
   if (!beginJob()) return;
 
-  int nPrint = std::max(10000, nEvents/1000);
+  int nPrint = max(10000, nEvents/1000);
 
   // --------------------
   // Start the event loop
@@ -205,7 +209,9 @@ void AnaBase::eventLoop()
             << " Events proc. " << setw(8) << ev << endl;
 
     if (_logOption >> 0 & 0x1) 
-    _fLog << "n_tau: "<< n_tau
+    _fLog << "run: " << run
+          << ", event: " << event
+          << ", n_tau: "<< n_tau
           << ", n_muon: "<< n_muon
           << ", n_jet: " << n_jet
           << ", n_vertex: " << n_vertex
@@ -228,11 +234,11 @@ void AnaBase::eventLoop()
       const Vertex* vtx = dynamic_cast<Vertex*>(vertexA->At(indx));
       if (!vtx) continue;
 
-      double dxy = std::sqrt(pow(vtx->x, 2) + pow(vtx->y, 2));
+      double dxy = sqrt(pow(vtx->x, 2) + pow(vtx->y, 2));
       int sbit = 0;
-      if (vtx->ndf <= _vtxCutMap["ndf"])       sbit |= (1 << 0);
-      if (dxy >= _vtxCutMap["dxy"])            sbit |= (1 << 1);
-      if (std::abs(vtx->z) >= _vtxCutMap["z"]) sbit |= (1 << 2);
+      if (vtx->ndf <= _vtxCutMap["ndf"])  sbit |= (1 << 0);
+      if (dxy >= _vtxCutMap["dxy"])       sbit |= (1 << 1);
+      if (abs(vtx->z) >= _vtxCutMap["z"]) sbit |= (1 << 2);
 
       if (_logOption >> 1 & 0x1) {
         _fLog << setw(4) << indx
@@ -249,7 +255,7 @@ void AnaBase::eventLoop()
       vtxList.push_back(*vtx);
     }
     if (vtxList.size() > 1) 
-      std::sort(vtxList.begin(), vtxList.end(), VertexComparator());
+      sort(vtxList.begin(), vtxList.end(), VertexComparator());
 #if 0
     if (n_genparticle) {
       for (int indx = 0; indx < n_genparticle; ++indx) {
@@ -318,7 +324,7 @@ void AnaBase::eventLoop()
       tauList.push_back(*tau);
     }
     if (tauList.size() > 1) 
-      std::sort(tauList.begin(), tauList.end(), PtComparator<Tau>());
+      sort(tauList.begin(), tauList.end(), PtComparator<Tau>());
    
     // Let's look at the Muon collection
     if (n_muon && (_logOption >> 3 & 0x1)) {
@@ -334,12 +340,12 @@ void AnaBase::eventLoop()
 
       int sbit = 0;
       if (!muon->isTrackerMuon)                                     sbit |= (1 << 0); 
-      if (std::abs(muon->eta) >= _muonCutMap["eta"])                sbit |= (1 << 1);
+      if (abs(muon->eta) >= _muonCutMap["eta"])                     sbit |= (1 << 1);
       if (muon->relIso >= _muonCutMap["relIso"])                    sbit |= (1 << 2);
       if ((muon->pixHits + muon->trkHits) <= _muonCutMap["ptHits"]) sbit |= (1 << 3);
       if (muon->globalChi2 >= _muonCutMap["globalChi2"])            sbit |= (1 << 4);
-      if (std::abs(muon->trkD0) >= _muonCutMap["trkD0"])            sbit |= (1 << 5);
-      if (std::abs(muon->dB) >= _muonCutMap["dB"])                  sbit |= (1 << 6);
+      if (abs(muon->trkD0) >= _muonCutMap["trkD0"])                 sbit |= (1 << 5);
+      if (abs(muon->dB) >= _muonCutMap["dB"])                       sbit |= (1 << 6);
 
       if (_logOption >> 3 & 0x1) {
         _fLog << setw(4) << indx 
@@ -365,7 +371,7 @@ void AnaBase::eventLoop()
       fillHist1D("muonPt", muon->pt, 1.0);
     }
     if (muoList.size() > 1) 
-      std::sort(muoList.begin(), muoList.end(), PtComparator<Muon>());
+      sort(muoList.begin(), muoList.end(), PtComparator<Muon>());
 
     // Let's look at the Electron collection now
     if (n_electron && (_logOption >> 4 & 0x1)) {
@@ -380,12 +386,12 @@ void AnaBase::eventLoop()
 
       int sbit = 0;
       if (elec->pt <= _electronCutMap["pt"])                    sbit |= (1 << 0);
-      if (std::abs(elec->eta) >= _electronCutMap["eta"])        sbit |= (1 << 1);
+      if (abs(elec->eta) >= _electronCutMap["eta"])             sbit |= (1 << 1);
       if (elec->simpleEleId95cIso <= _electronCutMap["eleId"])  sbit |= (1 << 2);
       if (!elec->hasGsfTrack)                                   sbit |= (1 << 3);
-      if (std::abs(elec->dB) >= _electronCutMap["dB"])          sbit |= (1 << 4);
-      if ( std::abs(elec->scEta) >= _electronCutMap["scEtaLow"] 
-        && std::abs(elec->scEta) <= _electronCutMap["scEtaUp"]) sbit |= (1 << 5);
+      if (abs(elec->dB) >= _electronCutMap["dB"])               sbit |= (1 << 4);
+      if ( abs(elec->scEta) >= _electronCutMap["scEtaLow"] 
+        && abs(elec->scEta) <= _electronCutMap["scEtaUp"])      sbit |= (1 << 5);
 
       if (_logOption >> 4 & 0x1) {
         _fLog << setw(4) << indx 
@@ -404,13 +410,13 @@ void AnaBase::eventLoop()
       fillHist1D("elecPt", elec->pt, 1.0);
     }
     if (eleList.size() > 1) 
-      std::sort(eleList.begin(), eleList.end(), PtComparator<Electron>());
+      sort(eleList.begin(), eleList.end(), PtComparator<Electron>());
 
     // Let's look at the Jet collection
     if (n_jet && (_logOption >> 5 & 0x1)) {
       _fLog << "=>> Jets: " << n_jet << endl
             << "indx     Eta     Phi      Pt  Energy"
-            << "    TCHE    TCHP     sbit"
+            << "    TCHE    TCHP   JPBTag  JBPBTag     sbit"
 	    << endl; 
     } 
     for (int indx = 0; indx < n_jet; ++indx) {
@@ -440,10 +446,12 @@ void AnaBase::eventLoop()
       bjetList.push_back(*jt);
     }
     if (bjetList.size() > 1) 
-      std::sort(bjetList.begin(), bjetList.end(), PtComparator<Jet>());
+      sort(bjetList.begin(), bjetList.end(), PtComparator<Jet>());
 
     if (_logOption)
-    _fLog << "n_vertex_good: "     << vtxList.size()
+    _fLog << "run: " << run
+          << ", event: " << event
+          << ", n_vertex_good: "   << vtxList.size()
           << ", n_muon_selected: " << muoList.size()
           << ", n_electron: "      << eleList.size()
           << ", n_tau_selected: "  << tauList.size()
