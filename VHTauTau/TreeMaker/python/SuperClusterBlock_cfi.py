@@ -7,5 +7,5 @@ superClusterBlock = cms.EDAnalyzer("SuperClusterBlock",
   ecalEBInputTag    = cms.InputTag('reducedEcalRecHitsEB'),
   ecalEEInputTag    = cms.InputTag('reducedEcalRecHitsEE'),
   tracksInputTag    = cms.InputTag('generalTracks'),
-  electronsInputTag = cms.InputTag('cleanPatElectrons')
+  electronsInputTag = cms.InputTag('selectedPatElectrons')
 )
