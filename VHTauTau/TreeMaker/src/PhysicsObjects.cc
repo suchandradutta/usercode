@@ -37,7 +37,6 @@ Event::Event() :
   nPU.clear();
   bunchCrossing.clear();
 }
-
 GenEvent::GenEvent() :
   processID(0),
   ptHat(-999)

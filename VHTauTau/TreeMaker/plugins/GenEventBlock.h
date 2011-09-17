@@ -23,7 +23,7 @@ private:
 
 public:
   explicit GenEventBlock(const edm::ParameterSet& iConfig);
-  virtual ~GenEventBlock() {}
+  virtual ~GenEventBlock();
 
 private:
   TClonesArray* cloneGenEvent; 
@@ -32,6 +32,8 @@ private:
   const edm::InputTag   _genEvtInfoInputTag;
   const bool            _storePDFWeights;
   const edm::InputTag   _pdfWeightsInputTag;
+
+  std::vector<double> *_pdfWeights;
 
   GenEvent* genEventB;
 };

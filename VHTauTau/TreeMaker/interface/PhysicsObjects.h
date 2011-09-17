@@ -25,6 +25,7 @@ public:
   bool isPrimaryVertex;
   bool isBeamScraping;
   bool passHBHENoiseFilter;
+
   std::vector<int> nPU;
   std::vector<int> bunchCrossing;
 

@@ -18,16 +18,25 @@ GenEventBlock::GenEventBlock(const edm::ParameterSet& iConfig) :
   _storePDFWeights(iConfig.getParameter<bool>("StorePDFWeights")),
   _pdfWeightsInputTag(iConfig.getParameter<edm::InputTag>("PDFWeightsInputTag"))
 {}
+GenEventBlock::~GenEventBlock() {
+  delete _pdfWeights;
+}
 void GenEventBlock::beginJob() 
 {
+  _pdfWeights = new std::vector<double>();
+
   // Get TTree pointer
   TTree* tree = Utility::getTree("vhtree");
   cloneGenEvent = new TClonesArray("GenEvent");
   tree->Branch("GenEvent", &cloneGenEvent, 32000, 2);
+  tree->Branch("pdfWeights", "vector<double>", &_pdfWeights);
 }
 void GenEventBlock::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup) {
   // Reset the TClonesArray 
   cloneGenEvent->Clear();
+
+  // Clear the two independent vectors
+  _pdfWeights->clear();
 
   if (!iEvent.isRealData()) {
     // GenEventInfo Part
@@ -48,6 +57,7 @@ void GenEventBlock::analyze(const edm::Event& iEvent, const edm::EventSetup& iSe
       if (pdfWeightsHandle.isValid()) {
 	edm::LogInfo("GenEventBlock") << "Successfully obtained " << _pdfWeightsInputTag;
 	copy(pdfWeightsHandle->begin(), pdfWeightsHandle->end(), genEventB->pdfWeights.begin());
+	copy(pdfWeightsHandle->begin(), pdfWeightsHandle->end(), _pdfWeights->begin());
       } 
       else {
 	edm::LogError("GenEventBlock") << "Error! Can't get the product " << _pdfWeightsInputTag;

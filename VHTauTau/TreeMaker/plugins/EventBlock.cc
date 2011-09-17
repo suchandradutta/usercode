@@ -28,15 +28,29 @@ EventBlock::EventBlock(const edm::ParameterSet& iConfig) :
   _numTracks(iConfig.getParameter<unsigned int>("numTracks")),
   _hpTrackThreshold(iConfig.getParameter<double>("hpTrackThreshold"))
 {}
+EventBlock::~EventBlock() {
+  delete _nPU;
+  delete _bunchCrossing;
+}
 void EventBlock::beginJob() {
+  _nPU = new std::vector<int>();
+  _bunchCrossing =  new std::vector<int>();
+
   // Get TTree pointer
   TTree* tree = Utility::getTree("vhtree");
   cloneEvent = new TClonesArray("Event");
   tree->Branch("Event", &cloneEvent, 32000, 2);
+
+  tree->Branch("nPU", "vector<int>", &_nPU);
+  tree->Branch("bunchCrossing", "vector<int>", &_bunchCrossing);
 }
 void EventBlock::analyze(edm::Event const& iEvent, edm::EventSetup const& iSetup) {
   // Reset the TClonesArray
   cloneEvent->Clear();
+
+  // Clear the two independent vectors
+  _nPU->clear();
+  _bunchCrossing->clear();
 
   // Create Event Object
   eventB = new ( (*cloneEvent)[0] ) Event();
@@ -147,7 +161,9 @@ void EventBlock::analyze(edm::Event const& iEvent, edm::EventSetup const& iSetup
     std::vector<PileupSummaryInfo>::const_iterator PVI;
     for (PVI = PupInfo->begin(); PVI != PupInfo->end(); ++PVI) {
       eventB->bunchCrossing.push_back(PVI->getBunchCrossing());
+      _bunchCrossing->push_back(PVI->getBunchCrossing());
       eventB->nPU.push_back(PVI->getPU_NumInteractions());      
+      _nPU->push_back(PVI->getPU_NumInteractions());      
     }
 
     // More info about PU is here:

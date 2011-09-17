@@ -22,7 +22,7 @@ private:
 
 public:
   explicit EventBlock(const edm::ParameterSet& iConfig);
-  virtual ~EventBlock() {}
+  virtual ~EventBlock();
 
 private:
   TClonesArray* cloneEvent; 
@@ -36,6 +36,9 @@ private:
   const double          _vtxMaxAbsZ, _vtxMaxd0;
   const unsigned int    _numTracks;
   const double          _hpTrackThreshold;
+
+  std::vector<int> *_nPU;
+  std::vector<int> *_bunchCrossing;
 
   Event* eventB;
 };

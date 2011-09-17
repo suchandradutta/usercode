@@ -9,7 +9,7 @@
 #include "TPRegexp.h"
 
 #include "VHTauTau/TreeMaker/plugins/TriggerBlock.h"
-#include "VHTauTau/TreeMaker/interface/PhysicsObjects.h"
+//#include "VHTauTau/TreeMaker/interface/PhysicsObjects.h"
 #include "VHTauTau/TreeMaker/interface/Utility.h"
 
 #include "DataFormats/L1GlobalTrigger/interface/L1GlobalTriggerReadoutRecord.h"
@@ -25,12 +25,30 @@ TriggerBlock::TriggerBlock(const edm::ParameterSet& iConfig) :
   _hltInputTag(iConfig.getParameter<edm::InputTag>("hltInputTag")),
   _hltPathsOfInterest(iConfig.getParameter<std::vector<std::string> > ("hltPathsOfInterest"))
 {}
+TriggerBlock::~TriggerBlock() {
+  delete _l1physbits;
+  delete _l1techbits;
+  delete _hltpaths;
+  delete _hltresults;
+  delete _hltprescales;
+}
 void TriggerBlock::beginJob() 
 {
+  _l1physbits = new std::vector<int>();
+  _l1techbits = new std::vector<int>();
+  _hltpaths = new std::vector<std::string>();
+  _hltresults = new std::vector<int>();
+  _hltprescales = new std::vector<int>();
+
   std::string tree_name = "vhtree";
   TTree* tree = Utility::getTree(tree_name);
-  cloneTrigger = new TClonesArray("Trigger");
-  tree->Branch("Trigger", &cloneTrigger, 32000, 2);
+  //cloneTrigger = new TClonesArray("Trigger");
+  //tree->Branch("Trigger", &cloneTrigger, 32000, 2);
+  tree->Branch("l1physbits", "vector<int>", &_l1physbits);
+  tree->Branch("l1techbits", "vector<int>", &_l1techbits);
+  tree->Branch("hltpaths", "vector<string>", &_hltpaths);
+  tree->Branch("hltresults", "vector<int>", &_hltresults);
+  tree->Branch("hltprescales", "vector<int>", &_hltprescales);
 }
 void TriggerBlock::beginRun(edm::Run const& iRun, edm::EventSetup const& iSetup) {
   bool changed = true;
@@ -49,10 +67,15 @@ void TriggerBlock::beginRun(edm::Run const& iRun, edm::EventSetup const& iSetup)
 }
 void TriggerBlock::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup) {
   // Reset the TClonesArray and the nObj variables
-  cloneTrigger->Clear();
+  //cloneTrigger->Clear();
+  _l1physbits->clear();
+  _l1techbits->clear();
+  _hltpaths->clear();
+  _hltresults->clear();
+  _hltprescales->clear();
 
   // Create Trigger Object
-  triggerB = new ( (*cloneTrigger)[0] ) Trigger();
+  //triggerB = new ( (*cloneTrigger)[0] ) Trigger();
 
   edm::Handle<L1GlobalTriggerReadoutRecord> l1GtReadoutRecord;
   iEvent.getByLabel(_l1InputTag, l1GtReadoutRecord);
@@ -60,10 +83,12 @@ void TriggerBlock::analyze(const edm::Event& iEvent, const edm::EventSetup& iSet
   if (l1GtReadoutRecord.isValid()) {
     edm::LogInfo("TriggerBlock") << "Successfully obtained " << _l1InputTag;
     for (unsigned int i = 0; i < NmaxL1AlgoBit; ++i) {
-      triggerB->l1physbits.push_back(l1GtReadoutRecord->decisionWord()[i] ? 1 : 0);
+      //triggerB->l1physbits.push_back(l1GtReadoutRecord->decisionWord()[i] ? 1 : 0);
+      _l1physbits->push_back(l1GtReadoutRecord->decisionWord()[i] ? 1 : 0);
     }
     for (unsigned int i = 0; i < NmaxL1TechBit; ++i) {
-      triggerB->l1techbits.push_back( l1GtReadoutRecord->technicalTriggerWord()[i] ? 1 : 0 );
+      //triggerB->l1techbits.push_back( l1GtReadoutRecord->technicalTriggerWord()[i] ? 1 : 0 );
+      _l1techbits->push_back( l1GtReadoutRecord->technicalTriggerWord()[i] ? 1 : 0 );
     }
   } 
   else {
@@ -84,7 +109,8 @@ void TriggerBlock::analyze(const edm::Event& iEvent, const edm::EventSetup& iSet
         }
         if (!nmatch) continue; 
       }
-      triggerB->hltpaths.push_back(*it);
+      //triggerB->hltpaths.push_back(*it);
+      _hltpaths->push_back(*it);
 
       int fired = 0;
       unsigned int index = hltConfig.triggerIndex(*it);
@@ -94,7 +120,8 @@ void TriggerBlock::analyze(const edm::Event& iEvent, const edm::EventSetup& iSet
       else {
 	edm::LogInfo("TriggerBlock") << "Requested HLT path \"" << (*it) << "\" does not exist";
       }
-      triggerB->hltresults.push_back(fired);
+      //triggerB->hltresults.push_back(fired);
+      _hltresults->push_back(fired);
 
       int prescale = -1;
       if (hltConfig.prescaleSet(iEvent, iSetup) < 0) {
@@ -103,10 +130,10 @@ void TriggerBlock::analyze(const edm::Event& iEvent, const edm::EventSetup& iSet
       else {
         prescale = hltConfig.prescaleValue(iEvent, iSetup, *it);
       }
-      triggerB->hltprescales.push_back(prescale);
+      //triggerB->hltprescales.push_back(prescale);
+      _hltprescales->push_back(prescale);
     }
-  } 
-  else {
+  } else {
     edm::LogError("TriggerBlock") << "Error! Can't get the product " << _hltInputTag;
   }
 }

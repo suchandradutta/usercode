@@ -31,7 +31,7 @@ private:
 
 public:
   explicit TriggerBlock(const edm::ParameterSet& iConfig);
-  virtual ~TriggerBlock() {}
+  virtual ~TriggerBlock();
 
 private:
   TClonesArray* cloneTrigger; 
@@ -43,6 +43,12 @@ private:
   const edm::InputTag _hltInputTag;
   const std::vector<std::string> _hltPathsOfInterest;
   HLTConfigProvider hltConfig;
+
+  std::vector<int> *_l1physbits;
+  std::vector<int> *_l1techbits;
+  std::vector<std::string> *_hltpaths;
+  std::vector<int> *_hltresults;
+  std::vector<int> *_hltprescales;
 
   Trigger* triggerB;
 };

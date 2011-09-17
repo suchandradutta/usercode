@@ -10,17 +10,30 @@ GenParticleBlock::GenParticleBlock(const edm::ParameterSet& iConfig) :
   _verbosity(iConfig.getParameter<int>("verbosity")),
   _inputTag(iConfig.getParameter<edm::InputTag>("genParticleSrc"))
 {}
+GenParticleBlock::~GenParticleBlock() {
+  //delete _motherIndices;
+  // delete _daughtIndices;
+}
 void GenParticleBlock::beginJob() {
+  //_motherIndices = new std::vector<int>();
+  //_daughtIndices = new std::vector<int>();
+
   // Get TTree pointer
   TTree* tree = Utility::getTree("vhtree");
   cloneGenParticle = new TClonesArray("GenParticle");
   tree->Branch("GenParticle", &cloneGenParticle, 32000, 2);
   tree->Branch("nGenParticle", &fnGenParticle,  "fnGenParticle/I");
+
+  //tree->Branch("motherIndices", "vector<int>", &_motherIndices);
+  //tree->Branch("daughtIndices", "vector<int>", &_daughtIndices);
 }
 void GenParticleBlock::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup) {
   // Reset the TClonesArray and the nObj variables
   cloneGenParticle->Clear();
   fnGenParticle = 0;
+
+  //_motherIndices->clear();
+  //_daughtIndices->clear();
 
   if (!iEvent.isRealData()) {
     edm::Handle<reco::GenParticleCollection> genParticles;
@@ -71,6 +84,7 @@ void GenParticleBlock::analyze(const edm::Event& iEvent, const edm::EventSetup& 
 	      int idx = std::distance(genParticles->begin(), mit);
 	      if (_verbosity > 0) std::cout << "mother index/pdgId: " << idx << "/" << mit->pdgId() << std::endl;
               genParticleB->motherIndices.push_back(idx);
+              //_motherIndices->push_back(idx);
               break;
             }
           } 
@@ -83,6 +97,7 @@ void GenParticleBlock::analyze(const edm::Event& iEvent, const edm::EventSetup& 
 	      int idx = std::distance(genParticles->begin(), mit);
 	      if (_verbosity > 0) std::cout << "daughter index/pdgId: " << idx << "/" << mit->pdgId() << std::endl;
               genParticleB->daughtIndices.push_back(idx);
+              //_daughtIndices->push_back(idx);
               break;
             }
           } 
