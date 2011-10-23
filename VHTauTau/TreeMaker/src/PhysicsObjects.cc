@@ -16,6 +16,7 @@ ClassImp(Vertex)
 ClassImp(Trigger)
 ClassImp(Track)
 ClassImp(Photon)
+ClassImp(TriggerMuon)
 
 
 Event::Event() :
@@ -438,3 +439,11 @@ Photon::Photon() :
   dPhiTracksAtEcal(-999),
   dEtaTracksAtEcal(-999)  
 {}
+TriggerMuon::TriggerMuon() :
+  energy(-999),
+  pt(-999),
+  eta(-999),
+  phi(-999)
+{
+  pathList.clear();
+}

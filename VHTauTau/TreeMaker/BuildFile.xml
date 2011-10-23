@@ -30,6 +30,11 @@
 <use name="HLTrigger/HLTcore" />
 <use name="L1Trigger/GlobalTriggerAnalyzer" />
 <use name="lhapdf" />
+<use name="PhysicsTools/PatAlgos" />
+<use name="PhysicsTools/PatUtils" />
+<use name="PhysicsTools/CandUtils" />
+<use name="PhysicsTools/UtilAlgos" />
+
 <export>
   <lib   name="1"/>
 </export>

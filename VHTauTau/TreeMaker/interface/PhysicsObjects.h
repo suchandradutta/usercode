@@ -554,4 +554,17 @@ public:
 
   ClassDef(Photon, 1)
 };
+class TriggerMuon: public TObject {
+public:
+  TriggerMuon();
+  ~TriggerMuon() {}
+
+  double energy;
+  double pt;
+  double eta;
+  double phi;
+  std::vector<std::string> pathList;
+
+  ClassDef(TriggerMuon, 1)
+};
 #endif

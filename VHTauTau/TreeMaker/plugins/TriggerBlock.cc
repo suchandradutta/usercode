@@ -64,6 +64,7 @@ void TriggerBlock::beginRun(edm::Run const& iRun, edm::EventSetup const& iSetup)
                                   << _hltInputTag.process() << " failed";
     // In this case, all access methods will return empty values!
   }
+  
 }
 void TriggerBlock::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup) {
   // Reset the TClonesArray and the nObj variables
