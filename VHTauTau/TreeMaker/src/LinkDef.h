@@ -24,7 +24,8 @@
 #pragma link C++ class Trigger+;
 #pragma link C++ class Track+;
 #pragma link C++ class Photon+;
-#pragma link C++ class TriggerMuon+;
+#pragma link C++ class TriggerObject+;
 #pragma link C++ class vector<string>+;
+#pragma link C++ class map<string, unsigned int>+;
 
 #endif

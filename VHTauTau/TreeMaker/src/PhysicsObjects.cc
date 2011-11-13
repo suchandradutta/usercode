@@ -16,7 +16,7 @@ ClassImp(Vertex)
 ClassImp(Trigger)
 ClassImp(Track)
 ClassImp(Photon)
-ClassImp(TriggerMuon)
+ClassImp(TriggerObject)
 
 
 Event::Event() :
@@ -439,7 +439,7 @@ Photon::Photon() :
   dPhiTracksAtEcal(-999),
   dEtaTracksAtEcal(-999)  
 {}
-TriggerMuon::TriggerMuon() :
+TriggerObject::TriggerObject() :
   energy(-999),
   pt(-999),
   eta(-999),

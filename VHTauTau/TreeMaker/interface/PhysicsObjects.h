@@ -3,6 +3,7 @@
 
 #include <vector>
 #include <string>
+#include <map>
 #include "TObject.h"
 
 class Event: public TObject {
@@ -554,17 +555,17 @@ public:
 
   ClassDef(Photon, 1)
 };
-class TriggerMuon: public TObject {
+class TriggerObject: public TObject {
 public:
-  TriggerMuon();
-  ~TriggerMuon() {}
+  TriggerObject();
+  ~TriggerObject() {}
 
   double energy;
   double pt;
   double eta;
   double phi;
-  std::vector<std::string> pathList;
+  std::map< std::string, unsigned int > pathList;
 
-  ClassDef(TriggerMuon, 1)
+  ClassDef(TriggerObject, 1)
 };
 #endif

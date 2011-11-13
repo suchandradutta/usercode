@@ -32,7 +32,7 @@ process.GlobalTag.globaltag = 'GR_R_42_V19::All'
 # Output ROOT file
 #-------------
 process.TFileService = cms.Service("TFileService",
-     fileName = cms.string('/tmp/SingleMu.root')
+     fileName = cms.string('/tmp/SingleElectron.root')
 )
 #--------------------------------------------------
 # VHTauTau Tree Specific
@@ -40,9 +40,9 @@ process.TFileService = cms.Service("TFileService",
 process.load("VHTauTau.TreeMaker.TreeCreator_cfi")
 process.load("VHTauTau.TreeMaker.TreeWriter_cfi")
 process.load("VHTauTau.TreeMaker.TreeContentConfig_cff")
-process.load("VHTauTau.TreeMaker.TriggerMuonBlock_cfi")
+process.load("VHTauTau.TreeMaker.TriggerObjectBlock_cfi")
 # Selection for DoubleMu PD
-process.triggerBlock.hltPathsOfInterest=cms.vstring ("HLT_DoubleMu", "HLT_L1DoubleMu", "HLT_Mu","HLT_TripleMu", "HLT_IsoMu")
+process.triggerBlock.hltPathsOfInterest=cms.vstring ("HLT_DoubleEle", "HLT_Ele", "HLT_TripleEle")
 process.load("RecoTauTag.Configuration.RecoPFTauTag_cff")
 #-------------------------------------------------------
 # PAT 
@@ -179,7 +179,8 @@ switchOnTriggerMatching( process, triggerMatchers = [ 'matchHLTMuons' ], outputM
 
 process.triggerStudyContentSequence = cms.Sequence(
    process.eventBlock
- + process.muonBlock
+ + process.electronBlock
+ + process.muonBlock   
  + process.triggerBlock
 )
 process.p = cms.Path(
@@ -189,7 +190,7 @@ process.p = cms.Path(
     process.PFTau     +
     process.patDefaultSequence +
     process.triggerStudyContentSequence +
-    process.triggerMuonBlock + 
+    process.triggerObjectBlock + 
     process.treeWriter
 )
 
@@ -200,7 +201,8 @@ switchToData(process)
 # List File names here
 #---------------------------------------
 process.PoolSource.fileNames = [
-      '/store/data/Run2011A/SingleMu/AOD/PromptReco-v6/000/173/692/F6F709D0-F9CE-E011-A248-003048F118D4.root'    
+        '/store/data/Run2011A/SingleElectron/AOD/PromptReco-v6/000/173/692/8E5EFE6C-BFCE-E011-ADC7-003048D37560.root'
+#      '/store/data/Run2011A/SingleMu/AOD/PromptReco-v6/000/173/692/F6F709D0-F9CE-E011-A248-003048F118D4.root'    
 #     '/store/data/Run2011A/SingleMu/AOD/PromptReco-v4/000/165/620/6AD32415-7888-E011-A499-001D09F292D1.root',
 #     '/store/data/Run2011A/DoubleMu/AOD/PromptReco-v4/000/165/620/44B9765C-9288-E011-9693-003048F117EA.root'
 #    '/store/data/Run2011A/TauPlusX/AOD/PromptReco-v4/000/165/620/BA59FB16-9288-E011-831B-003048F11C28.root'
