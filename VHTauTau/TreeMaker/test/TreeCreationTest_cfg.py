@@ -219,6 +219,8 @@ process.p = cms.Path(
    process.ak5PFJets *
    process.PFTau     +
    process.patDefaultSequence +
+   process.patMuonsLoosePFIsoEmbedded04 +
+   process.patElectronsLoosePFIsoEmbedded04 +
    process.treeContentSequence +
    process.treeWriter
 )
