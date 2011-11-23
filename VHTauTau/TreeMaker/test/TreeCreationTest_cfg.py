@@ -118,6 +118,41 @@ process.kt6PFJets.doRhoFastjet = True
 ##-------------------- Turn-on the FastJet jet area calculation for your favorite algorithm
 process.ak5PFJets.doAreaFastjet = True
 
+# PF based muon and electron isolation
+# Muon Isolation
+from TauAnalysis.RecoTools.patLeptonPFIsolationSelector_cfi import patMuonPFIsolationSelector
+patMuonPFIsolationSelector.chargedHadronIso.ptMin = cms.double(0.5)
+patMuonPFIsolationSelector.neutralHadronIso.ptMin = cms.double(0.5)
+patMuonPFIsolationSelector.photonIso.ptMin = cms.double(0.5)
+patMuonPFIsolationSelector.chargedHadronIso.dRvetoCone = cms.double(0.01)
+patMuonPFIsolationSelector.neutralHadronIso.dRvetoCone = cms.double(0.01)
+patMuonPFIsolationSelector.photonIso.dRvetoCone = cms.double(0.01)
+patMuonPFIsolationSelector.pileUpCorr.chargedToNeutralFactor = cms.double(0.5)
+process.patMuonsLoosePFIsoEmbedded04 = cms.EDProducer("PATMuonPFIsolationEmbedder",
+    patMuonPFIsolationSelector,
+    src = cms.InputTag("selectedPatMuons"),
+    userFloatName = cms.string('pfLooseIsoPt04')
+)
+process.patMuonsLoosePFIsoEmbedded04.pfCandidateSource = cms.InputTag('pfNoPileUp')
+process.muonBlock.muonSrc = cms.InputTag("patMuonsLoosePFIsoEmbedded04")
+
+# Electron Isolation
+from TauAnalysis.RecoTools.patLeptonPFIsolationSelector_cfi import patElectronPFIsolationSelector
+patElectronPFIsolationSelector.chargedHadronIso.ptMin = cms.double(0.5)
+patElectronPFIsolationSelector.neutralHadronIso.ptMin = cms.double(0.5)
+patElectronPFIsolationSelector.photonIso.ptMin = cms.double(0.5)
+patElectronPFIsolationSelector.chargedHadronIso.dRvetoCone = cms.double(0.03)
+patElectronPFIsolationSelector.neutralHadronIso.dRvetoCone = cms.double(0.08)
+patElectronPFIsolationSelector.photonIso.dRvetoCone = cms.double(0.05)
+patElectronPFIsolationSelector.pileUpCorr.chargedToNeutralFactor = cms.double(0.5)
+process.patElectronsLoosePFIsoEmbedded04 = cms.EDProducer("PATElectronPFIsolationEmbedder",
+    patElectronPFIsolationSelector,
+    src = cms.InputTag("selectedPatElectrons"),
+    userFloatName = cms.string('pfLooseIsoPt04')
+)
+process.patElectronsLoosePFIsoEmbedded04.pfCandidateSource = cms.InputTag('pfNoPileUp')
+process.electronBlock.electronSrc = cms.InputTag("patElectronsLoosePFIsoEmbedded04")
+
 from PhysicsTools.PatAlgos.tools.tauTools import *
 switchToPFTauHPS(process) # For HPS Taus
 #switchToPFTauHPSpTaNC(process) # For HPS TaNC Taus
