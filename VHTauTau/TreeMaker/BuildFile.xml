@@ -34,7 +34,8 @@
 <use name="PhysicsTools/PatUtils" />
 <use name="PhysicsTools/CandUtils" />
 <use name="PhysicsTools/UtilAlgos" />
-
+<use name="HiggsAnalysis/HiggsToWW2Leptons" />
+<use name="Bianchi/Utilities" />
 <export>
   <lib   name="1"/>
 </export>

@@ -128,6 +128,16 @@ void MuonBlock::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
       // IP information
       muonB->dB  = it->dB(pat::Muon::PV2D);
       muonB->edB = it->edB(pat::Muon::PV2D);
+
+      // UW recommendation
+      muonB->isGlobalMuonPromptTight = muon::isGoodMuon(*it, muon::GlobalMuonPromptTight);
+      muonB->isAllArbitrated         = muon::isGoodMuon(*it, muon::AllArbitrated);
+      muonB->nChambers              = it->numberOfChambers();
+      muonB->nMatches               = it->numberOfMatches();
+      muonB->nMatchedStations       = it->numberOfMatchedStations();
+      muonB->stationMask            = it->stationMask();
+      muonB->stationGapMaskDistance = it->stationGapMaskDistance();
+      muonB->stationGapMaskPull     = it->stationGapMaskPull();
     }
   } 
   else {

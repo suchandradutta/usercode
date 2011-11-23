@@ -2,8 +2,9 @@
 #define __TreeMaker_PhysicsObjects_h
 
 #include <vector>
-#include <string>
 #include <map>
+#include <string>
+
 #include "TObject.h"
 
 class Event: public TObject {
@@ -56,10 +57,17 @@ public:
   double energy;
   double caloEnergy;
      int charge;
+     int nValidHits;
+   float simpleEleId60cIso;
+   float simpleEleId70cIso;
+   float simpleEleId80cIso;
+   float simpleEleId85cIso;
+   float simpleEleId90cIso;
    float simpleEleId95cIso;
 
   // ID variables
   double hoe;
+  double eop;
   double sigmaEtaEta;
   double sigmaIEtaIEta;
   double deltaPhiTrkSC;
@@ -94,6 +102,7 @@ public:
   double vtxDist3D;
      int vtxIndex;
   double vtxDistZ;
+  double relIso;
   double pfRelIso;
 
   double dB;
@@ -106,7 +115,12 @@ public:
   double scHEEPEcalIso;
   double scHEEPTrkIso;
 
-  ClassDef(Electron,2) 
+     int nBrems;
+   float fbrem;
+
+  double mva;
+ 
+  ClassDef(Electron,3) 
 };
 class GenParticle: public TObject {
 public:
@@ -238,6 +252,8 @@ public:
   double zvertex;
   double ltsipt;
 
+  double mva;
+
   ClassDef(Tau,3) 
 };
 class CaloJet: public TObject {
@@ -306,7 +322,17 @@ public:
   double dB;  // PV2D
   double edB;   
 
-  ClassDef(Muon, 2)
+  // UW Recommendation
+    bool isGlobalMuonPromptTight;
+    bool isAllArbitrated;
+     int nChambers;
+     int nMatches;
+     int nMatchedStations;
+     unsigned int stationMask;
+     unsigned int stationGapMaskDistance;
+     unsigned int stationGapMaskPull;
+   
+  ClassDef(Muon, 3)
 };
 class Jet: public TObject {
 public:
@@ -564,6 +590,7 @@ public:
   double pt;
   double eta;
   double phi;
+
   std::map< std::string, unsigned int > pathList;
 
   ClassDef(TriggerObject, 1)

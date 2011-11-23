@@ -27,5 +27,4 @@
 #pragma link C++ class TriggerObject+;
 #pragma link C++ class vector<string>+;
 #pragma link C++ class map<string, unsigned int>+;
-
 #endif

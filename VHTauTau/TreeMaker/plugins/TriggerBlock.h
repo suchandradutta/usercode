@@ -19,7 +19,7 @@
 #include <vector>
 
 class TClonesArray;
-class Trigger;
+//class Trigger;
 
 class TriggerBlock : public edm::EDAnalyzer 
 {
@@ -34,7 +34,7 @@ public:
   virtual ~TriggerBlock();
 
 private:
-  TClonesArray* cloneTrigger; 
+  //TClonesArray* cloneTrigger; 
 
   int _verbosity;
   edm::InputTag _inputTag;
@@ -50,6 +50,6 @@ private:
   std::vector<int> *_hltresults;
   std::vector<int> *_hltprescales;
 
-  Trigger* triggerB;
+  //Trigger* triggerB;
 };
 #endif

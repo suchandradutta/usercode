@@ -1,3 +1,4 @@
+
 #include <iostream>
 #include <algorithm>
 
@@ -24,6 +25,10 @@
 #include "DataFormats/VertexReco/interface/Vertex.h"
 #include "DataFormats/VertexReco/interface/VertexFwd.h"
 
+#include "RecoEcal/EgammaCoreTools/interface/EcalClusterLazyTools.h"
+#include "Utilities/General/interface/FileInPath.h"
+#include "HiggsAnalysis/HiggsToWW2Leptons/interface/ElectronIDMVA.h"
+
 // Constructor
 ElectronBlock::ElectronBlock(const edm::ParameterSet& iConfig) :
   _verbosity(iConfig.getParameter<int>("verbosity")),
@@ -34,7 +39,28 @@ ElectronBlock::ElectronBlock(const edm::ParameterSet& iConfig) :
   _pfElectronInputTag(iConfig.getParameter<edm::InputTag>("pfElectronSrc")),
   _ecalEBInputTag(iConfig.getParameter<edm::InputTag>("ecalEBInputTag")),
   _ecalEEInputTag(iConfig.getParameter<edm::InputTag>("ecalEEInputTag"))
-{}
+{
+  std::string method = iConfig.getParameter<std::string>("methodName");
+  edm::FileInPath Subdet0Pt10To20Weights = iConfig.getParameter<edm::FileInPath>("Subdet0LowPtWeights");
+  edm::FileInPath Subdet1Pt10To20Weights = iConfig.getParameter<edm::FileInPath>("Subdet1LowPtWeights");
+  edm::FileInPath Subdet2Pt10To20Weights = iConfig.getParameter<edm::FileInPath>("Subdet2LowPtWeights");
+  edm::FileInPath Subdet0HighPtWeights = iConfig.getParameter<edm::FileInPath>("Subdet0HighPtWeights");
+  edm::FileInPath Subdet1HighPtWeights = iConfig.getParameter<edm::FileInPath>("Subdet1HighPtWeights");
+  edm::FileInPath Subdet2HighPtWeights = iConfig.getParameter<edm::FileInPath>("Subdet2HighPtWeights");
+  ElectronIDMVA::MVAType mvaType = static_cast<ElectronIDMVA::MVAType>(iConfig.getParameter<unsigned int>("mvaType")); 
+
+  // Electron ID MVA against fake QCD
+  fMVA = new ElectronIDMVA();
+  fMVA->Initialize(method,
+		   Subdet0Pt10To20Weights.fullPath(),
+		   Subdet1Pt10To20Weights.fullPath(),
+		   Subdet2Pt10To20Weights.fullPath(),
+		   Subdet0HighPtWeights.fullPath(),
+		   Subdet1HighPtWeights.fullPath(),
+		   Subdet2HighPtWeights.fullPath(),
+                   mvaType);
+}
+ElectronBlock::~ElectronBlock() { delete fMVA; }
 void ElectronBlock::beginJob() 
 {
   // Get TTree pointer
@@ -147,16 +173,30 @@ void ElectronBlock::analyze(const edm::Event& iEvent, const edm::EventSetup& iSe
       electronB->eta         = it->eta();
       electronB->phi         = it->phi();
       electronB->pt          = it->pt();
-      electronB->hasGsfTrack = it->gsfTrack().isNonnull() ? true : false;
-      electronB->trackPt     = it->gsfTrack()->pt();
+      bool hasGsfTrack = it->gsfTrack().isNonnull() ? true : false;
+      electronB->hasGsfTrack = hasGsfTrack;
+      electronB->trackPt     = (hasGsfTrack) ? it->gsfTrack()->pt() : -1;
       electronB->energy      = it->energy();
       electronB->caloEnergy  = it->caloEnergy();
       electronB->charge      = it->charge();
+      electronB->nValidHits  = (hasGsfTrack) ? it->gsfTrack()->numberOfValidHits() : -1; 
+
+      electronB->simpleEleId60cIso 
+                             = it->electronID("simpleEleId60cIso");
+      electronB->simpleEleId70cIso 
+                             = it->electronID("simpleEleId70cIso");
+      electronB->simpleEleId80cIso 
+                             = it->electronID("simpleEleId80cIso");
+      electronB->simpleEleId85cIso 
+                             = it->electronID("simpleEleId85cIso");
+      electronB->simpleEleId90cIso 
+                             = it->electronID("simpleEleId90cIso");
       electronB->simpleEleId95cIso 
                              = it->electronID("simpleEleId95cIso");
 
       // ID variables
       electronB->hoe           = it->hadronicOverEm();
+      electronB->eop           = it->eSuperClusterOverP(); 
       electronB->sigmaEtaEta   = it->sigmaEtaEta();
       electronB->sigmaIEtaIEta = it->sigmaIetaIeta();
       electronB->deltaPhiTrkSC = it->deltaPhiSuperClusterTrackAtVtx();
@@ -176,7 +216,7 @@ void ElectronBlock::analyze(const edm::Event& iEvent, const edm::EventSetup& iSe
       electronB->isoRel04  = (it->dr04EcalRecHitSumEt()+it->dr04HcalTowerSumEt()+it->dr04TkSumPt())/it->pt();
 
       // Conversion variables
-      electronB->missingHits = it->gsfTrack()->trackerExpectedHitsInner().numberOfHits();
+      electronB->missingHits = (hasGsfTrack) ? it->gsfTrack()->trackerExpectedHitsInner().numberOfHits() : -1;
       electronB->dist_vec    = dist;
       electronB->dCotTheta   = dcot;
 
@@ -191,11 +231,20 @@ void ElectronBlock::analyze(const edm::Event& iEvent, const edm::EventSetup& iSe
       electronB->vtxDist3D = minVtxDist3D;
       electronB->vtxIndex  = indexVtx;
       electronB->vtxDistZ  = vertexDistZ;
+      electronB->relIso = (it->trackIso() + it->ecalIso() + it->hcalIso())/it->pt();
       electronB->pfRelIso  = pfreliso;
 
       // IP information
       electronB->dB  = it->dB(pat::Electron::PV2D);
       electronB->edB = it->edB(pat::Electron::PV2D);
+
+      // Bremstrahlung information
+      electronB->nBrems = it->numberOfBrems();
+      electronB->fbrem = it->fbrem();
+
+      // MIT Electron ID
+      EcalClusterLazyTools lazyTools(iEvent, iSetup, _ecalEBInputTag, _ecalEEInputTag);
+      electronB->mva = fMVA->MVAValue(&(*it),  lazyTools);
     }
   } 
   else {

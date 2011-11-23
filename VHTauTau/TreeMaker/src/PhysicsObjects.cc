@@ -53,8 +53,15 @@ Electron::Electron() :
   energy(-999),
   caloEnergy(-999),
   charge(-9),
+  nValidHits(-1),
+  simpleEleId60cIso(-999),
+  simpleEleId70cIso(-999),
+  simpleEleId80cIso(-999),
+  simpleEleId85cIso(-999),
+  simpleEleId90cIso(-999),
   simpleEleId95cIso(-999),
   hoe(-999),
+  eop(-999),
   sigmaEtaEta(-999),
   sigmaIEtaIEta(-999),
   deltaPhiTrkSC(-999),
@@ -81,6 +88,7 @@ Electron::Electron() :
   vtxDist3D(-999),
   vtxIndex(-1),
   vtxDistZ(-999),
+  relIso(-999), 
   pfRelIso(-999), 
   dB(-999),
   edB(-999),
@@ -89,7 +97,10 @@ Electron::Electron() :
   sckOutOfTime(-999),
   scEcalIso(-999),
   scHEEPEcalIso(-999),
-  scHEEPTrkIso(-999)
+  scHEEPTrkIso(-999),
+  nBrems(-1),
+  fbrem(-999),
+  mva(-999)
 {}
 
 GenParticle::GenParticle() :
@@ -187,7 +198,8 @@ Tau::Tau() :
   phiphiMoment(-999),
   etaphiMoment(-999),
   vx(-999), vy(-999), vz(-999),
-  zvertex(-999), ltsipt(-999) 
+  zvertex(-999), ltsipt(-999),
+  mva(-999) 
   {}
 
 CaloJet::CaloJet() :
@@ -246,7 +258,16 @@ Muon::Muon() :
   pfRelIso(-999),
   isTrackerMuon(false),
   dB(-999), 
-  edB(-999) {}
+  edB(-999),
+  isGlobalMuonPromptTight(false),
+  isAllArbitrated(false),
+  nChambers(-1),
+  nMatches(-1),
+  nMatchedStations(-1),
+  stationMask(0),
+  stationGapMaskDistance(0),
+  stationGapMaskPull(0)
+ {}
 
 Jet::Jet() :
   eta(-999),

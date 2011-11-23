@@ -19,6 +19,7 @@
 
 class TClonesArray;
 class Electron;
+class ElectronIDMVA;
 
 class ElectronBlock : public edm::EDAnalyzer 
 {
@@ -30,7 +31,7 @@ private:
 
 public:
   explicit ElectronBlock(const edm::ParameterSet& iConfig);
-  virtual ~ElectronBlock() {}
+  virtual ~ElectronBlock();
 
   enum {
     kMaxElectron = 100
@@ -47,7 +48,11 @@ private:
   edm::InputTag _pfElectronInputTag;
   edm::InputTag _ecalEBInputTag;
   edm::InputTag _ecalEEInputTag;
+  edm::InputTag _ebRecHits;
+  edm::InputTag _eeRecHits;
 
   Electron* electronB;
+
+  ElectronIDMVA* fMVA;
 };
 #endif

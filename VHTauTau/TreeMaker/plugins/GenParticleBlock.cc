@@ -46,6 +46,11 @@ void GenParticleBlock::analyze(const edm::Event& iEvent, const edm::EventSetup& 
 	  edm::LogInfo("GenParticleBlock") << "Too many GenParticles, fnGenParticle = " << fnGenParticle;
 	  break;
         }
+        // Do not store low energy gluons
+        int pdgid     = it->pdgId(); 
+        double energy = it->energy();
+        if (std::abs(pdgid) == 21 && energy < 0.2) continue; // 200MeV 
+
         genParticleB = new ((*cloneGenParticle)[fnGenParticle++]) GenParticle();
 
         // fill in all the vectors
@@ -56,8 +61,8 @@ void GenParticleBlock::analyze(const edm::Event& iEvent, const edm::EventSetup& 
         genParticleB->py        = it->py();
         genParticleB->pz        = it->pz();
         genParticleB->pt        = it->pt();
-        genParticleB->energy    = it->energy();
-        genParticleB->pdgId     = it->pdgId();
+        genParticleB->energy    = energy;
+        genParticleB->pdgId     = pdgid;
         genParticleB->vx        = it->vx();
         genParticleB->vy        = it->vy();
         genParticleB->vz        = it->vz();

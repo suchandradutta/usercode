@@ -8,10 +8,32 @@
 #include "FWCore/MessageLogger/interface/MessageLogger.h"
 #include "DataFormats/PatCandidates/interface/Tau.h"
 
+#include "Utilities/General/interface/FileInPath.h"
+#include "Bianchi/Utilities/interface/AntiElectronIDMVA.h"
+
 TauBlock::TauBlock(const edm::ParameterSet& iConfig) :
   _verbosity(iConfig.getParameter<int>("verbosity")),
   _inputTag(iConfig.getParameter<edm::InputTag>("patTauSrc"))
-{}
+{
+  std::string method = iConfig.getParameter<std::string>("methodName");
+  edm::FileInPath weightsX0BL = iConfig.getParameter<edm::FileInPath>("weightsX0BL");
+  edm::FileInPath weights11BL = iConfig.getParameter<edm::FileInPath>("weights11BL");
+  edm::FileInPath weights01BL = iConfig.getParameter<edm::FileInPath>("weights01BL");
+  edm::FileInPath weightsX0EC = iConfig.getParameter<edm::FileInPath>("weightsX0EC");
+  edm::FileInPath weights11EC = iConfig.getParameter<edm::FileInPath>("weights11EC");
+  edm::FileInPath weights01EC = iConfig.getParameter<edm::FileInPath>("weights01EC");
+
+  antiE = new AntiElectronIDMVA();
+  antiE->Initialize(method,
+                    weightsX0BL.fullPath(), 
+                    weights11BL.fullPath(), 
+                    weights01BL.fullPath(), 
+                    weightsX0EC.fullPath(), 
+                    weights11EC.fullPath(), 
+                    weights01EC.fullPath() 
+  );
+}
+TauBlock::~TauBlock() { delete antiE; }
 void TauBlock::beginJob() 
 {
   // Get TTree pointer
@@ -111,6 +133,9 @@ void TauBlock::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup) 
       tauB->zvertex = it->vz(); // distance from the primary vertex
       tauB->mass = it->p4().M();
       tauB->ltsipt = TMath::Abs(it->leadPFChargedHadrCandsignedSipt());
+
+      // Electron ID MVA
+      tauB->mva = antiE->MVAValue(const_cast<pat::Tau*>(&(*it)));
     }
   }
   else {

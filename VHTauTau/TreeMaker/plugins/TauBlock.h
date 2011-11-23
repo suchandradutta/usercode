@@ -13,6 +13,7 @@
 
 class TClonesArray;
 class Tau;
+class AntiElectronIDMVA;
 
 class TauBlock : public edm::EDAnalyzer 
 {
@@ -24,7 +25,7 @@ private:
 
 public:
   explicit TauBlock(const edm::ParameterSet& iConfig);
-  virtual ~TauBlock() {}
+  virtual ~TauBlock();
 
   enum {
     kMaxTau = 100
@@ -37,5 +38,6 @@ private:
   edm::InputTag _inputTag;
 
   Tau* tauB;
+  AntiElectronIDMVA* antiE;
 };
 #endif
