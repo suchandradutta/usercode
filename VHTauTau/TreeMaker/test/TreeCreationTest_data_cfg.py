@@ -60,7 +60,7 @@ from PhysicsTools.PatAlgos.tools.jetTools import *
 
 jec = [ 'L1FastJet', 'L1Offset', 'L2Relative', 'L3Absolute' ]
 #if not isMC:
-#        jec.extend([ 'L2L3Residual' ])
+jec.extend([ 'L2L3Residual' ])
 addJetCollection(process, cms.InputTag('ak5PFJets'),
      'AK5', 'PF',
      doJTA            = True,
