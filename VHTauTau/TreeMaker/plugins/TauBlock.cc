@@ -1,3 +1,4 @@
+#include <iostream>
 #include "TTree.h"
 #include "TClonesArray.h"
 
@@ -10,6 +11,7 @@
 
 #include "Utilities/General/interface/FileInPath.h"
 #include "Bianchi/Utilities/interface/AntiElectronIDMVA.h"
+//#include "RecoTauTag/RecoTau/interface/AntiElectronIDMVA.h"
 
 TauBlock::TauBlock(const edm::ParameterSet& iConfig) :
   _verbosity(iConfig.getParameter<int>("verbosity")),
@@ -60,6 +62,7 @@ void TauBlock::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup) 
 	break;
       }
       tauB = new ((*cloneTau)[fnTau++]) Tau();
+
       // Store Tau variables
       tauB->eta    = it->eta();
       tauB->phi    = it->phi();
@@ -105,10 +108,10 @@ void TauBlock::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup) 
       tauB->byLooseCombinedIsolationDeltaBetaCorr  = it->tauID("byLooseCombinedIsolationDeltaBetaCorr");
       tauB->byMediumCombinedIsolationDeltaBetaCorr = it->tauID("byMediumCombinedIsolationDeltaBetaCorr");
       tauB->byTightCombinedIsolationDeltaBetaCorr  = it->tauID("byTightCombinedIsolationDeltaBetaCorr");
-      tauB->byVLooseIsolationDeltaBetaCorr = it->tauID("byVLooseIsolationDeltaBetaCorr");
-      tauB->byLooseIsolationDeltaBetaCorr  = it->tauID("byLooseIsolationDeltaBetaCorr");
-      tauB->byMediumIsolationDeltaBetaCorr = it->tauID("byMediumIsolationDeltaBetaCorr");
-      tauB->byTightIsolationDeltaBetaCorr  = it->tauID("byTightIsolationDeltaBetaCorr");
+      tauB->byVLooseIsolationDeltaBetaCorr         = it->tauID("byVLooseIsolationDeltaBetaCorr");
+      tauB->byLooseIsolationDeltaBetaCorr          = it->tauID("byLooseIsolationDeltaBetaCorr");
+      tauB->byMediumIsolationDeltaBetaCorr         = it->tauID("byMediumIsolationDeltaBetaCorr");
+      tauB->byTightIsolationDeltaBetaCorr          = it->tauID("byTightIsolationDeltaBetaCorr");
 
       // kinematic variables for PFJet associated to PFTau
       tauB->jetPt  = it->pfJetRef()->pt();
@@ -131,11 +134,13 @@ void TauBlock::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup) 
       tauB->vz = vertex.z();             
 
       tauB->zvertex = it->vz(); // distance from the primary vertex
-      tauB->mass = it->p4().M();
-      tauB->ltsipt = TMath::Abs(it->leadPFChargedHadrCandsignedSipt());
+      tauB->mass    = it->p4().M();
+      tauB->ltsipt  = TMath::Abs(it->leadPFChargedHadrCandsignedSipt());
 
-      // Electron ID MVA
-      tauB->mva = antiE->MVAValue(const_cast<pat::Tau*>(&(*it)));
+      // ElectronIDMVA, electron faking tau
+      const pat::Tau& tau = *it;  
+      tauB->mva = (it->leadPFChargedHadrCand().isNonnull()) ? antiE->MVAValue(&tau) : -1;
+      tauB->againstElectronMVA = it->tauID("againstElectronMVA");
     }
   }
   else {

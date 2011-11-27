@@ -177,6 +177,7 @@ Tau::Tau() :
   againstElectronMedium(-1), 
   againstElectronTight(-1), 
   pfElectronMVA(-999),
+  againstElectronMVA(-1),
   byVLooseCombinedIsolationDeltaBetaCorr(-1),
   byLooseCombinedIsolationDeltaBetaCorr(-1),
   byMediumCombinedIsolationDeltaBetaCorr(-1),

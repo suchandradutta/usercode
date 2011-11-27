@@ -48,8 +48,9 @@ void GenParticleBlock::analyze(const edm::Event& iEvent, const edm::EventSetup& 
         }
         // Do not store low energy gluons
         int pdgid     = it->pdgId(); 
-        double energy = it->energy();
-        if (std::abs(pdgid) == 21 && energy < 0.2) continue; // 200MeV 
+        double pt     = it->pt();  
+        if (pt < 0.1) continue;                          // Do not store very low pt entries
+        if (std::abs(pdgid) == 21 && pt < 1.0) continue; // remove Low Pt gluons 
 
         genParticleB = new ((*cloneGenParticle)[fnGenParticle++]) GenParticle();
 
@@ -60,8 +61,8 @@ void GenParticleBlock::analyze(const edm::Event& iEvent, const edm::EventSetup& 
         genParticleB->px        = it->px();
         genParticleB->py        = it->py();
         genParticleB->pz        = it->pz();
-        genParticleB->pt        = it->pt();
-        genParticleB->energy    = energy;
+        genParticleB->pt        = pt;
+        genParticleB->energy    = it->energy();
         genParticleB->pdgId     = pdgid;
         genParticleB->vx        = it->vx();
         genParticleB->vy        = it->vy();

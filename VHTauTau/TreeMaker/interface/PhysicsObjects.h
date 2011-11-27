@@ -219,6 +219,7 @@ public:
   float againstElectronMedium; 
   float againstElectronTight; 
   float pfElectronMVA;
+  float againstElectronMVA;
 
   float byVLooseCombinedIsolationDeltaBetaCorr;
   float byLooseCombinedIsolationDeltaBetaCorr;

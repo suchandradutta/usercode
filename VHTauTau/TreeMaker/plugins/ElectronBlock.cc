@@ -1,4 +1,3 @@
-
 #include <iostream>
 #include <algorithm>
 
@@ -231,7 +230,7 @@ void ElectronBlock::analyze(const edm::Event& iEvent, const edm::EventSetup& iSe
       electronB->vtxDist3D = minVtxDist3D;
       electronB->vtxIndex  = indexVtx;
       electronB->vtxDistZ  = vertexDistZ;
-      electronB->relIso = (it->trackIso() + it->ecalIso() + it->hcalIso())/it->pt();
+      electronB->relIso    = (it->trackIso() + it->ecalIso() + it->hcalIso())/it->pt();
       electronB->pfRelIso  = pfreliso;
 
       // IP information
@@ -240,11 +239,12 @@ void ElectronBlock::analyze(const edm::Event& iEvent, const edm::EventSetup& iSe
 
       // Bremstrahlung information
       electronB->nBrems = it->numberOfBrems();
-      electronB->fbrem = it->fbrem();
+      electronB->fbrem  = it->fbrem();
 
       // MIT Electron ID
       EcalClusterLazyTools lazyTools(iEvent, iSetup, _ecalEBInputTag, _ecalEEInputTag);
-      electronB->mva = fMVA->MVAValue(&(*it),  lazyTools);
+      const pat::Electron& ele = *it;
+      electronB->mva = fMVA->MVAValue(&ele,  lazyTools);
     }
   } 
   else {
