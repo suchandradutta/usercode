@@ -15,7 +15,7 @@ METBlock::METBlock(const edm::ParameterSet& iConfig) :
 void METBlock::beginJob() 
 {
   // Get TTree pointer
-  TTree* tree = Utility::getTree("vhtree");
+  TTree* tree = vhtm::Utility::getTree("vhtree");
   cloneMET = new TClonesArray("vhtm::MET");
   tree->Branch("MET", &cloneMET, 32000, 2);
   tree->Branch("nMET", &fnMET,  "fnMET/I");

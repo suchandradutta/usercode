@@ -38,7 +38,7 @@ TauBlock::~TauBlock() { delete antiE; }
 void TauBlock::beginJob() 
 {
   // Get TTree pointer
-  TTree* tree = Utility::getTree("vhtree");
+  TTree* tree = vhtm::Utility::getTree("vhtree");
   cloneTau = new TClonesArray("vhtm::Tau");
   tree->Branch("Tau", &cloneTau, 32000, 2);
   tree->Branch("nTau", &fnTau, "fnTau/I");

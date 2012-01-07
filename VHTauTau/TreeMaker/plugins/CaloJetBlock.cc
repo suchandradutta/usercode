@@ -37,7 +37,7 @@ CaloJetBlock::CaloJetBlock(const edm::ParameterSet& iConfig) :
 void CaloJetBlock::beginJob() 
 {
   std::string tree_name = "vhtree";
-  TTree* tree = Utility::getTree(tree_name);
+  TTree* tree = vhtm::Utility::getTree(tree_name);
   cloneCaloJet = new TClonesArray("vhtm::CaloJet");
   tree->Branch("CaloJet", &cloneCaloJet, 32000, 2);
   tree->Branch("nCaloJet", &fnCaloJet, "fnCaloJet/I");

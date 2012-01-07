@@ -30,7 +30,7 @@ JetBlock::JetBlock(const edm::ParameterSet& iConfig) :
 void JetBlock::beginJob() 
 {
   std::string tree_name = "vhtree";
-  TTree* tree = Utility::getTree(tree_name);
+  TTree* tree = vhtm::Utility::getTree(tree_name);
   cloneJet = new TClonesArray("vhtm::Jet");
   tree->Branch("Jet", &cloneJet, 32000, 2);
   tree->Branch("nJet", &fnJet, "fnJet/I");

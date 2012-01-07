@@ -40,7 +40,7 @@ void TriggerBlock::beginJob()
   _hltprescales = new std::vector<int>();
 
   std::string tree_name = "vhtree";
-  TTree* tree = Utility::getTree(tree_name);
+  TTree* tree = vhtm::Utility::getTree(tree_name);
   //cloneTrigger = new TClonesArray(vhtm::"Trigger");
   //tree->Branch("Trigger", &cloneTrigger, 32000, 2);
   tree->Branch("l1physbits", "vector<int>", &_l1physbits);

@@ -12,7 +12,7 @@ GenJetBlock::GenJetBlock(const edm::ParameterSet& iConfig) :
 {}
 void GenJetBlock::beginJob() {
   // Get TTree pointer
-  TTree* tree = Utility::getTree("vhtree");
+  TTree* tree = vhtm::Utility::getTree("vhtree");
   cloneGenJet = new TClonesArray("vhtm::GenJet");
   tree->Branch("GenJet", &cloneGenJet, 32000, 2);
   tree->Branch("nGenJet", &fnGenJet,  "fnGenJet/I");

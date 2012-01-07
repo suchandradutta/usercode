@@ -25,7 +25,7 @@ MuonBlock::MuonBlock(const edm::ParameterSet& iConfig) :
 void MuonBlock::beginJob() 
 {
   // Get TTree pointer
-  TTree* tree = Utility::getTree("vhtree");
+  TTree* tree = vhtm::Utility::getTree("vhtree");
   cloneMuon = new TClonesArray("vhtm::Muon");
   tree->Branch("Muon", &cloneMuon, 32000, 2);
   tree->Branch("nMuon", &fnMuon,  "fnMuon/I");

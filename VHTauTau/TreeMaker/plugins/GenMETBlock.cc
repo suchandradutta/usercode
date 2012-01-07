@@ -16,7 +16,7 @@ GenMETBlock::GenMETBlock(const edm::ParameterSet& iConfig) :
 void GenMETBlock::beginJob() 
 {
   // Get TTree pointer
-  TTree* tree = Utility::getTree("vhtree");
+  TTree* tree = vhtm::Utility::getTree("vhtree");
   cloneGenMET = new TClonesArray("GenMET");
   tree->Branch("GenMET", &cloneGenMET, 32000, 2);
   tree->Branch("nGenMET", &fnGenMET,  "fnGenMET/I");

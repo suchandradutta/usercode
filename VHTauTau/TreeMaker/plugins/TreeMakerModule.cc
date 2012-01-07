@@ -29,7 +29,7 @@ void TreeMakerModule::beginJob()
 void TreeMakerModule::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup) {
   // Get TTree pointer
   if (_createTree) return;
-  TTree* tree = Utility::getTree("vhtree");
+  TTree* tree = vhtm::Utility::getTree("vhtree");
   tree->Fill();
 }
 void TreeMakerModule::endJob() {

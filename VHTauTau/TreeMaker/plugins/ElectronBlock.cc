@@ -63,7 +63,7 @@ void ElectronBlock::beginJob()
 {
   // Get TTree pointer
   std::string tree_name = "vhtree";
-  TTree* tree = Utility::getTree(tree_name);
+  TTree* tree = vhtm::Utility::getTree(tree_name);
   cloneElectron = new TClonesArray("vhtm::Electron");
   tree->Branch("Electron", &cloneElectron, 32000, 2);
   tree->Branch("nElectron", &fnElectron,  "fnElectron/I");

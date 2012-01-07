@@ -28,7 +28,7 @@ PhotonBlock::PhotonBlock(const edm::ParameterSet& iConfig) :
 void PhotonBlock::beginJob() 
 {
   // Get TTree pointer
-  TTree* tree = Utility::getTree(_treeName);
+  TTree* tree = vhtm::Utility::getTree(_treeName);
   clonePhoton = new TClonesArray("vhtm::Photon");
   tree->Branch("Photon", &clonePhoton, 32000, 2);
   tree->Branch("nPhoton", &fnPhoton,  "fnPhoton/I");

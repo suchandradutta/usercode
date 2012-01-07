@@ -7,7 +7,7 @@
 #include "FWCore/ServiceRegistry/interface/Service.h"
 #include "CommonTools/UtilAlgos/interface/TFileService.h"
 
-TTree* Utility::getTree(const std::string& tree_name) {
+TTree* vhtm::Utility::getTree(const std::string& tree_name) {
   edm::Service<TFileService> fs;
   TTree *tree = dynamic_cast<TTree*>(fs->file().FindObjectAny(tree_name.c_str()));
   assert(tree);

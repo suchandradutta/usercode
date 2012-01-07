@@ -28,7 +28,7 @@ TriggerObjectBlock::~TriggerObjectBlock() {
 void TriggerObjectBlock::beginJob() 
 {
   std::string tree_name = "vhtree";
-  TTree* tree = Utility::getTree(tree_name);
+  TTree* tree = vhtm::Utility::getTree(tree_name);
   cloneTriggerObject = new TClonesArray("vhtm::TriggerObject");
   tree->Branch("TriggerObject", &cloneTriggerObject, 32000, 2);
   tree->Branch("nTriggerObject", &fnTriggerObject, "fnTriggerObject/I");

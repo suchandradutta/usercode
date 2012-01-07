@@ -37,7 +37,7 @@ void EventBlock::beginJob() {
   _trueNInt = new std::vector<int>();
 
   // Get TTree pointer
-  TTree* tree = Utility::getTree("vhtree");
+  TTree* tree = vhtm::Utility::getTree("vhtree");
   cloneEvent = new TClonesArray("vhtm::Event");
   tree->Branch("Event", &cloneEvent, 32000, 2);
 

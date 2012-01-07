@@ -50,7 +50,7 @@ SuperClusterBlock::SuperClusterBlock(const edm::ParameterSet& iConfig) :
 void SuperClusterBlock::beginJob() 
 {
   std::string tree_name = "vhtree";
-  TTree* tree = Utility::getTree(tree_name);
+  TTree* tree = vhtm::Utility::getTree(tree_name);
   cloneSuperCluster = new TClonesArray("vhtm::SuperCluster");
   tree->Branch("SuperCluster", &cloneSuperCluster, 32000, 2);
   tree->Branch("nSuperCluster", &fnSuperCluster,  "fnSuperCluster/I");

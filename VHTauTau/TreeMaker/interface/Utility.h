@@ -1,13 +1,14 @@
-#ifndef __TreeMaker_Utility_hh
-#define __TreeMaker_Utility_hh
+#ifndef __VHTauTau_TreeMaker_Utility_h
+#define __VHTauTau_TreeMaker_Utility_h
 
 #include <string>
 
 class TTree;
 
-class Utility 
-{
-public:
-  static TTree* getTree(const std::string& tree_name="vhtree");
-};
+namespace vhtm {
+  class Utility {
+  public:
+    static TTree* getTree(const std::string& tree_name="vhtree");
+  };
+}
 #endif

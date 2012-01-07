@@ -14,7 +14,7 @@ VertexBlock::VertexBlock(const edm::ParameterSet& iConfig) :
 {}
 void VertexBlock::beginJob() {
   // Get TTree pointer
-  TTree* tree = Utility::getTree("vhtree");
+  TTree* tree = vhtm::Utility::getTree("vhtree");
   cloneVertex = new TClonesArray("vhtm::Vertex");
   tree->Branch("Vertex", &cloneVertex, 32000, 2);
   tree->Branch("nVertex", &fnVertex, "fnVertex/I");

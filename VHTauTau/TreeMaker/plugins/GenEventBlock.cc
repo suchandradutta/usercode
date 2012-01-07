@@ -25,7 +25,7 @@ void GenEventBlock::beginJob()
   _pdfWeights = new std::vector<double>();
 
   // Get TTree pointer
-  TTree* tree = Utility::getTree("vhtree");
+  TTree* tree = vhtm::Utility::getTree("vhtree");
   cloneGenEvent = new TClonesArray("vhtm::GenEvent");
   tree->Branch("GenEvent", &cloneGenEvent, 32000, 2);
   tree->Branch("pdfWeights", "vector<double>", &_pdfWeights);

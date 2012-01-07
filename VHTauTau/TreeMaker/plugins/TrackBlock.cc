@@ -20,7 +20,7 @@ TrackBlock::TrackBlock(const edm::ParameterSet& iConfig) :
 void TrackBlock::beginJob() 
 {
   // Get TTree pointer
-  TTree* tree = Utility::getTree("vhtree");
+  TTree* tree = vhtm::Utility::getTree("vhtree");
   cloneTrack = new TClonesArray("vhtm::Track");
   tree->Branch("Track", &cloneTrack);
   tree->Branch("nTrack", &fnTrack,  "fnTrack/I");

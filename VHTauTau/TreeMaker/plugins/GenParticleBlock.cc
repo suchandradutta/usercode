@@ -20,7 +20,7 @@ void GenParticleBlock::beginJob() {
   //_daughtIndices = new std::vector<int>();
 
   // Get TTree pointer
-  TTree* tree = Utility::getTree("vhtree");
+  TTree* tree = vhtm::Utility::getTree("vhtree");
   cloneGenParticle = new TClonesArray("vhtm::GenParticle");
   tree->Branch("GenParticle", &cloneGenParticle, 32000, 2);
   tree->Branch("nGenParticle", &fnGenParticle,  "fnGenParticle/I");
