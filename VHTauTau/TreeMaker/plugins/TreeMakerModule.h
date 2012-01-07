@@ -1,5 +1,8 @@
-#ifndef __TreeMaker_TreeMakerModule_hh
-#define __TreeMaker_TreeMakerModule_hh
+#ifndef __VHTauTau_TreeMaker_TreeMakerModule_hh
+#define __VHTauTau_TreeMaker_TreeMakerModule_hh
+
+#include <string>
+#include <vector>
 
 #include "FWCore/Framework/interface/Frameworkfwd.h"
 #include "FWCore/Framework/interface/EDAnalyzer.h"
@@ -7,9 +10,6 @@
 #include "FWCore/ParameterSet/interface/ParameterSet.h"
 #include "FWCore/ServiceRegistry/interface/Service.h"
 #include "CommonTools/UtilAlgos/interface/TFileService.h"
-
-#include <string>
-#include <vector>
 
 class TreeMakerModule : public edm::EDAnalyzer 
 {

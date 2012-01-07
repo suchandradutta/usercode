@@ -1,5 +1,8 @@
-#ifndef __TreeMaker_VertexBlock_hh
-#define __TreeMaker_VertexBlock_hh
+#ifndef __VHTauTau_TreeMaker_VertexBlock_hh
+#define __VHTauTau_TreeMaker_VertexBlock_hh
+
+#include <string>
+#include <vector>
 
 #include "FWCore/Framework/interface/Frameworkfwd.h"
 #include "FWCore/Framework/interface/EDAnalyzer.h"
@@ -8,8 +11,7 @@
 #include "FWCore/ServiceRegistry/interface/Service.h"
 #include "CommonTools/UtilAlgos/interface/TFileService.h"
 
-#include <string>
-#include <vector>
+#include "VHTauTau/TreeMaker/interface/PhysicsObjects.h"
 
 class TClonesArray;
 class Vertex;
@@ -37,6 +39,6 @@ private:
   int _verbosity;
   edm::InputTag _inputTag;
 
-  Vertex* vertexB;
+  vhtm::Vertex* vertexB;
 };
 #endif

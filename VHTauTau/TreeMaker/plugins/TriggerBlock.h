@@ -1,5 +1,8 @@
-#ifndef __TreeMaker_TriggerBlock_hh
-#define __TreeMaker_TriggerBlock_hh
+#ifndef __VHTauTau_TreeMaker_TriggerBlock_hh
+#define __VHTauTau_TreeMaker_TriggerBlock_hh
+
+#include <string>
+#include <vector>
 
 #include "FWCore/Framework/interface/Frameworkfwd.h"
 #include "FWCore/Framework/interface/EDAnalyzer.h"
@@ -14,9 +17,6 @@
 #include "FWCore/ParameterSet/interface/ProcessDesc.h"
 
 #include "HLTrigger/HLTcore/interface/HLTConfigProvider.h"
-
-#include <string>
-#include <vector>
 
 class TClonesArray;
 //class Trigger;

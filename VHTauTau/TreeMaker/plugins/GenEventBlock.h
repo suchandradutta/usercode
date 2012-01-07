@@ -1,5 +1,8 @@
-#ifndef __TreeMaker_GenEventBlock_hh
-#define __TreeMaker_GenEventBlock_hh
+#ifndef __VHTauTau_TreeMaker_GenEventBlock_hh
+#define __VHTauTau_TreeMaker_GenEventBlock_hh
+
+#include <string>
+#include <vector>
 
 #include "FWCore/Framework/interface/Frameworkfwd.h"
 #include "FWCore/Framework/interface/EDAnalyzer.h"
@@ -7,8 +10,7 @@
 #include "FWCore/ParameterSet/interface/ParameterSet.h"
 #include "FWCore/ServiceRegistry/interface/Service.h"
 
-#include <string>
-#include <vector>
+#include "VHTauTau/TreeMaker/interface/PhysicsObjects.h"
 
 class TClonesArray;
 class GenEvent;
@@ -29,12 +31,12 @@ private:
   TClonesArray* cloneGenEvent; 
   int _verbosity;
 
-  const edm::InputTag   _genEvtInfoInputTag;
-  const bool            _storePDFWeights;
-  const edm::InputTag   _pdfWeightsInputTag;
+  const edm::InputTag _genEvtInfoInputTag;
+  const bool          _storePDFWeights;
+  const edm::InputTag _pdfWeightsInputTag;
 
   std::vector<double> *_pdfWeights;
 
-  GenEvent* genEventB;
+  vhtm::GenEvent* genEventB;
 };
 #endif

@@ -1,14 +1,13 @@
 #include "TTree.h"
 #include "TClonesArray.h"
 
-#include "VHTauTau/TreeMaker/plugins/GenMETBlock.h"
-#include "VHTauTau/TreeMaker/interface/PhysicsObjects.h"
-#include "VHTauTau/TreeMaker/interface/Utility.h"
-
 #include "FWCore/MessageLogger/interface/MessageLogger.h"
 #include "CommonTools/UtilAlgos/interface/TFileService.h"
 #include "DataFormats/METReco/interface/GenMET.h"
 #include "DataFormats/METReco/interface/GenMETFwd.h"
+
+#include "VHTauTau/TreeMaker/plugins/GenMETBlock.h"
+#include "VHTauTau/TreeMaker/interface/Utility.h"
 
 GenMETBlock::GenMETBlock(const edm::ParameterSet& iConfig) :
   _verbosity(iConfig.getParameter<int>("verbosity")),
@@ -38,7 +37,7 @@ void GenMETBlock::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
 	  edm::LogInfo("GenMETBlock") << "Too many GenMET, fnGenMET = " << fnGenMET; 
 	  break;
         }
-        genMetB = new ((*cloneGenMET)[fnGenMET++]) GenMET();
+        genMetB = new ((*cloneGenMET)[fnGenMET++]) vhtm::GenMET();
 
         // fill in all the vectors
         genMetB->met    = it->pt();

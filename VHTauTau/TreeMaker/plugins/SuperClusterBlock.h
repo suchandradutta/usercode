@@ -1,5 +1,8 @@
-#ifndef __TreeMaker_SuperClusterBlock_hh
-#define __TreeMaker_SuperClusterBlock_hh
+#ifndef __VHTauTau_TreeMaker_SuperClusterBlock_hh
+#define __VHTauTau_TreeMaker_SuperClusterBlock_hh
+
+#include <string>
+#include <vector>
 
 #include "FWCore/Framework/interface/Frameworkfwd.h"
 #include "FWCore/Framework/interface/EDAnalyzer.h"
@@ -8,8 +11,7 @@
 #include "FWCore/ServiceRegistry/interface/Service.h"
 #include "CommonTools/UtilAlgos/interface/TFileService.h"
 
-#include <string>
-#include <vector>
+#include "VHTauTau/TreeMaker/interface/PhysicsObjects.h"
 
 class TClonesArray;
 class SuperCluster;
@@ -43,6 +45,6 @@ private:
   edm::InputTag _trkInputTag;
   edm::InputTag _eleInputTag;
 
-  SuperCluster* scB;
+  vhtm::SuperCluster* scB;
 };
 #endif

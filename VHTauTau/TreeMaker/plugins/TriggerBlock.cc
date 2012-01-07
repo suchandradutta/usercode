@@ -9,7 +9,6 @@
 #include "TPRegexp.h"
 
 #include "VHTauTau/TreeMaker/plugins/TriggerBlock.h"
-//#include "VHTauTau/TreeMaker/interface/PhysicsObjects.h"
 #include "VHTauTau/TreeMaker/interface/Utility.h"
 
 #include "DataFormats/L1GlobalTrigger/interface/L1GlobalTriggerReadoutRecord.h"
@@ -42,7 +41,7 @@ void TriggerBlock::beginJob()
 
   std::string tree_name = "vhtree";
   TTree* tree = Utility::getTree(tree_name);
-  //cloneTrigger = new TClonesArray("Trigger");
+  //cloneTrigger = new TClonesArray(vhtm::"Trigger");
   //tree->Branch("Trigger", &cloneTrigger, 32000, 2);
   tree->Branch("l1physbits", "vector<int>", &_l1physbits);
   tree->Branch("l1techbits", "vector<int>", &_l1techbits);
@@ -76,7 +75,7 @@ void TriggerBlock::analyze(const edm::Event& iEvent, const edm::EventSetup& iSet
   _hltprescales->clear();
 
   // Create Trigger Object
-  //triggerB = new ( (*cloneTrigger)[0] ) Trigger();
+  //triggerB = new ( (*cloneTrigger)[0] ) vhtm::Trigger();
 
   edm::Handle<L1GlobalTriggerReadoutRecord> l1GtReadoutRecord;
   iEvent.getByLabel(_l1InputTag, l1GtReadoutRecord);

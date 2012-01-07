@@ -1,10 +1,6 @@
 #include "TTree.h"
 #include "TClonesArray.h"
 
-#include "VHTauTau/TreeMaker/plugins/TrackBlock.h"
-#include "VHTauTau/TreeMaker/interface/PhysicsObjects.h"
-#include "VHTauTau/TreeMaker/interface/Utility.h"
-
 #include "FWCore/MessageLogger/interface/MessageLogger.h"
 #include "CommonTools/UtilAlgos/interface/TFileService.h"
 #include "DataFormats/Common/interface/View.h"
@@ -12,6 +8,9 @@
 #include "DataFormats/TrackReco/interface/HitPattern.h"
 #include "DataFormats/BeamSpot/interface/BeamSpot.h"
 #include "Math/GenVector/VectorUtil.h"
+
+#include "VHTauTau/TreeMaker/plugins/TrackBlock.h"
+#include "VHTauTau/TreeMaker/interface/Utility.h"
 
 TrackBlock::TrackBlock(const edm::ParameterSet& iConfig) :
   _verbosity(iConfig.getParameter<int>("verbosity")),
@@ -22,7 +21,7 @@ void TrackBlock::beginJob()
 {
   // Get TTree pointer
   TTree* tree = Utility::getTree("vhtree");
-  cloneTrack = new TClonesArray("Track");
+  cloneTrack = new TClonesArray("vhtm::Track");
   tree->Branch("Track", &cloneTrack);
   tree->Branch("nTrack", &fnTrack,  "fnTrack/I");
 }
@@ -50,7 +49,7 @@ void TrackBlock::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup
 	edm::LogInfo("TrackBlock") << "Too many Tracks in the event, fnTrack = " << fnTrack; 
 	break;
       }
-      trackB = new ((*cloneTrack)[fnTrack++]) Track();
+      trackB = new ((*cloneTrack)[fnTrack++]) vhtm::Track();
       trackB->eta         = track.eta();
       trackB->etaError    = track.etaError();
       trackB->theta       = track.theta();

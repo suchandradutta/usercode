@@ -1,10 +1,6 @@
 #include "TTree.h"
 #include "TClonesArray.h"
 
-#include "VHTauTau/TreeMaker/plugins/EventSkimmer.h"
-#include "VHTauTau/TreeMaker/interface/PhysicsObjects.h"
-#include "VHTauTau/TreeMaker/interface/Utility.h"
-
 #include "FWCore/MessageLogger/interface/MessageLogger.h"
 #include "CommonTools/UtilAlgos/interface/TFileService.h"
 #include "DataFormats/MuonReco/interface/MuonFwd.h"
@@ -14,6 +10,8 @@
 #include "DataFormats/Common/interface/Handle.h"
 
 #include "Math/GenVector/VectorUtil.h"
+
+#include "VHTauTau/TreeMaker/plugins/EventSkimmer.h"
 
 EventSkimmer::EventSkimmer(const edm::ParameterSet& iConfig) :
   _verbosity(iConfig.getParameter<int>("verbosity")),

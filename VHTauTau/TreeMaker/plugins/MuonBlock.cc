@@ -1,10 +1,6 @@
 #include "TTree.h"
 #include "TClonesArray.h"
 
-#include "VHTauTau/TreeMaker/plugins/MuonBlock.h"
-#include "VHTauTau/TreeMaker/interface/PhysicsObjects.h"
-#include "VHTauTau/TreeMaker/interface/Utility.h"
-
 #include "FWCore/MessageLogger/interface/MessageLogger.h"
 #include "CommonTools/UtilAlgos/interface/TFileService.h"
 #include "DataFormats/PatCandidates/interface/Muon.h"
@@ -13,6 +9,9 @@
 #include "DataFormats/VertexReco/interface/Vertex.h"
 #include "DataFormats/VertexReco/interface/VertexFwd.h"
 #include "Math/GenVector/VectorUtil.h"
+
+#include "VHTauTau/TreeMaker/plugins/MuonBlock.h"
+#include "VHTauTau/TreeMaker/interface/Utility.h"
 
 MuonBlock::MuonBlock(const edm::ParameterSet& iConfig) :
   _verbosity(iConfig.getParameter<int>("verbosity")),
@@ -27,7 +26,7 @@ void MuonBlock::beginJob()
 {
   // Get TTree pointer
   TTree* tree = Utility::getTree("vhtree");
-  cloneMuon = new TClonesArray("Muon");
+  cloneMuon = new TClonesArray("vhtm::Muon");
   tree->Branch("Muon", &cloneMuon, 32000, 2);
   tree->Branch("nMuon", &fnMuon,  "fnMuon/I");
 }
@@ -95,7 +94,7 @@ void MuonBlock::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
 
       reco::TrackRef tk = it->innerTrack();
 
-      muonB = new ((*cloneMuon)[fnMuon++]) Muon();
+      muonB = new ((*cloneMuon)[fnMuon++]) vhtm::Muon();
       muonB->eta        = it->eta();
       muonB->phi        = it->phi();
       muonB->pt         = it->pt();

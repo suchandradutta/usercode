@@ -2,16 +2,15 @@
 #include "TTree.h"
 #include "TClonesArray.h"
 
-#include "VHTauTau/TreeMaker/plugins/TauBlock.h"
-#include "VHTauTau/TreeMaker/interface/PhysicsObjects.h"
-#include "VHTauTau/TreeMaker/interface/Utility.h"
-
 #include "FWCore/MessageLogger/interface/MessageLogger.h"
 #include "DataFormats/PatCandidates/interface/Tau.h"
 
 #include "Utilities/General/interface/FileInPath.h"
 #include "Bianchi/Utilities/interface/AntiElectronIDMVA.h"
 //#include "RecoTauTag/RecoTau/interface/AntiElectronIDMVA.h"
+
+#include "VHTauTau/TreeMaker/plugins/TauBlock.h"
+#include "VHTauTau/TreeMaker/interface/Utility.h"
 
 TauBlock::TauBlock(const edm::ParameterSet& iConfig) :
   _verbosity(iConfig.getParameter<int>("verbosity")),
@@ -40,7 +39,7 @@ void TauBlock::beginJob()
 {
   // Get TTree pointer
   TTree* tree = Utility::getTree("vhtree");
-  cloneTau = new TClonesArray("Tau");
+  cloneTau = new TClonesArray("vhtm::Tau");
   tree->Branch("Tau", &cloneTau, 32000, 2);
   tree->Branch("nTau", &fnTau, "fnTau/I");
 }
@@ -61,7 +60,7 @@ void TauBlock::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup) 
 	edm::LogInfo("TauBlock") << "Too many PAT Taus, fnTau = " << fnTau;
 	break;
       }
-      tauB = new ((*cloneTau)[fnTau++]) Tau();
+      tauB = new ((*cloneTau)[fnTau++]) vhtm::Tau();
 
       // Store Tau variables
       tauB->eta    = it->eta();

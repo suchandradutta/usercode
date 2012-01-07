@@ -1,16 +1,11 @@
 #include <iostream>
 #include <algorithm>
 
-#include "CommonTools/UtilAlgos/interface/TFileService.h"
 #include "TFile.h"
 #include "TTree.h"
 #include "TROOT.h"
 #include "TClonesArray.h"
 #include "TVector3.h"
-
-#include "VHTauTau/TreeMaker/plugins/ElectronBlock.h"
-#include "VHTauTau/TreeMaker/interface/PhysicsObjects.h"
-#include "VHTauTau/TreeMaker/interface/Utility.h"
 
 #include "FWCore/MessageLogger/interface/MessageLogger.h"
 #include "FWCore/Framework/interface/ESHandle.h"
@@ -23,10 +18,14 @@
 #include "RecoEgamma/EgammaTools/interface/ConversionFinder.h"
 #include "DataFormats/VertexReco/interface/Vertex.h"
 #include "DataFormats/VertexReco/interface/VertexFwd.h"
+#include "CommonTools/UtilAlgos/interface/TFileService.h"
 
 #include "RecoEcal/EgammaCoreTools/interface/EcalClusterLazyTools.h"
 #include "Utilities/General/interface/FileInPath.h"
 #include "HiggsAnalysis/HiggsToWW2Leptons/interface/ElectronIDMVA.h"
+
+#include "VHTauTau/TreeMaker/plugins/ElectronBlock.h"
+#include "VHTauTau/TreeMaker/interface/Utility.h"
 
 // Constructor
 ElectronBlock::ElectronBlock(const edm::ParameterSet& iConfig) :
@@ -65,7 +64,7 @@ void ElectronBlock::beginJob()
   // Get TTree pointer
   std::string tree_name = "vhtree";
   TTree* tree = Utility::getTree(tree_name);
-  cloneElectron = new TClonesArray("Electron");
+  cloneElectron = new TClonesArray("vhtm::Electron");
   tree->Branch("Electron", &cloneElectron, 32000, 2);
   tree->Branch("nElectron", &fnElectron,  "fnElectron/I");
 }
@@ -168,7 +167,7 @@ void ElectronBlock::analyze(const edm::Event& iEvent, const edm::EventSetup& iSe
       }      
       double pfreliso = it->userFloat("pfLooseIsoPt04")/it->pt();
 
-      electronB = new ((*cloneElectron)[fnElectron++]) Electron();
+      electronB = new ((*cloneElectron)[fnElectron++]) vhtm::Electron();
       electronB->eta         = it->eta();
       electronB->phi         = it->phi();
       electronB->pt          = it->pt();

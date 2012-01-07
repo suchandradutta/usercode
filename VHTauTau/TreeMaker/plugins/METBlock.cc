@@ -1,13 +1,12 @@
 #include "TTree.h"
 #include "TClonesArray.h"
 
-#include "VHTauTau/TreeMaker/plugins/METBlock.h"
-#include "VHTauTau/TreeMaker/interface/PhysicsObjects.h"
-#include "VHTauTau/TreeMaker/interface/Utility.h"
-
 #include "FWCore/MessageLogger/interface/MessageLogger.h"
 #include "CommonTools/UtilAlgos/interface/TFileService.h"
 #include "DataFormats/PatCandidates/interface/MET.h"
+
+#include "VHTauTau/TreeMaker/plugins/METBlock.h"
+#include "VHTauTau/TreeMaker/interface/Utility.h"
 
 METBlock::METBlock(const edm::ParameterSet& iConfig) :
   _verbosity(iConfig.getParameter<int>("verbosity")),
@@ -17,7 +16,7 @@ void METBlock::beginJob()
 {
   // Get TTree pointer
   TTree* tree = Utility::getTree("vhtree");
-  cloneMET = new TClonesArray("MET");
+  cloneMET = new TClonesArray("vhtm::MET");
   tree->Branch("MET", &cloneMET, 32000, 2);
   tree->Branch("nMET", &fnMET,  "fnMET/I");
 }
@@ -38,7 +37,7 @@ void METBlock::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup) 
 	edm::LogInfo("METBlock") << "Too many PAT MET, fnMET = " << fnMET; 
 	break;
       }
-      metB = new ((*cloneMET)[fnMET++]) MET();
+      metB = new ((*cloneMET)[fnMET++]) vhtm::MET();
 
       // fill in all the vectors
       metB->met          = it->pt();

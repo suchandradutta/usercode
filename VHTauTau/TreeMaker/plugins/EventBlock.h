@@ -1,5 +1,8 @@
-#ifndef __TreeMaker_EventBlock_hh
-#define __TreeMaker_EventBlock_hh
+#ifndef __VHTauTau_TreeMaker_EventBlock_hh
+#define __VHTauTau_TreeMaker_EventBlock_hh
+
+#include <string>
+#include <vector>
 
 #include "FWCore/Framework/interface/Frameworkfwd.h"
 #include "FWCore/Framework/interface/EDAnalyzer.h"
@@ -7,9 +10,7 @@
 #include "FWCore/ParameterSet/interface/ParameterSet.h"
 #include "FWCore/ServiceRegistry/interface/Service.h"
 
-#include <string>
-#include <vector>
-
+#include "VHTauTau/TreeMaker/interface/PhysicsObjects.h"
 class Event;
 
 class EventBlock : public edm::EDAnalyzer 
@@ -39,7 +40,8 @@ private:
 
   std::vector<int> *_nPU;
   std::vector<int> *_bunchCrossing;
+  std::vector<int> *_trueNInt;
 
-  Event* eventB;
+  vhtm::Event* eventB;
 };
 #endif

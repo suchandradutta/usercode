@@ -13,7 +13,7 @@ GenJetBlock::GenJetBlock(const edm::ParameterSet& iConfig) :
 void GenJetBlock::beginJob() {
   // Get TTree pointer
   TTree* tree = Utility::getTree("vhtree");
-  cloneGenJet = new TClonesArray("GenJet");
+  cloneGenJet = new TClonesArray("vhtm::GenJet");
   tree->Branch("GenJet", &cloneGenJet, 32000, 2);
   tree->Branch("nGenJet", &fnGenJet,  "fnGenJet/I");
 }
@@ -36,7 +36,7 @@ void GenJetBlock::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
 	  edm::LogInfo("GenJetBlock") << "Too many Gen Jets, fnGenJet = " << fnGenJet; 
 	  break;
         }
-        genJetB = new ((*cloneGenJet)[fnGenJet++]) GenJet();
+        genJetB = new ((*cloneGenJet)[fnGenJet++]) vhtm::GenJet();
 
         // fill in all the vectors
         genJetB->eta    = it->eta();

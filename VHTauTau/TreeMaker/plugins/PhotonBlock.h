@@ -1,5 +1,8 @@
-#ifndef __TreeMaker_PhotonBlock_hh
-#define __TreeMaker_PhotonBlock_hh
+#ifndef __VHTauTau_TreeMaker_PhotonBlock_hh
+#define __VHTauTau_TreeMaker_PhotonBlock_hh
+
+#include <string>
+#include <vector>
 
 #include "FWCore/Framework/interface/Frameworkfwd.h"
 #include "FWCore/Framework/interface/EDAnalyzer.h"
@@ -13,8 +16,7 @@
 #include "DataFormats/Provenance/interface/EventID.h"
 #include "FWCore/ParameterSet/interface/ProcessDesc.h"
 
-#include <string>
-#include <vector>
+#include "VHTauTau/TreeMaker/interface/PhysicsObjects.h"
 
 class TClonesArray;
 class Photon;
@@ -42,6 +44,6 @@ private:
   std::string _treeName;
   edm::InputTag _photonInputTag;
 
-  Photon* photonB;
+  vhtm::Photon* photonB;
 };
 #endif

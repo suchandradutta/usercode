@@ -1,5 +1,9 @@
-#ifndef __TreeMaker_TriggerObjectBlock_hh
-#define __TreeMaker_TriggerObjectBlock_hh
+#ifndef __VHTauTau_TreeMaker_TriggerObjectBlock_hh
+#define __VHTauTau_TreeMaker_TriggerObjectBlock_hh
+
+#include <string>
+#include <vector>
+#include <map>
 
 #include "FWCore/Framework/interface/Frameworkfwd.h"
 #include "FWCore/Framework/interface/EDAnalyzer.h"
@@ -15,9 +19,7 @@
 
 #include "HLTrigger/HLTcore/interface/HLTConfigProvider.h"
 
-#include <string>
-#include <vector>
-#include <map>
+#include "VHTauTau/TreeMaker/interface/PhysicsObjects.h"
 
 class TClonesArray;
 class TriggerObject;
@@ -49,7 +51,7 @@ private:
   const std::string  _probePathLabel;
   const std::vector<std::string> _hltPathsOfInterest;
 
-  TriggerObject* _triggerObject;
+  vhtm::TriggerObject* _triggerObject;
 
   HLTConfigProvider hltConfig;
 };

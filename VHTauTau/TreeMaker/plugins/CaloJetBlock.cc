@@ -16,7 +16,6 @@
 
 #include "VHTauTau/TreeMaker/interface/Utility.h"
 #include "VHTauTau/TreeMaker/plugins/CaloJetBlock.h"
-#include "VHTauTau/TreeMaker/interface/PhysicsObjects.h"
 
 JetIDSelectionFunctor jetIDLoose(JetIDSelectionFunctor::PURE09, JetIDSelectionFunctor::LOOSE);
 JetIDSelectionFunctor jetIDTight(JetIDSelectionFunctor::PURE09, JetIDSelectionFunctor::TIGHT);
@@ -39,7 +38,7 @@ void CaloJetBlock::beginJob()
 {
   std::string tree_name = "vhtree";
   TTree* tree = Utility::getTree(tree_name);
-  cloneCaloJet = new TClonesArray("CaloJet");
+  cloneCaloJet = new TClonesArray("vhtm::CaloJet");
   tree->Branch("CaloJet", &cloneCaloJet, 32000, 2);
   tree->Branch("nCaloJet", &fnCaloJet, "fnCaloJet/I");
 }
@@ -139,7 +138,7 @@ void CaloJetBlock::analyze(const edm::Event& iEvent, const edm::EventSetup& iSet
       jecUnc->setJetEta(it->eta());
       jecUnc->setJetPt(it->pt()*corr); // the uncertainty is a function of the corrected pt
 
-      caloJetB = new ((*cloneCaloJet)[fnCaloJet++]) CaloJet();
+      caloJetB = new ((*cloneCaloJet)[fnCaloJet++]) vhtm::CaloJet();
 
       // fill in all the vectors
       caloJetB->eta        = it->eta();

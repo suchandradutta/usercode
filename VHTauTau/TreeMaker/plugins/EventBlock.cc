@@ -13,7 +13,6 @@
 #include "TClonesArray.h"
 
 #include "VHTauTau/TreeMaker/plugins/EventBlock.h"
-#include "VHTauTau/TreeMaker/interface/PhysicsObjects.h"
 #include "VHTauTau/TreeMaker/interface/Utility.h"
 
 EventBlock::EventBlock(const edm::ParameterSet& iConfig) :
@@ -34,15 +33,17 @@ EventBlock::~EventBlock() {
 }
 void EventBlock::beginJob() {
   _nPU = new std::vector<int>();
-  _bunchCrossing =  new std::vector<int>();
+  _bunchCrossing = new std::vector<int>();
+  _trueNInt = new std::vector<int>();
 
   // Get TTree pointer
   TTree* tree = Utility::getTree("vhtree");
-  cloneEvent = new TClonesArray("Event");
+  cloneEvent = new TClonesArray("vhtm::Event");
   tree->Branch("Event", &cloneEvent, 32000, 2);
 
   tree->Branch("nPU", "vector<int>", &_nPU);
   tree->Branch("bunchCrossing", "vector<int>", &_bunchCrossing);
+  tree->Branch("trueNInt", "std::vector<int>", &_trueNInt);
 }
 void EventBlock::analyze(edm::Event const& iEvent, edm::EventSetup const& iSetup) {
   // Reset the TClonesArray
@@ -51,9 +52,10 @@ void EventBlock::analyze(edm::Event const& iEvent, edm::EventSetup const& iSetup
   // Clear the two independent vectors
   _nPU->clear();
   _bunchCrossing->clear();
+  _trueNInt->clear();
 
   // Create Event Object
-  eventB = new ( (*cloneEvent)[0] ) Event();
+  eventB = new ( (*cloneEvent)[0] ) vhtm::Event();
   eventB->run   = iEvent.id().run();
   eventB->event = iEvent.id().event();
   eventB->lumis = iEvent.id().luminosityBlock();
@@ -164,6 +166,8 @@ void EventBlock::analyze(edm::Event const& iEvent, edm::EventSetup const& iSetup
       _bunchCrossing->push_back(PVI->getBunchCrossing());
       eventB->nPU.push_back(PVI->getPU_NumInteractions());      
       _nPU->push_back(PVI->getPU_NumInteractions());      
+      eventB->trueNInt.push_back(PVI->getTrueNumInteractions());      
+      _trueNInt->push_back(PVI->getTrueNumInteractions());    
     }
 
     // More info about PU is here:

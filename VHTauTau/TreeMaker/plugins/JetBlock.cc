@@ -13,7 +13,6 @@
 #include "TClonesArray.h"
 
 #include "VHTauTau/TreeMaker/plugins/JetBlock.h"
-#include "VHTauTau/TreeMaker/interface/PhysicsObjects.h"
 #include "VHTauTau/TreeMaker/interface/Utility.h"
 
 PFJetIDSelectionFunctor pfjetIDLoose(PFJetIDSelectionFunctor::FIRSTDATA, PFJetIDSelectionFunctor::LOOSE);
@@ -32,7 +31,7 @@ void JetBlock::beginJob()
 {
   std::string tree_name = "vhtree";
   TTree* tree = Utility::getTree(tree_name);
-  cloneJet = new TClonesArray("Jet");
+  cloneJet = new TClonesArray("vhtm::Jet");
   tree->Branch("Jet", &cloneJet, 32000, 2);
   tree->Branch("nJet", &fnJet, "fnJet/I");
 }
@@ -41,19 +40,26 @@ void JetBlock::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup) 
   cloneJet->Clear();
   fnJet = 0;
 
+  bool applyResJECLocal = _applyResJEC;
+
   edm::FileInPath fipUnc(_jecUncPath);;
   JetCorrectionUncertainty *jecUnc = new JetCorrectionUncertainty(fipUnc.fullPath());
 
   JetCorrectorParameters *ResJetCorPar = 0;
   FactorizedJetCorrector *JEC = 0;
   if (_applyResJEC) {
-    edm::FileInPath fipRes(_resJEC);
-    ResJetCorPar = new JetCorrectorParameters(fipRes.fullPath());
-    std::vector<JetCorrectorParameters> vParam;
-    vParam.push_back(*ResJetCorPar);
-    JEC = new FactorizedJetCorrector(vParam);
+    try {
+      edm::FileInPath fipRes(_resJEC);
+      ResJetCorPar = new JetCorrectorParameters(fipRes.fullPath());
+      std::vector<JetCorrectorParameters> vParam;
+      vParam.push_back(*ResJetCorPar);
+      JEC = new FactorizedJetCorrector(vParam);
+    }
+    catch (std::exception& ex) {
+      edm::LogInfo("JetBlock") << "The following exception occurred:" << std::endl << ex.what();
+      applyResJECLocal = false; 
+    } 
   }
-
   edm::Handle<std::vector<pat::Jet> > jets;
   iEvent.getByLabel(_inputTag, jets);
 
@@ -72,7 +78,7 @@ void JetBlock::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup) 
       int passjetTight = (pfjetIDTight(*it, retpf)) ? 1 : 0;
 
       double corr = 1.;
-      if (_applyResJEC && iEvent.isRealData() ) {
+      if (applyResJECLocal && iEvent.isRealData() ) {
         JEC->setJetEta(it->eta());
         JEC->setJetPt(it->pt()); // here you put the L2L3 Corrected jet pt
         corr = JEC->getCorrection();
@@ -81,7 +87,7 @@ void JetBlock::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup) 
       jecUnc->setJetEta(it->eta());
       jecUnc->setJetPt(it->pt()*corr); // the uncertainty is a function of the corrected pt
 
-      jetB = new ((*cloneJet)[fnJet++]) Jet();
+      jetB = new ((*cloneJet)[fnJet++]) vhtm::Jet();
 
       // fill in all the vectors
       jetB->eta        = it->eta();
@@ -131,9 +137,9 @@ void JetBlock::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup) 
   else {
     edm::LogError("JetBlock") << "Error! Can't get the product " << _inputTag;
   }
-  delete jecUnc;
-  delete ResJetCorPar;
-  delete JEC;
+  if (jecUnc) delete jecUnc;
+  if (ResJetCorPar) delete ResJetCorPar;
+  if (JEC) delete JEC;
 }
 #include "FWCore/Framework/interface/MakerMacros.h"
 DEFINE_FWK_MODULE(JetBlock);

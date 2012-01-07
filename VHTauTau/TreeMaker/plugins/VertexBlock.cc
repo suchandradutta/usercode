@@ -1,13 +1,12 @@
 #include "TTree.h"
 #include "TClonesArray.h"
 
-#include "VHTauTau/TreeMaker/plugins/VertexBlock.h"
-#include "VHTauTau/TreeMaker/interface/PhysicsObjects.h"
-#include "VHTauTau/TreeMaker/interface/Utility.h"
-
 #include "FWCore/MessageLogger/interface/MessageLogger.h"
 #include "DataFormats/VertexReco/interface/Vertex.h"
 #include "DataFormats/VertexReco/interface/VertexFwd.h"
+
+#include "VHTauTau/TreeMaker/plugins/VertexBlock.h"
+#include "VHTauTau/TreeMaker/interface/Utility.h"
 
 VertexBlock::VertexBlock(const edm::ParameterSet& iConfig) :
   _verbosity(iConfig.getParameter<int>("verbosity")),
@@ -16,7 +15,7 @@ VertexBlock::VertexBlock(const edm::ParameterSet& iConfig) :
 void VertexBlock::beginJob() {
   // Get TTree pointer
   TTree* tree = Utility::getTree("vhtree");
-  cloneVertex = new TClonesArray("Vertex");
+  cloneVertex = new TClonesArray("vhtm::Vertex");
   tree->Branch("Vertex", &cloneVertex, 32000, 2);
   tree->Branch("nVertex", &fnVertex, "fnVertex/I");
 }
@@ -37,7 +36,7 @@ void VertexBlock::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
 	edm::LogInfo("VertexBlock") << "Too many Vertex, fnVertex = " << fnVertex; 
 	break;
       }
-      vertexB = new ((*cloneVertex)[fnVertex++]) Vertex();
+      vertexB = new ((*cloneVertex)[fnVertex++]) vhtm::Vertex();
       vertexB->x = it->x();
       vertexB->y = it->y();
       vertexB->z = it->z();

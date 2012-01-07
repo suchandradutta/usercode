@@ -1,5 +1,8 @@
-#ifndef __TreeMaker_GenJetBlock_hh
-#define __TreeMaker_GenJetBlock_hh
+#ifndef __VHTauTau_TreeMaker_GenJetBlock_hh
+#define __VHTauTau_TreeMaker_GenJetBlock_hh
+
+#include <string>
+#include <vector>
 
 #include "FWCore/Framework/interface/Frameworkfwd.h"
 #include "FWCore/Framework/interface/EDAnalyzer.h"
@@ -8,8 +11,7 @@
 #include "FWCore/ServiceRegistry/interface/Service.h"
 #include "CommonTools/UtilAlgos/interface/TFileService.h"
 
-#include <string>
-#include <vector>
+#include "VHTauTau/TreeMaker/interface/PhysicsObjects.h"
 
 class TClonesArray;
 class GenJet;
@@ -35,6 +37,7 @@ private:
   int  fnGenJet;
   int _verbosity;
   edm::InputTag _inputTag;
-  GenJet* genJetB; 
+
+  vhtm::GenJet* genJetB; 
 };
 #endif

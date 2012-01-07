@@ -4,18 +4,17 @@
 #include "FWCore/MessageLogger/interface/MessageLogger.h"
 #include "CommonTools/UtilAlgos/interface/TFileService.h"
 
+#include "PhysicsTools/PatUtils/interface/TriggerHelper.h"
+#include "DataFormats/PatCandidates/interface/Muon.h"
+#include "DataFormats/PatCandidates/interface/TriggerEvent.h"
+
+#include "VHTauTau/TreeMaker/plugins/TriggerObjectBlock.h"
+#include "VHTauTau/TreeMaker/interface/Utility.h"
+
 #include "TMath.h"
 #include "TTree.h"
 #include "TClonesArray.h"
 #include "TPRegexp.h"
-
-#include "VHTauTau/TreeMaker/plugins/TriggerObjectBlock.h"
-#include "VHTauTau/TreeMaker/interface/PhysicsObjects.h"
-#include "VHTauTau/TreeMaker/interface/Utility.h"
-
-#include "PhysicsTools/PatUtils/interface/TriggerHelper.h"
-#include "DataFormats/PatCandidates/interface/Muon.h"
-#include "DataFormats/PatCandidates/interface/TriggerEvent.h"
 
 // Constructor
 TriggerObjectBlock::TriggerObjectBlock(const edm::ParameterSet& iConfig) :
@@ -30,7 +29,7 @@ void TriggerObjectBlock::beginJob()
 {
   std::string tree_name = "vhtree";
   TTree* tree = Utility::getTree(tree_name);
-  cloneTriggerObject = new TClonesArray("TriggerObject");
+  cloneTriggerObject = new TClonesArray("vhtm::TriggerObject");
   tree->Branch("TriggerObject", &cloneTriggerObject, 32000, 2);
   tree->Branch("nTriggerObject", &fnTriggerObject, "fnTriggerObject/I");
 
@@ -93,7 +92,7 @@ void TriggerObjectBlock::analyze(const edm::Event& iEvent, const edm::EventSetup
 	<< "Too many Trigger Muons (HLT), fnTriggerObject = " << fnTriggerObject; 
       break;
     }
-    _triggerObject = new ((*cloneTriggerObject)[fnTriggerObject++]) TriggerObject();
+    _triggerObject = new ((*cloneTriggerObject)[fnTriggerObject++]) vhtm::TriggerObject();
     _triggerObject->eta = (**it).eta();
     _triggerObject->phi = (**it).phi();
     _triggerObject->pt  = (**it).pt();

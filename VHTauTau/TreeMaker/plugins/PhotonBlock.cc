@@ -1,13 +1,11 @@
 #include <iostream>
 #include <algorithm>
 
-#include "CommonTools/UtilAlgos/interface/TFileService.h"
 #include "TTree.h"
 #include "TClonesArray.h"
 
-#include "VHTauTau/TreeMaker/plugins/PhotonBlock.h"
-#include "VHTauTau/TreeMaker/interface/PhysicsObjects.h"
-#include "VHTauTau/TreeMaker/interface/Utility.h"
+#include "CommonTools/UtilAlgos/interface/TFileService.h"
+
 #include "DataFormats/GeometryVector/interface/GlobalVector.h"
 #include "DataFormats/GeometryVector/interface/GlobalPoint.h"
 
@@ -17,6 +15,9 @@
 #include "DataFormats/EgammaReco/interface/SuperCluster.h"
 #include "DataFormats/EgammaCandidates/interface/Conversion.h"
 #include "DataFormats/EgammaCandidates/interface/ConversionFwd.h"
+
+#include "VHTauTau/TreeMaker/plugins/PhotonBlock.h"
+#include "VHTauTau/TreeMaker/interface/Utility.h"
 
 // Constructor
 PhotonBlock::PhotonBlock(const edm::ParameterSet& iConfig) :
@@ -28,7 +29,7 @@ void PhotonBlock::beginJob()
 {
   // Get TTree pointer
   TTree* tree = Utility::getTree(_treeName);
-  clonePhoton = new TClonesArray("Photon");
+  clonePhoton = new TClonesArray("vhtm::Photon");
   tree->Branch("Photon", &clonePhoton, 32000, 2);
   tree->Branch("nPhoton", &fnPhoton,  "fnPhoton/I");
 }
@@ -48,7 +49,7 @@ void PhotonBlock::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
 	edm::LogInfo("PhotonBlock") << "Too many PAT Photon, fnPhoton = " << fnPhoton; 
 	break;
       }
-      photonB = new ((*clonePhoton)[fnPhoton++]) Photon();
+      photonB = new ((*clonePhoton)[fnPhoton++]) vhtm::Photon();
       photonB->et      = it->et();
       photonB->eta     = it->eta();
       photonB->phi     = it->phi();

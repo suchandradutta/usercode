@@ -1,5 +1,8 @@
-#ifndef __TreeMaker_GenParticleBlock_hh
-#define __TreeMaker_GenParticleBlock_hh
+#ifndef __VHTauTau_TreeMaker_GenParticleBlock_hh
+#define __VHTauTau_TreeMaker_GenParticleBlock_hh
+
+#include <string>
+#include <vector>
 
 #include "FWCore/Framework/interface/Frameworkfwd.h"
 #include "FWCore/Framework/interface/EDAnalyzer.h"
@@ -8,8 +11,7 @@
 #include "FWCore/ServiceRegistry/interface/Service.h"
 #include "CommonTools/UtilAlgos/interface/TFileService.h"
 
-#include <string>
-#include <vector>
+#include "VHTauTau/TreeMaker/interface/PhysicsObjects.h"
 
 class TClonesArray;
 class GenParticle;
@@ -36,6 +38,6 @@ private:
   int _verbosity;
   edm::InputTag _inputTag;
 
-  GenParticle* genParticleB;
+  vhtm::GenParticle* genParticleB;
 };
 #endif

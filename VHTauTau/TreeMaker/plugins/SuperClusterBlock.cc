@@ -6,10 +6,6 @@
 #include "TROOT.h"
 #include "TClonesArray.h"
 
-#include "VHTauTau/TreeMaker/plugins/SuperClusterBlock.h"
-#include "VHTauTau/TreeMaker/interface/PhysicsObjects.h"
-#include "VHTauTau/TreeMaker/interface/Utility.h"
-
 #include "CommonTools/UtilAlgos/interface/TFileService.h"
 #include "FWCore/MessageLogger/interface/MessageLogger.h"
 #include "DataFormats/EgammaReco/interface/SuperCluster.h"
@@ -36,6 +32,9 @@
 #include "RecoLocalCalo/EcalRecAlgos/interface/EcalSeverityLevelAlgo.h"
 #include "RecoLocalCalo/EcalRecAlgos/interface/EcalSeverityLevelAlgoRcd.h"
 
+#include "VHTauTau/TreeMaker/plugins/SuperClusterBlock.h"
+#include "VHTauTau/TreeMaker/interface/Utility.h"
+
 #include "TVector3.h"
 
 // Constructor
@@ -52,7 +51,7 @@ void SuperClusterBlock::beginJob()
 {
   std::string tree_name = "vhtree";
   TTree* tree = Utility::getTree(tree_name);
-  cloneSuperCluster = new TClonesArray("SuperCluster");
+  cloneSuperCluster = new TClonesArray("vhtm::SuperCluster");
   tree->Branch("SuperCluster", &cloneSuperCluster, 32000, 2);
   tree->Branch("nSuperCluster", &fnSuperCluster,  "fnSuperCluster/I");
 }
@@ -125,7 +124,7 @@ void SuperClusterBlock::analyze(const edm::Event& iEvent, const edm::EventSetup&
       break;
     }
 
-    scB = new ((*cloneSuperCluster)[fnSuperCluster++]) SuperCluster();
+    scB = new ((*cloneSuperCluster)[fnSuperCluster++]) vhtm::SuperCluster();
 
     scB->eta = it->eta();
     scB->phi = it->phi();
@@ -210,7 +209,7 @@ void SuperClusterBlock::analyze(const edm::Event& iEvent, const edm::EventSetup&
       edm::LogInfo("SuperClusterBlock") << "Too many EE SuperCluster, fnSuperCluster = " << fnSuperCluster; 
       break;
     }
-    scB = new ((*cloneSuperCluster)[fnSuperCluster++]) SuperCluster();
+    scB = new ((*cloneSuperCluster)[fnSuperCluster++]) vhtm::SuperCluster();
     scB->eta = it->eta();
     scB->phi = it->phi();
     TVector3 sc_vec;

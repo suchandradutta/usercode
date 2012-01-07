@@ -1,5 +1,8 @@
-#ifndef EventSkimmer_hh
-#define EventSkimmer_hh
+#ifndef __VHTauTau_TreeMaker_EventSkimmer_hh
+#define __VHTauTau_TreeMaker_EventSkimmer_hh
+
+#include <string>
+#include <vector>
 
 #include "FWCore/Framework/interface/Frameworkfwd.h"
 #include "FWCore/Framework/interface/EDFilter.h"
@@ -7,9 +10,6 @@
 #include "FWCore/ParameterSet/interface/ParameterSet.h"
 #include "FWCore/ServiceRegistry/interface/Service.h"
 #include "CommonTools/UtilAlgos/interface/TFileService.h"
-
-#include <string>
-#include <vector>
 
 class EventSkimmer : public edm::EDFilter 
 {
@@ -24,7 +24,6 @@ public:
   virtual ~EventSkimmer() {}
   bool checkMuonSelection(const edm::Event& iEvent);
   bool checkElectronSelection(const edm::Event& iEvent);
-
 
 private:
   int _verbosity;

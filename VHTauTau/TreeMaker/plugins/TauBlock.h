@@ -1,5 +1,8 @@
-#ifndef __TreeMaker_TauBlock_hh
-#define __TreeMaker_TauBlock_hh
+#ifndef __VHTauTau_TreeMaker_TauBlock_hh
+#define __VHTauTau_TreeMaker_TauBlock_hh
+
+#include <string>
+#include <vector>
 
 #include "FWCore/Framework/interface/Frameworkfwd.h"
 #include "FWCore/Framework/interface/EDAnalyzer.h"
@@ -8,8 +11,7 @@
 #include "FWCore/ServiceRegistry/interface/Service.h"
 #include "CommonTools/UtilAlgos/interface/TFileService.h"
 
-#include <string>
-#include <vector>
+#include "VHTauTau/TreeMaker/interface/PhysicsObjects.h"
 
 class TClonesArray;
 class Tau;
@@ -37,7 +39,7 @@ private:
   int _verbosity;
   edm::InputTag _inputTag;
 
-  Tau* tauB;
+  vhtm::Tau* tauB;
   AntiElectronIDMVA* antiE;
 };
 #endif

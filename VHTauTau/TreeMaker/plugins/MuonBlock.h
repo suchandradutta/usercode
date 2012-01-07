@@ -1,5 +1,8 @@
-#ifndef __TreeMaker_MuonBlock_hh
-#define __TreeMaker_MuonBlock_hh
+#ifndef __VHTauTau_TreeMaker_MuonBlock_hh
+#define __VHTauTau_TreeMaker_MuonBlock_hh
+
+#include <string>
+#include <vector>
 
 #include "FWCore/Framework/interface/Frameworkfwd.h"
 #include "FWCore/Framework/interface/EDAnalyzer.h"
@@ -7,8 +10,7 @@
 #include "FWCore/ParameterSet/interface/ParameterSet.h"
 #include "FWCore/ServiceRegistry/interface/Service.h"
 
-#include <string>
-#include <vector>
+#include "VHTauTau/TreeMaker/interface/PhysicsObjects.h"
 
 class TClonesArray;
 class Muon;
@@ -41,6 +43,7 @@ private:
   edm::InputTag _beamSpotInputTag;
   bool _beamSpotCorr;
   std::string _muonID;
-  Muon* muonB;
+
+  vhtm::Muon* muonB;
 };
 #endif

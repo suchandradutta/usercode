@@ -1,16 +1,15 @@
 #include <algorithm>
 #include <iostream>
 
+#include "FWCore/MessageLogger/interface/MessageLogger.h"
+#include "CommonTools/UtilAlgos/interface/TFileService.h"
+#include "SimDataFormats/GeneratorProducts/interface/GenEventInfoProduct.h"
+
 #include "TTree.h"
 #include "TClonesArray.h"
 
 #include "VHTauTau/TreeMaker/plugins/GenEventBlock.h"
-#include "VHTauTau/TreeMaker/interface/PhysicsObjects.h"
 #include "VHTauTau/TreeMaker/interface/Utility.h"
-
-#include "FWCore/MessageLogger/interface/MessageLogger.h"
-#include "CommonTools/UtilAlgos/interface/TFileService.h"
-#include "SimDataFormats/GeneratorProducts/interface/GenEventInfoProduct.h"
 
 GenEventBlock::GenEventBlock(const edm::ParameterSet& iConfig) :
   _verbosity(iConfig.getUntrackedParameter<int>("verbosity", 0)),
@@ -27,7 +26,7 @@ void GenEventBlock::beginJob()
 
   // Get TTree pointer
   TTree* tree = Utility::getTree("vhtree");
-  cloneGenEvent = new TClonesArray("GenEvent");
+  cloneGenEvent = new TClonesArray("vhtm::GenEvent");
   tree->Branch("GenEvent", &cloneGenEvent, 32000, 2);
   tree->Branch("pdfWeights", "vector<double>", &_pdfWeights);
 }
@@ -39,6 +38,9 @@ void GenEventBlock::analyze(const edm::Event& iEvent, const edm::EventSetup& iSe
   _pdfWeights->clear();
 
   if (!iEvent.isRealData()) {
+    // Create Event Object
+    genEventB = new ( (*cloneGenEvent)[0] ) vhtm::GenEvent();
+
     // GenEventInfo Part
     edm::Handle<GenEventInfoProduct> genEvtInfoProduct;
     iEvent.getByLabel(_genEvtInfoInputTag, genEvtInfoProduct);

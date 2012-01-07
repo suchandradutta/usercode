@@ -1,10 +1,11 @@
 #include "TTree.h"
 #include "TClonesArray.h"
-#include "VHTauTau/TreeMaker/plugins/GenParticleBlock.h"
-#include "VHTauTau/TreeMaker/interface/PhysicsObjects.h"
-#include "VHTauTau/TreeMaker/interface/Utility.h"
+
 #include "FWCore/MessageLogger/interface/MessageLogger.h"
 #include "DataFormats/HepMCCandidate/interface/GenParticle.h"
+
+#include "VHTauTau/TreeMaker/plugins/GenParticleBlock.h"
+#include "VHTauTau/TreeMaker/interface/Utility.h"
 
 GenParticleBlock::GenParticleBlock(const edm::ParameterSet& iConfig) :
   _verbosity(iConfig.getParameter<int>("verbosity")),
@@ -20,7 +21,7 @@ void GenParticleBlock::beginJob() {
 
   // Get TTree pointer
   TTree* tree = Utility::getTree("vhtree");
-  cloneGenParticle = new TClonesArray("GenParticle");
+  cloneGenParticle = new TClonesArray("vhtm::GenParticle");
   tree->Branch("GenParticle", &cloneGenParticle, 32000, 2);
   tree->Branch("nGenParticle", &fnGenParticle,  "fnGenParticle/I");
 
@@ -52,7 +53,7 @@ void GenParticleBlock::analyze(const edm::Event& iEvent, const edm::EventSetup& 
         //if (pt < 0.1) continue;                          // Do not store very low pt entries
         //if (std::abs(pdgid) == 21 && pt < 1.0) continue; // remove Low Pt gluons 
 
-        genParticleB = new ((*cloneGenParticle)[fnGenParticle++]) GenParticle();
+        genParticleB = new ((*cloneGenParticle)[fnGenParticle++]) vhtm::GenParticle();
 
         // fill in all the vectors
         genParticleB->eta       = it->eta();

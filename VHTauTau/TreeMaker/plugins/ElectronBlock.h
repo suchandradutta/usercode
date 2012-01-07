@@ -1,6 +1,9 @@
 
-#ifndef __TreeMaker_ElectronBlock_hh
-#define __TreeMaker_ElectronBlock_hh
+#ifndef __VHTauTau_TreeMaker_ElectronBlock_hh
+#define __VHTauTau_TreeMaker_ElectronBlock_hh
+
+#include <string>
+#include <vector>
 
 #include "FWCore/Framework/interface/Frameworkfwd.h"
 #include "FWCore/Framework/interface/EDAnalyzer.h"
@@ -14,8 +17,7 @@
 #include "DataFormats/Provenance/interface/EventID.h"
 #include "FWCore/ParameterSet/interface/ProcessDesc.h"
 
-#include <string>
-#include <vector>
+#include "VHTauTau/TreeMaker/interface/PhysicsObjects.h"
 
 class TClonesArray;
 class Electron;
@@ -51,7 +53,7 @@ private:
   edm::InputTag _ebRecHits;
   edm::InputTag _eeRecHits;
 
-  Electron* electronB;
+  vhtm::Electron* electronB;
 
   ElectronIDMVA* fMVA;
 };

@@ -1,5 +1,8 @@
-#ifndef __TreeMaker_JetBlock_hh
-#define __TreeMaker_JetBlock_hh
+#ifndef __VHTauTau_TreeMaker_JetBlock_hh
+#define __VHTauTau_TreeMaker_JetBlock_hh
+
+#include <string>
+#include <vector>
 
 #include "FWCore/Framework/interface/Frameworkfwd.h"
 #include "FWCore/Framework/interface/EDAnalyzer.h"
@@ -13,8 +16,7 @@
 #include "DataFormats/Provenance/interface/EventID.h"
 #include "FWCore/ParameterSet/interface/ProcessDesc.h"
 
-#include <string>
-#include <vector>
+#include "VHTauTau/TreeMaker/interface/PhysicsObjects.h"
 
 class TClonesArray;
 class Jet;
@@ -44,6 +46,6 @@ private:
   bool _applyResJEC;
   std::string _resJEC;
 
-  Jet* jetB;
+  vhtm::Jet* jetB;
 };
 #endif
