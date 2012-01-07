@@ -1,5 +1,5 @@
-#ifndef __TreeMaker_PhysicsObjects_h
-#define __TreeMaker_PhysicsObjects_h
+#ifndef __VHTauTau_TreeMaker_PhysicsObjects_h
+#define __VHTauTau_TreeMaker_PhysicsObjects_h
 
 #include <vector>
 #include <map>
