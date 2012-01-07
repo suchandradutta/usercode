@@ -1,25 +1,24 @@
 #include "VHTauTau/TreeMaker/interface/PhysicsObjects.h"
 
-ClassImp(Event) 
-ClassImp(GenEvent) 
-ClassImp(Electron) 
-ClassImp(GenParticle) 
-ClassImp(GenJet) 
-ClassImp(MET) 
-ClassImp(GenMET) 
-ClassImp(Tau) 
-ClassImp(CaloJet)
-ClassImp(Muon)
-ClassImp(Jet)
-ClassImp(SuperCluster)
-ClassImp(Vertex)
-ClassImp(Trigger)
-ClassImp(Track)
-ClassImp(Photon)
-ClassImp(TriggerObject)
+//ClassImp(Event) 
+//ClassImp(GenEvent) 
+//ClassImp(Electron) 
+//ClassImp(GenParticle) 
+//ClassImp(GenJet) 
+//ClassImp(MET) 
+//ClassImp(GenMET) 
+//ClassImp(Tau) 
+//ClassImp(CaloJet)
+//ClassImp(Muon)
+//ClassImp(Jet)
+//ClassImp(SuperCluster)
+//ClassImp(Vertex)
+//ClassImp(Trigger)
+//ClassImp(Track)
+//ClassImp(Photon)
+//ClassImp(TriggerObject)
 
-
-Event::Event() :
+vhtm::Event::Event() :
   run(0), 
   event(0), 
   lumis(0), 
@@ -37,14 +36,15 @@ Event::Event() :
 {
   nPU.clear();
   bunchCrossing.clear();
+  trueNInt.clear();
 }
-GenEvent::GenEvent() :
+vhtm::GenEvent::GenEvent() :
   processID(0),
   ptHat(-999)
 {
   pdfWeights.clear();
 }
-Electron::Electron() :
+vhtm::Electron::Electron() :
   eta(-999),
   phi(-999),
   pt(-999),
@@ -103,7 +103,7 @@ Electron::Electron() :
   mva(-999)
 {}
 
-GenParticle::GenParticle() :
+vhtm::GenParticle::GenParticle() :
   eta(-999),
   phi(-999),
   p(-999),
@@ -125,7 +125,7 @@ GenParticle::GenParticle() :
   daughtIndices.clear();
 }
 
-GenJet::GenJet() :
+vhtm::GenJet::GenJet() :
   eta(-999),
   phi(-999),
   p(-999),
@@ -134,7 +134,7 @@ GenJet::GenJet() :
   emf(-999),
   hadf(-999) {}
 
-MET::MET() :
+vhtm::MET::MET() :
   met(-999),
   metphi(-999),
   sumet(-999),
@@ -142,12 +142,12 @@ MET::MET() :
   metphiuncorr(-999),
   sumetuncorr(-999) {}
 
-GenMET::GenMET() :
+vhtm::GenMET::GenMET() :
   met(-999),
   metphi(-999),
   sumet(-999) {}
 
-Tau::Tau() :
+vhtm::Tau::Tau() :
   eta(-999),
   phi(-999),
   pt(-999),
@@ -203,7 +203,7 @@ Tau::Tau() :
   mva(-999) 
   {}
 
-CaloJet::CaloJet() :
+vhtm::CaloJet::CaloJet() :
   eta(-999),
   phi(-999),
   pt(-999),
@@ -231,7 +231,7 @@ CaloJet::CaloJet() :
   passLooseID(-1),
   passTightID(-1) {}
 
-Muon::Muon() :
+vhtm::Muon::Muon() :
   eta(-999),
   phi(-999),
   pt(-999),
@@ -270,7 +270,7 @@ Muon::Muon() :
   stationGapMaskPull(0)
  {}
 
-Jet::Jet() :
+vhtm::Jet::Jet() :
   eta(-999),
   phi(-999),
   pt(-999),
@@ -305,7 +305,7 @@ Jet::Jet() :
   passLooseID(-1),
   passTightID(-1) {}
 
-SuperCluster::SuperCluster() :
+vhtm::SuperCluster::SuperCluster() :
   eta(-999),
   phi(-999),
   pt(-999),
@@ -335,7 +335,7 @@ SuperCluster::SuperCluster() :
   scHEEPEcalIso(-999),
   scHEEPTrkIso(-999) {}
 
-Vertex::Vertex() :
+vhtm::Vertex::Vertex() :
   x(-999),
   y(-999),
   z(-999),
@@ -351,7 +351,7 @@ Vertex::Vertex() :
   isvalid(false),
   sumPt(-999) {}
 
-Trigger::Trigger() 
+vhtm::Trigger::Trigger() 
 {
   l1physbits.clear();
   l1techbits.clear();
@@ -359,7 +359,7 @@ Trigger::Trigger()
   hltresults.clear();
   hltprescales.clear();
 }
-Track::Track()
+vhtm::Track::Track()
   : eta(-999),
     etaError(-999),
     theta(-999),
@@ -388,7 +388,7 @@ Track::Track()
     ndof(-1),
     vx(-999), vy(-999), vz(-999)
 {}
-Photon::Photon() :
+vhtm::Photon::Photon() :
   et(-999),
   eta(-999),
   phi(-999),
@@ -461,7 +461,7 @@ Photon::Photon() :
   dPhiTracksAtEcal(-999),
   dEtaTracksAtEcal(-999)  
 {}
-TriggerObject::TriggerObject() :
+vhtm::TriggerObject::TriggerObject() :
   energy(-999),
   pt(-999),
   eta(-999),
