@@ -1,6 +1,7 @@
 import FWCore.ParameterSet.Config as cms
 
 from VHTauTau.TreeMaker.ElectronIDMVA_cfi import electronMVAIDNOIPcfg
+
 electronBlock = cms.EDAnalyzer("ElectronBlock",
     electronMVAIDNOIPcfg,
     verbosity     = cms.int32(0),

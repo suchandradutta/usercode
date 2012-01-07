@@ -1,15 +1,15 @@
 import FWCore.ParameterSet.Config as cms
 
-from VHTauTau.TreeMaker.EventBlock_cfi import *
-from VHTauTau.TreeMaker.VertexBlock_cfi import *
-from VHTauTau.TreeMaker.CaloJetBlock_cfi import *
-from VHTauTau.TreeMaker.JetBlock_cfi import *
-from VHTauTau.TreeMaker.ElectronBlock_cfi import *
-from VHTauTau.TreeMaker.METBlock_cfi import *
-from VHTauTau.TreeMaker.MuonBlock_cfi import *
-from VHTauTau.TreeMaker.TauBlock_cfi import *
-from VHTauTau.TreeMaker.TriggerBlock_cfi import *
-from VHTauTau.TreeMaker.PhotonBlock_cfi import *
+from VHTauTau.TreeMaker.EventBlock_cfi import eventBlock
+from VHTauTau.TreeMaker.VertexBlock_cfi import vertexBlock
+from VHTauTau.TreeMaker.CaloJetBlock_cfi import caloJetBlock
+from VHTauTau.TreeMaker.JetBlock_cfi import jetBlock
+from VHTauTau.TreeMaker.ElectronBlock_cfi import electronBlock
+from VHTauTau.TreeMaker.METBlock_cfi import metBlock
+from VHTauTau.TreeMaker.MuonBlock_cfi import muonBlock
+from VHTauTau.TreeMaker.TauBlock_cfi import tauBlock
+from VHTauTau.TreeMaker.TriggerBlock_cfi import triggerBlock
+from VHTauTau.TreeMaker.PhotonBlock_cfi import photonBlock
 
 treeContentSequence = cms.Sequence(
    eventBlock

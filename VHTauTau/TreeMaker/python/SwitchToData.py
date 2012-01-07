@@ -1,22 +1,19 @@
-
 import FWCore.ParameterSet.Config as cms
 import copy
 
-from PhysicsTools.PatAlgos.tools.coreTools import *
-import PhysicsTools.PatAlgos.tools.helpers as patutils
-
+from PhysicsTools.PatAlgos.tools.coreTools import coreTools
 
 def _setattr_ifexists(obj, attrName, attrValue):
 	if hasattr(obj, attrName):
 		setattr(obj, attrName, attrValue)
 
 def switchToData(process):
+  #remove MC matching from standard PAT sequences
+  #from VHTauTau.TreeMaker.SwitchToData import switchToData
+  # remove MC matching
 
-#remove MC matching from standard PAT sequences
-#from VHTauTau.TreeMaker.SwitchToData import switchToData
-# remove MC matching
-
-  removeMCMatching(process, ["All"], outputInProcess = False)
+  coreTools.runOnData(process)      
+  #removeMCMatching(process, ["All"], outputInProcess = False)
   removeMCMatching(process, ['METs'], "TC", outputInProcess = False)
   removeMCMatching(process, ['METs'], "PF", outputInProcess = False)
   removeMCMatching(process, ['METs'], "AK5Calo", outputInProcess = False)
@@ -34,7 +31,3 @@ def switchToData(process):
   process.patDefaultSequence.remove(process.patJetFlavourAssociation)
   process.patDefaultSequence.remove(process.patJetFlavourAssociationAK5PF)
   process.patDefaultSequence.remove(process.patJetFlavourAssociationAK5Calo)  
-
-  
-#runOnData(process, ["Jets"], outputInProcess = False)      
-
