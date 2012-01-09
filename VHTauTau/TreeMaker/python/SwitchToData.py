@@ -1,7 +1,7 @@
 import FWCore.ParameterSet.Config as cms
 import copy
 
-from PhysicsTools.PatAlgos.tools.coreTools import coreTools
+import PhysicsTools.PatAlgos.tools.coreTools as coreTools
 
 def _setattr_ifexists(obj, attrName, attrValue):
 	if hasattr(obj, attrName):
@@ -14,9 +14,9 @@ def switchToData(process):
 
   coreTools.runOnData(process)      
   #removeMCMatching(process, ["All"], outputInProcess = False)
-  removeMCMatching(process, ['METs'], "TC", outputInProcess = False)
-  removeMCMatching(process, ['METs'], "PF", outputInProcess = False)
-  removeMCMatching(process, ['METs'], "AK5Calo", outputInProcess = False)
+  coreTools.removeMCMatching(process, ['METs'], "TC", outputInProcess = False)
+  coreTools.removeMCMatching(process, ['METs'], "PF", outputInProcess = False)
+  coreTools.removeMCMatching(process, ['METs'], "AK5Calo", outputInProcess = False)
 
   process.patDefaultSequence.remove(process.patJetPartonMatch)
   process.patDefaultSequence.remove(process.patJetPartonMatchAK5PF)
