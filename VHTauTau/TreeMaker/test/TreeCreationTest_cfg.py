@@ -27,12 +27,11 @@ process.load('Configuration.StandardSequences.MagneticField_AutoFromDBCurrent_cf
 #-------------
 process.load('Configuration.StandardSequences.FrontierConditions_GlobalTag_cff')
 process.GlobalTag.globaltag = 'START42_V13::All'
-#from PhysicsTools.PatAlgos.patTemplate_cfg import *
 #-------------
 # Output ROOT file
 #-------------
 process.TFileService = cms.Service("TFileService",
-     fileName = cms.string('MC_RelValTTbar.root')
+    fileName = cms.string('MC_RelValTTbar.root')
 )
 #--------------------------------------------------
 # VHTauTau Tree Specific
@@ -40,23 +39,30 @@ process.TFileService = cms.Service("TFileService",
 process.load("VHTauTau.TreeMaker.TreeCreator_cfi")
 process.load("VHTauTau.TreeMaker.TreeWriter_cfi")
 process.load("VHTauTau.TreeMaker.TreeContentConfig_cff")
-# Event Skim
-process.load("VHTauTau.TreeMaker.EventSkimmer_cfi")
-
-process.load("RecoTauTag.Configuration.RecoPFTauTag_cff")
+process.triggerBlock.hltPathsOfInterest = cms.vstring(
+    "HLT_Ele17_CaloIdT_TrkIdVL_CaloIsoVL_TrkIsoVL_Ele8_CaloIdT_TrkIdVL_CaloIsoVL_TrkIsoVL",
+    "HLT_DoubleMu7",
+    "HLT_Mu17_Ele8_CaloIdL",
+    "HLT_IsoMu12_LooseIsoPFTau10"
+)
 #-------------------------------------------------------
 # PAT 
 #------------------------------------------------------
+process.load("RecoTauTag.Configuration.RecoPFTauTag_cff")
 process.load("PhysicsTools.PatAlgos.patSequences_cff")
 
+import PhysicsTools.PatAlgos.tools.tauTools as tauTools
+import PhysicsTools.PatAlgos.tools.jetTools as jetTools
+import PhysicsTools.PatAlgos.tools.metTools as metTools
+tauTools.switchToPFTauHPS(process) # For HPS Taus
+
+metTools.addTcMET(process, 'TC')
+metTools.addPfMET(process, 'PF')
+
 # Add PF jets
-from PhysicsTools.PatAlgos.tools.tauTools import *
-from PhysicsTools.PatAlgos.tools.jetTools import *
 jec = [ 'L1FastJet', 'L2Relative', 'L3Absolute' ]
-JetCorrectionService = cms.string('ak5PFL1FastL2L3'),
-#if not isMC:
-#        jec.extend([ 'L2L3Residual' ])
-addJetCollection(process, cms.InputTag('ak5PFJets'),
+JetCorrectionService = cms.string('ak5PFL1FastL2L3')
+jetTools.addJetCollection(process, cms.InputTag('ak5PFJets'),
      'AK5', 'PF',
      doJTA            = True,
      doBTagging       = True,
@@ -69,7 +75,7 @@ addJetCollection(process, cms.InputTag('ak5PFJets'),
      jetIdLabel       = "ak5",
      outputModule     = ''
 )
-addJetCollection(process, cms.InputTag('ak5CaloJets'),
+jetTools.addJetCollection(process, cms.InputTag('ak5CaloJets'),
      'AK5', 'Calo',
      doJTA            = True,
      doBTagging       = True,
@@ -82,10 +88,9 @@ addJetCollection(process, cms.InputTag('ak5CaloJets'),
      jetIdLabel       = "ak5",
      outputModule     = ''
 )
-#--------------------------------------------------------------------------------
-#
+#---------------------------------------
 # configure Jet Energy Corrections
-#
+#---------------------------------------
 process.load("CondCore.DBCommon.CondDBCommon_cfi")
 process.jec = cms.ESSource("PoolDBESSource",
      DBParameters = cms.PSet(
@@ -113,55 +118,9 @@ process.load('JetMETCorrections.Configuration.DefaultJEC_cff')
 ##-------------------- Import the Jet RECO modules -----------------------
 process.load('RecoJets.Configuration.RecoPFJets_cff')
 ##-------------------- Turn-on the FastJet density calculation
-
 process.kt6PFJets.doRhoFastjet = True
 ##-------------------- Turn-on the FastJet jet area calculation for your favorite algorithm
 process.ak5PFJets.doAreaFastjet = True
-
-# PF based muon and electron isolation
-# Muon Isolation
-from TauAnalysis.RecoTools.patLeptonPFIsolationSelector_cfi import patMuonPFIsolationSelector
-patMuonPFIsolationSelector.chargedHadronIso.ptMin = cms.double(0.5)
-patMuonPFIsolationSelector.neutralHadronIso.ptMin = cms.double(0.5)
-patMuonPFIsolationSelector.photonIso.ptMin = cms.double(0.5)
-patMuonPFIsolationSelector.chargedHadronIso.dRvetoCone = cms.double(0.01)
-patMuonPFIsolationSelector.neutralHadronIso.dRvetoCone = cms.double(0.01)
-patMuonPFIsolationSelector.photonIso.dRvetoCone = cms.double(0.01)
-patMuonPFIsolationSelector.pileUpCorr.chargedToNeutralFactor = cms.double(0.5)
-process.patMuonsLoosePFIsoEmbedded04 = cms.EDProducer("PATMuonPFIsolationEmbedder",
-    patMuonPFIsolationSelector,
-    src = cms.InputTag("selectedPatMuons"),
-    userFloatName = cms.string('pfLooseIsoPt04')
-)
-process.patMuonsLoosePFIsoEmbedded04.pfCandidateSource = cms.InputTag('pfNoPileUp')
-process.muonBlock.muonSrc = cms.InputTag("patMuonsLoosePFIsoEmbedded04")
-
-# Electron Isolation
-from TauAnalysis.RecoTools.patLeptonPFIsolationSelector_cfi import patElectronPFIsolationSelector
-patElectronPFIsolationSelector.chargedHadronIso.ptMin = cms.double(0.5)
-patElectronPFIsolationSelector.neutralHadronIso.ptMin = cms.double(0.5)
-patElectronPFIsolationSelector.photonIso.ptMin = cms.double(0.5)
-patElectronPFIsolationSelector.chargedHadronIso.dRvetoCone = cms.double(0.03)
-patElectronPFIsolationSelector.neutralHadronIso.dRvetoCone = cms.double(0.08)
-patElectronPFIsolationSelector.photonIso.dRvetoCone = cms.double(0.05)
-patElectronPFIsolationSelector.pileUpCorr.chargedToNeutralFactor = cms.double(0.5)
-process.patElectronsLoosePFIsoEmbedded04 = cms.EDProducer("PATElectronPFIsolationEmbedder",
-    patElectronPFIsolationSelector,
-    src = cms.InputTag("selectedPatElectrons"),
-    userFloatName = cms.string('pfLooseIsoPt04')
-)
-process.patElectronsLoosePFIsoEmbedded04.pfCandidateSource = cms.InputTag('pfNoPileUp')
-process.electronBlock.electronSrc = cms.InputTag("patElectronsLoosePFIsoEmbedded04")
-
-from PhysicsTools.PatAlgos.tools.tauTools import *
-switchToPFTauHPS(process) # For HPS Taus
-#switchToPFTauHPSpTaNC(process) # For HPS TaNC Taus
-from PhysicsTools.PatAlgos.tools.metTools import *
-addTcMET(process, 'TC')
-addPfMET(process, 'PF')
-
-# remove MC matching
-#removeMCMatching(process, ['All'])
 
 process.load("RecoEgamma.EgammaIsolationAlgos.egammaIsolationSequence_cff")
 #process.patElectronIsolation = cms.Sequence(process.egammaIsolationSequence)
@@ -206,28 +165,70 @@ process.simpleEleId60cIso.dataMagneticFieldSetUp = cms.bool(True)
 process.patElectronIDs = cms.Sequence(process.simpleEleIdSequence)
 process.makePatElectrons = cms.Sequence(process.patElectronIDs*process.patElectrons)
 
-process.triggerBlock.hltPathsOfInterest = cms.vstring(
-    "HLT_Ele17_CaloIdT_TrkIdVL_CaloIsoVL_TrkIsoVL_Ele8_CaloIdT_TrkIdVL_CaloIsoVL_TrkIsoVL",
-    "HLT_DoubleMu7",
-    "HLT_Mu17_Ele8_CaloIdL",
-    "HLT_IsoMu12_LooseIsoPFTau10"
+from VHTauTau.PatTools.pfNoPileup import configurePFNoPileup
+process.pfNPU = configurePFNoPileup(process)
+
+from VHTauTau.PatTools.muons.pfIsolation import addMuPFIsolation
+from VHTauTau.PatTools.electrons.pfIsolation import addElecPFIsolation
+
+# Embed PF Isolation in electrons & muons
+addMuPFIsolation(process, process.patDefaultSequence)
+addElecPFIsolation(process, process.patDefaultSequence)
+
+# Disable tau IsoDeposits
+process.patTaus.isoDeposits = cms.PSet()
+process.patTaus.userIsolation = cms.PSet()
+
+# PF based muon and electron isolation
+# Muon Isolation
+from TauAnalysis.RecoTools.patLeptonPFIsolationSelector_cfi import patMuonPFIsolationSelector
+patMuonPFIsolationSelector.chargedHadronIso.ptMin = cms.double(0.5)
+patMuonPFIsolationSelector.neutralHadronIso.ptMin = cms.double(0.5)
+patMuonPFIsolationSelector.photonIso.ptMin = cms.double(0.5)
+patMuonPFIsolationSelector.chargedHadronIso.dRvetoCone = cms.double(0.01)
+patMuonPFIsolationSelector.neutralHadronIso.dRvetoCone = cms.double(0.01)
+patMuonPFIsolationSelector.photonIso.dRvetoCone = cms.double(0.01)
+patMuonPFIsolationSelector.pileUpCorr.chargedToNeutralFactor = cms.double(0.5)
+process.patMuonsLoosePFIsoEmbedded04 = cms.EDProducer("PATMuonPFIsolationEmbedder",
+    patMuonPFIsolationSelector,
+    src = cms.InputTag("selectedPatMuons"),
+    userFloatName = cms.string('pfLooseIsoPt04')
 )
-process.jetBlock.verbosity = cms.int32(1)
+process.patMuonsLoosePFIsoEmbedded04.pfCandidateSource = cms.InputTag('pfNoPileUp')
+process.muonBlock.muonSrc = cms.InputTag("patMuonsLoosePFIsoEmbedded04")
+
+# Electron Isolation
+from TauAnalysis.RecoTools.patLeptonPFIsolationSelector_cfi import patElectronPFIsolationSelector
+patElectronPFIsolationSelector.chargedHadronIso.ptMin = cms.double(0.5)
+patElectronPFIsolationSelector.neutralHadronIso.ptMin = cms.double(0.5)
+patElectronPFIsolationSelector.photonIso.ptMin = cms.double(0.5)
+patElectronPFIsolationSelector.chargedHadronIso.dRvetoCone = cms.double(0.03)
+patElectronPFIsolationSelector.neutralHadronIso.dRvetoCone = cms.double(0.08)
+patElectronPFIsolationSelector.photonIso.dRvetoCone = cms.double(0.05)
+patElectronPFIsolationSelector.pileUpCorr.chargedToNeutralFactor = cms.double(0.5)
+process.patElectronsLoosePFIsoEmbedded04 = cms.EDProducer("PATElectronPFIsolationEmbedder",
+    patElectronPFIsolationSelector,
+    src = cms.InputTag("selectedPatElectrons"),
+    userFloatName = cms.string('pfLooseIsoPt04')
+)
+process.patElectronsLoosePFIsoEmbedded04.pfCandidateSource = cms.InputTag('pfNoPileUp')
+process.electronBlock.electronSrc = cms.InputTag("patElectronsLoosePFIsoEmbedded04")
+
 process.p = cms.Path(
-   process.treeCreator +
-   process.kt6PFJets *
-   process.ak5PFJets *
-   process.PFTau     +
+   process.kt6PFJets +
+   process.ak5PFJets +
+   process.PFTau +
+   process.pfNPU +
    process.patDefaultSequence +
    process.patMuonsLoosePFIsoEmbedded04 +
    process.patElectronsLoosePFIsoEmbedded04 +
+   process.treeCreator +
    process.treeContentSequence +
    process.treeWriter
 )
 #--------------------------------------
 # List File names here
 #---------------------------------------
-process.PoolSource.fileNames = [
-     '/store/relval/CMSSW_4_2_6/RelValTTbar/GEN-SIM-RECO/MC_42_V12-v1/0006/AE44BEC1-E8A8-E011-BB78-003048D25B68.root',
-     '/store/relval/CMSSW_4_2_6/RelValTTbar/GEN-SIM-RECO/MC_42_V12-v1/0007/203FAE61-3CA9-E011-AA6D-001A928116B8.root'
+process.PoolSource.fileNames = [   
+  'file:/home/data/sarkar/FCDB422C-A39C-E011-9E28-00261834B53C.root'
 ]
