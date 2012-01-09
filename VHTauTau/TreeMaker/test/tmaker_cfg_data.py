@@ -39,14 +39,14 @@ process.TFileService = cms.Service("TFileService",
 process.load("VHTauTau.TreeMaker.TreeCreator_cfi")
 process.load("VHTauTau.TreeMaker.TreeWriter_cfi")
 process.load("VHTauTau.TreeMaker.TreeContentConfig_data_cff")
-# Selection for DoubleElectron PD
-process.triggerBlock.hltPathsOfInterest=cms.vstring ("HLT_DoubleEle", "HLT_Ele", "HLT_TripleEle")
-# Selection for DoubleMu PD
-#process.triggerBlock.hltPathsOfInterest=cms.vstring ("HLT_DoubleMu", "HLT_L1DoubleMu", "HLT_Mu","HLT_TripleMu")
-# Selection for MuEG PD
-# process.triggerBlock.hltPathsOfInterest=cms.vstring ("HLT_DoubleMu", "HLT_Mu")
-# Selection for TauPlusX PD
-# process.triggerBlock.hltPathsOfInterest=cms.vstring ("LooseIsoPFTau", "TightIsoPFTau", "DoubleIsoPFTau", "TrkIsoT")
+process.triggerBlock.hltPathsOfInterest=cms.vstring ("HLT_DoubleMu","HLT_Mu","HLT_TripleMu","LooseIsoPFTau",
+                                                     "TightIsoPFTau", "DoubleIsoPFTau", "TrkIsoT")
+process.load("VHTauTau.TreeMaker.TriggerObjectBlock_cfi")
+process.triggerObjectBlock.hltPathsOfInterest=cms.vstring ("HLT_DoubleMu7_v", "HLT_Mu13_Mu8_v", "HLT_Mu17_Mu8_v", "HLT_Mu8_v",
+                                                           "HLT_Mu15_v", "HLT_Mu20_v", "HLT_Mu24_v",
+                                                           "HLT_IsoMu15_v", "HLT_IsoMu20_v", "HLT_IsoMu24_v",
+                                                           "HLT_Mu17_Ele8_Calo", "HLT_Mu8_Ele17_",
+                                                           "LooseIsoPFTau", "TightIsoPFTau", "DoubleIsoPFTau")
 
 #-------------------------------------------------------
 # PAT 
@@ -61,8 +61,14 @@ tauTools.switchToPFTauHPS(process) # For HPS Taus
 metTools.addTcMET(process, 'TC')
 metTools.addPfMET(process, 'PF')
 
+## --
+## Switch on PAT trigger
+## --
+import PhysicsTools.PatAlgos.tools.trigTools import trigTools
+trigTools.switchOnTrigger( process, outputModule='' ) # This is optional and can be omitted.
+
 jec = [ 'L1FastJet', 'L1Offset', 'L2Relative', 'L3Absolute' ]
-jec.extend([ 'L2L3Residual' ])
+#jec.extend([ 'L2L3Residual' ])
 jetTools.addJetCollection(process, cms.InputTag('ak5PFJets'),
      'AK5', 'PF',
      doJTA            = True,
