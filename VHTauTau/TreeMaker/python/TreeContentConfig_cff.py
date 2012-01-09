@@ -10,7 +10,7 @@ from VHTauTau.TreeMaker.MuonBlock_cfi import muonBlock
 from VHTauTau.TreeMaker.TauBlock_cfi import tauBlock
 from VHTauTau.TreeMaker.GenParticleBlock_cfi import genParticleBlock
 from VHTauTau.TreeMaker.GenJetBlock_cfi import genJetBlock
-from VHTauTau.TreeMaker.GenMETBlock_cfi import getMETBlock
+from VHTauTau.TreeMaker.GenMETBlock_cfi import genMETBlock
 from VHTauTau.TreeMaker.TriggerBlock_cfi import triggerBlock
 from VHTauTau.TreeMaker.PhotonBlock_cfi import photonBlock
 
