@@ -1,5 +1,5 @@
-#ifndef __VHTauTau_TreeMaker_TreeMakerModule_hh
-#define __VHTauTau_TreeMaker_TreeMakerModule_hh
+#ifndef __VHTauTau_TreeMaker_TreeMakerModule_h
+#define __VHTauTau_TreeMaker_TreeMakerModule_h
 
 #include <string>
 #include <vector>

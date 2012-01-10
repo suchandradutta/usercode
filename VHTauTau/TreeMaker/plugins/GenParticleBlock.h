@@ -1,5 +1,5 @@
-#ifndef __VHTauTau_TreeMaker_GenParticleBlock_hh
-#define __VHTauTau_TreeMaker_GenParticleBlock_hh
+#ifndef __VHTauTau_TreeMaker_GenParticleBlock_h
+#define __VHTauTau_TreeMaker_GenParticleBlock_h
 
 #include <string>
 #include <vector>

@@ -1,5 +1,5 @@
-#ifndef __VHTauTau_TreeMaker_CaloJetBlock_hh
-#define __VHTauTau_TreeMaker_CaloJetBlock_hh
+#ifndef __VHTauTau_TreeMaker_CaloJetBlock_h
+#define __VHTauTau_TreeMaker_CaloJetBlock_h
 
 #include <string>
 #include <vector>
@@ -49,7 +49,6 @@ private:
   std::string _jecUncPath;
   bool _applyResJEC;
   std::string _resJEC;
-
 
   vhtm::CaloJet* caloJetB;
 };

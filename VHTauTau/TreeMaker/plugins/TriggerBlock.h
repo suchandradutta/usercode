@@ -1,5 +1,5 @@
-#ifndef __VHTauTau_TreeMaker_TriggerBlock_hh
-#define __VHTauTau_TreeMaker_TriggerBlock_hh
+#ifndef __VHTauTau_TreeMaker_TriggerBlock_h
+#define __VHTauTau_TreeMaker_TriggerBlock_h
 
 #include <string>
 #include <vector>

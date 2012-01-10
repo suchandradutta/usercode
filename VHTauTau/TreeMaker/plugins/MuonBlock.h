@@ -1,5 +1,5 @@
-#ifndef __VHTauTau_TreeMaker_MuonBlock_hh
-#define __VHTauTau_TreeMaker_MuonBlock_hh
+#ifndef __VHTauTau_TreeMaker_MuonBlock_h
+#define __VHTauTau_TreeMaker_MuonBlock_h
 
 #include <string>
 #include <vector>

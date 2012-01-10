@@ -1,5 +1,5 @@
-#ifndef __VHTauTau_TreeMaker_GenMETBlock_hh
-#define __VHTauTau_TreeMaker_GenMETBlock_hh
+#ifndef __VHTauTau_TreeMaker_GenMETBlock_h
+#define __VHTauTau_TreeMaker_GenMETBlock_h
 
 #include <string>
 #include <vector>

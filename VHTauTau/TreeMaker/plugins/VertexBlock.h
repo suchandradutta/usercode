@@ -1,5 +1,5 @@
-#ifndef __VHTauTau_TreeMaker_VertexBlock_hh
-#define __VHTauTau_TreeMaker_VertexBlock_hh
+#ifndef __VHTauTau_TreeMaker_VertexBlock_h
+#define __VHTauTau_TreeMaker_VertexBlock_h
 
 #include <string>
 #include <vector>

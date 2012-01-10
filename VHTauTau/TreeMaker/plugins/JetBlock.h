@@ -1,5 +1,5 @@
-#ifndef __VHTauTau_TreeMaker_JetBlock_hh
-#define __VHTauTau_TreeMaker_JetBlock_hh
+#ifndef __VHTauTau_TreeMaker_JetBlock_h
+#define __VHTauTau_TreeMaker_JetBlock_h
 
 #include <string>
 #include <vector>

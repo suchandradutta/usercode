@@ -1,6 +1,6 @@
 
-#ifndef __VHTauTau_TreeMaker_ElectronBlock_hh
-#define __VHTauTau_TreeMaker_ElectronBlock_hh
+#ifndef __VHTauTau_TreeMaker_ElectronBlock_h
+#define __VHTauTau_TreeMaker_ElectronBlock_h
 
 #include <string>
 #include <vector>

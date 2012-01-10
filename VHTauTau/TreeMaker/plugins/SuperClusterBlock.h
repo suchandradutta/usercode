@@ -1,5 +1,5 @@
-#ifndef __VHTauTau_TreeMaker_SuperClusterBlock_hh
-#define __VHTauTau_TreeMaker_SuperClusterBlock_hh
+#ifndef __VHTauTau_TreeMaker_SuperClusterBlock_h
+#define __VHTauTau_TreeMaker_SuperClusterBlock_h
 
 #include <string>
 #include <vector>

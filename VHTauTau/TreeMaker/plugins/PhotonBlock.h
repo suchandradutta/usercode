@@ -1,5 +1,5 @@
-#ifndef __VHTauTau_TreeMaker_PhotonBlock_hh
-#define __VHTauTau_TreeMaker_PhotonBlock_hh
+#ifndef __VHTauTau_TreeMaker_PhotonBlock_h
+#define __VHTauTau_TreeMaker_PhotonBlock_h
 
 #include <string>
 #include <vector>

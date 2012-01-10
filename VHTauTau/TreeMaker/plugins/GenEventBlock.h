@@ -1,5 +1,5 @@
-#ifndef __VHTauTau_TreeMaker_GenEventBlock_hh
-#define __VHTauTau_TreeMaker_GenEventBlock_hh
+#ifndef __VHTauTau_TreeMaker_GenEventBlock_h
+#define __VHTauTau_TreeMaker_GenEventBlock_h
 
 #include <string>
 #include <vector>

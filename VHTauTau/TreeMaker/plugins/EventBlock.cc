@@ -30,6 +30,7 @@ EventBlock::EventBlock(const edm::ParameterSet& iConfig) :
 EventBlock::~EventBlock() {
   delete _nPU;
   delete _bunchCrossing;
+  delete _trueNInt;
 }
 void EventBlock::beginJob() {
   _nPU = new std::vector<int>();
