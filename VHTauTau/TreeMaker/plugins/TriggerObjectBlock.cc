@@ -5,7 +5,6 @@
 #include "CommonTools/UtilAlgos/interface/TFileService.h"
 
 #include "PhysicsTools/PatUtils/interface/TriggerHelper.h"
-#include "DataFormats/PatCandidates/interface/Muon.h"
 #include "DataFormats/PatCandidates/interface/TriggerEvent.h"
 
 #include "VHTauTau/TreeMaker/plugins/TriggerObjectBlock.h"
@@ -90,7 +89,7 @@ void TriggerObjectBlock::analyze(const edm::Event& iEvent, const edm::EventSetup
 	break;
       }
       nObjects++;
-      _triggerObject = new ((*cloneTriggerObject)[fnTriggerObject++]) TriggerObject();
+      _triggerObject = new ((*cloneTriggerObject)[fnTriggerObject++]) vhtm::TriggerObject();
       _triggerObject->eta = (**it).eta();
       _triggerObject->phi = (**it).phi();
       _triggerObject->pt  = (**it).pt();
