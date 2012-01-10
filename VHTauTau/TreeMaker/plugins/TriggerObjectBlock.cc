@@ -63,70 +63,56 @@ void TriggerObjectBlock::analyze(const edm::Event& iEvent, const edm::EventSetup
 
   // get the trigger objects corresponding to the used matching (HLT muons) and
   // loop over selected trigger objects
-  std::vector<pat::TriggerObjectRef> uniqueObjects;
   const pat::TriggerPathRefVector trigAllPaths(triggerEvent->pathRefs());
-  for (pat::TriggerPathRefVector::const_iterator iPath  = trigAllPaths.begin();
-       iPath != trigAllPaths.end(); iPath++) {
-    std::string name = (**iPath).name();
-    int nmatch = 0;
-    for (std::vector<std::string>::const_iterator kt  = _hltPathsOfInterest.begin();
-	 kt != _hltPathsOfInterest.end(); ++kt) {
-      nmatch += TPRegexp(*kt).Match(name);
-    }
-    if (!nmatch) continue; 
-    pat::TriggerObjectRefVector myObjects(triggerEvent->pathObjects( name, true));
-    for (pat::TriggerObjectRefVector::const_iterator it  = myObjects.begin();
-	 it != myObjects.end();	   ++it) {
-      std::vector<pat::TriggerObjectRef>::iterator ifind = find(uniqueObjects.begin(), uniqueObjects.end(), (*it));
-      if (ifind == uniqueObjects.end()) uniqueObjects.push_back((*it));
-    }
-  }
-  if (_verbosity)  std::cout << " # of unique Trigger Objects " << uniqueObjects.size() << std::endl;
+  pat::TriggerObjectRefVector myObjects(triggerEvent->objectRefs());
+  int nObjects = 0; 
+  for (pat::TriggerObjectRefVector::const_iterator it  = myObjects.begin();                                                 
+       it != myObjects.end();    ++it) {                                 
+    pat::TriggerPathRefVector myPaths = triggerEvent->objectPaths((*it));
+    std::map <std::string, unsigned int> pathInfoMap;
 
-  for (std::vector<pat::TriggerObjectRef>::const_iterator it  = uniqueObjects.begin(); 
-                                                   it != uniqueObjects.end(); 
-                                                  ++it) 
-  {
-    if (fnTriggerObject == kMaxTriggerObject) {
-      edm::LogInfo("TriggerObjectBlock") 
-	<< "Too many Trigger Muons (HLT), fnTriggerObject = " << fnTriggerObject; 
-      break;
-    }
-    _triggerObject = new ((*cloneTriggerObject)[fnTriggerObject++]) vhtm::TriggerObject();
-    _triggerObject->eta = (**it).eta();
-    _triggerObject->phi = (**it).phi();
-    _triggerObject->pt  = (**it).pt();
-    _triggerObject->energy  = (**it).energy();
-    
-    pat::TriggerPathRefVector objectPaths(triggerEvent->objectPaths((*it), true));
-    for (pat::TriggerPathRefVector::const_iterator iPath  = objectPaths.begin();
-	                                             iPath != objectPaths.end();
-                                                      ++iPath) 
-    {
-      std::string name = (**iPath).name();
-      int nmatch = 0;
+    for (pat::TriggerPathRefVector::const_iterator ipath = myPaths.begin();
+	 ipath != myPaths.end();    ++ipath) {
+      std::string name = (**ipath).name();
       for (std::vector<std::string>::const_iterator kt  = _hltPathsOfInterest.begin();
 	   kt != _hltPathsOfInterest.end(); ++kt) {
-	nmatch += TPRegexp(*kt).Match(name);
+	std::string path_int = (*kt);
+        if (name.find(path_int) == std::string::npos) continue;
+	unsigned int val = 0;
+	if (triggerEvent->path(name)->wasRun() && triggerEvent->path(name)->wasAccept()) val = 1;
+	pathInfoMap.insert(std::pair<std::string, unsigned int> (name, val));
       }
-      if (!nmatch) continue;
-      unsigned int val = 0;
-      if (triggerEvent->path(name)->wasRun() && triggerEvent->path(name)->wasAccept()) val = 1;
-      _triggerObject->pathList.insert(std::pair<std::string, unsigned int> (name, val));
     }
-    if (_verbosity) {
-      std::cout << _triggerObject->eta 
-		<< ":" << _triggerObject->phi 
-		<< ":" << _triggerObject->pt 
-		<< ":" << _triggerObject->energy
-		<< std::endl;
-      for (std::map<std::string, unsigned int>::const_iterator jt  = _triggerObject->pathList.begin();
-	                                            jt != _triggerObject->pathList.end(); ++jt)
-      {
-	std::cout << jt->first << " flag " << jt->second << std::endl;
+    if (pathInfoMap.size() > 0)  {
+      if (fnTriggerObject == kMaxTriggerObject) {
+	edm::LogInfo("TriggerObjectBlock") 
+	  << "Too many Trigger Muons (HLT), fnTriggerObject = " << fnTriggerObject; 
+	break;
+      }
+      nObjects++;
+      _triggerObject = new ((*cloneTriggerObject)[fnTriggerObject++]) TriggerObject();
+      _triggerObject->eta = (**it).eta();
+      _triggerObject->phi = (**it).phi();
+      _triggerObject->pt  = (**it).pt();
+      _triggerObject->energy  = (**it).energy();
+      for (std::map <std::string, unsigned int>::iterator imap = pathInfoMap.begin(); imap != pathInfoMap.end(); imap++) {
+	_triggerObject->pathList.insert(std::pair<std::string, unsigned int> (imap->first, imap->second));
+      }
+      if (_verbosity) {
+	std::cout << _triggerObject->eta 
+		  << ":" << _triggerObject->phi 
+		  << ":" << _triggerObject->pt 
+		  << ":" << _triggerObject->energy
+		  << std::endl;
+	for (std::map<std::string, unsigned int>::const_iterator jt  = _triggerObject->pathList.begin();
+	     jt != _triggerObject->pathList.end(); ++jt)
+	  {
+	    std::cout << jt->first << " flag " << jt->second << std::endl;
+	  }
       }
     }
   }
+  if (_verbosity) std::cout << " # of Trigger Objects " << nObjects << std::endl;
 }
 #include "FWCore/Framework/interface/MakerMacros.h"
 DEFINE_FWK_MODULE(TriggerObjectBlock);
