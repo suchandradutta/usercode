@@ -7,7 +7,6 @@
 
 #include "Utilities/General/interface/FileInPath.h"
 #include "Bianchi/Utilities/interface/AntiElectronIDMVA.h"
-//#include "RecoTauTag/RecoTau/interface/AntiElectronIDMVA.h"
 
 #include "VHTauTau/TreeMaker/plugins/TauBlock.h"
 #include "VHTauTau/TreeMaker/interface/Utility.h"
