@@ -64,7 +64,7 @@ metTools.addPfMET(process, 'PF')
 ## --
 ## Switch on PAT trigger
 ## --
-import PhysicsTools.PatAlgos.tools.trigTools import trigTools
+import PhysicsTools.PatAlgos.tools.trigTools as trigTools
 trigTools.switchOnTrigger( process, outputModule='' ) # This is optional and can be omitted.
 
 jec = [ 'L1FastJet', 'L1Offset', 'L2Relative', 'L3Absolute' ]
@@ -236,3 +236,11 @@ process.p = cms.Path(
 
 import VHTauTau.TreeMaker.SwitchToData as stod
 stod.switchToData(process)
+
+#--------------------------------------
+# List File names here
+#---------------------------------------
+process.PoolSource.fileNames = [
+  'file:./infn_mmt_events.root'
+]
+

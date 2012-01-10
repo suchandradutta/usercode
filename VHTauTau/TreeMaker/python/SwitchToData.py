@@ -12,8 +12,8 @@ def switchToData(process):
   #from VHTauTau.TreeMaker.SwitchToData import switchToData
   # remove MC matching
 
-  coreTools.runOnData(process)      
-  #removeMCMatching(process, ["All"], outputInProcess = False)
+  coreTools.runOnData(process, outputInProcess = False)      
+  #coreTools.removeMCMatching(process, ["All"], outputInProcess = False)
   coreTools.removeMCMatching(process, ['METs'], "TC", outputInProcess = False)
   coreTools.removeMCMatching(process, ['METs'], "PF", outputInProcess = False)
   coreTools.removeMCMatching(process, ['METs'], "AK5Calo", outputInProcess = False)
