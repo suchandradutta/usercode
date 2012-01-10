@@ -42,8 +42,7 @@ void MuonBlock::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
   iEvent.getByLabel(_vtxInputTag, primaryVertices);
 
   edm::Handle<reco::BeamSpot> beamSpot;
-  //iEvent.getByLabel(_beamSpotInputTag, beamSpot);
-  iEvent.getByLabel("offlineBeamSpot", beamSpot);
+  iEvent.getByLabel(_beamSpotInputTag, beamSpot);
 
   edm::Handle<reco::PFCandidateCollection> pfMuons;
   iEvent.getByLabel(_pfMuonInputTag, pfMuons);
@@ -53,8 +52,9 @@ void MuonBlock::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
   
   if (muons.isValid()) {
     edm::LogInfo("MuonBlock") << "Total # Muons: " << muons->size();
-    for (std::vector<pat::Muon>::const_iterator it = muons->begin(); it != muons->end(); ++it) {
-      // if muon is not global muon, continue
+    for (std::vector<pat::Muon>::const_iterator it  = muons->begin(); 
+                                                it != muons->end(); ++it) {
+      // if it is not a global muon, continue
       if (!it->isGlobalMuon()) continue;
 
       if (fnMuon == kMaxMuon) {
