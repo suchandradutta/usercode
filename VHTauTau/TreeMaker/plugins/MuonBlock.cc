@@ -91,7 +91,12 @@ void MuonBlock::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
 
       // PF-Isolation
       double pfreliso = it->userFloat("pfLooseIsoPt04")/it->pt();
-
+//(mu.chargedHadronIso" "+max(mu.photonIso()" "+mu.neutralHadronIso()" "-0.5*mu.userIso(0),0.0))" "/mu.pt() < ${threshold}"
+      double V1= it->photonIso()+it->neutralHadronIso()-0.5*(it->userIso(0));
+      
+      double Max =0;      
+if (V1>=0 ) Max= V1;
+ double UWpfreliso = (it->chargedHadronIso() +Max)/it->pt();
       reco::TrackRef tk = it->innerTrack();
 
       muonB = new ((*cloneMuon)[fnMuon++]) vhtm::Muon();
@@ -120,7 +125,7 @@ void MuonBlock::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
       muonB->trkHits    = hitp.numberOfValidTrackerHits();
       muonB->muoHits    = hitp.numberOfValidMuonHits();
       muonB->matches    = it->numberOfMatches();
-      muonB->pfRelIso   = pfreliso;
+      muonB->pfRelIso   = UWpfreliso;
 
       muonB->isTrackerMuon = (it->isTrackerMuon()) ? true : false;
 
