@@ -167,6 +167,13 @@ void ElectronBlock::analyze(const edm::Event& iEvent, const edm::EventSetup& iSe
       }      
       double pfreliso = it->userFloat("pfLooseIsoPt04")/it->pt();
 
+
+ double V1= it->photonIso()+it->neutralHadronIso()-0.5*(it->userIso(0));
+      
+      double Max =0;      
+if (V1>=0 ) Max= V1;
+ double UWpfreliso = (it->chargedHadronIso() +Max)/it->pt();
+
       electronB = new ((*cloneElectron)[fnElectron++]) vhtm::Electron();
       electronB->eta         = it->eta();
       electronB->phi         = it->phi();
@@ -230,7 +237,7 @@ void ElectronBlock::analyze(const edm::Event& iEvent, const edm::EventSetup& iSe
       electronB->vtxIndex  = indexVtx;
       electronB->vtxDistZ  = vertexDistZ;
       electronB->relIso    = (it->trackIso() + it->ecalIso() + it->hcalIso())/it->pt();
-      electronB->pfRelIso  = pfreliso;
+      electronB->pfRelIso  = UWpfreliso;
 
       // IP information
       electronB->dB  = it->dB(pat::Electron::PV2D);
