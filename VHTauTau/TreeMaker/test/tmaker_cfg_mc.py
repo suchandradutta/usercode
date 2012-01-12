@@ -226,3 +226,10 @@ process.p = cms.Path(
    process.treeContentSequence +
    process.treeWriter
 )
+#--------------------------------------
+# List File names here
+#---------------------------------------
+process.PoolSource.fileNames = [   
+  'file:/home/data/sarkar/FCDB422C-A39C-E011-9E28-00261834B53C.root'
+]
+
