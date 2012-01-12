@@ -50,6 +50,8 @@ private:
   const std::string  _tagPathLabel;
   const std::string  _probePathLabel;
   const std::vector<std::string> _hltPathsOfInterest;
+  bool _may10ReRecoData;
+  bool _firingFlag;
 
   vhtm::TriggerObject* _triggerObject;
 

@@ -9,6 +9,7 @@
 
 #include "VHTauTau/TreeMaker/plugins/TriggerObjectBlock.h"
 #include "VHTauTau/TreeMaker/interface/Utility.h"
+#include "DataFormats/PatCandidates/interface/TriggerFilter.h"
 
 #include "TMath.h"
 #include "TTree.h"
@@ -20,7 +21,8 @@ TriggerObjectBlock::TriggerObjectBlock(const edm::ParameterSet& iConfig) :
   _verbosity(iConfig.getParameter<int>("verbosity")),
   _hltInputTag(iConfig.getParameter<edm::InputTag>("hltInputTag")),
   _triggerEventTag(iConfig.getParameter<edm::InputTag>("triggerEventTag")),
-  _hltPathsOfInterest(iConfig.getParameter<std::vector<std::string> > ("hltPathsOfInterest"))
+  _hltPathsOfInterest(iConfig.getParameter<std::vector<std::string> > ("hltPathsOfInterest")),
+  _may10ReRecoData(iConfig.getParameter<bool>("May10ReRecoData"))
 {}
 TriggerObjectBlock::~TriggerObjectBlock() {
 }
@@ -35,6 +37,8 @@ void TriggerObjectBlock::beginJob()
   // Now book histograms
   edm::Service<TFileService> fileService;
 
+  if (_may10ReRecoData) _firingFlag = false;
+  else _firingFlag = true; 
 }
 void TriggerObjectBlock::beginRun(edm::Run const& iRun, edm::EventSetup const& iSetup) {
   bool changed = true;
@@ -62,7 +66,6 @@ void TriggerObjectBlock::analyze(const edm::Event& iEvent, const edm::EventSetup
 
   // get the trigger objects corresponding to the used matching (HLT muons) and
   // loop over selected trigger objects
-  const pat::TriggerPathRefVector trigAllPaths(triggerEvent->pathRefs());
   pat::TriggerObjectRefVector myObjects(triggerEvent->objectRefs());
   int nObjects = 0; 
   for (pat::TriggerObjectRefVector::const_iterator it  = myObjects.begin();                                                 
@@ -77,9 +80,20 @@ void TriggerObjectBlock::analyze(const edm::Event& iEvent, const edm::EventSetup
 	   kt != _hltPathsOfInterest.end(); ++kt) {
 	std::string path_int = (*kt);
         if (name.find(path_int) == std::string::npos) continue;
-	unsigned int val = 0;
-	if (triggerEvent->path(name)->wasRun() && triggerEvent->path(name)->wasAccept()) val = 1;
-	pathInfoMap.insert(std::pair<std::string, unsigned int> (name, val));
+        bool matched = true; 
+	// Get the filters and access the L3 filter (needed for May10ReReco data) 
+	if (_may10ReRecoData) {
+	  matched = false;
+          pat::TriggerFilterRefVector filters( triggerEvent->pathFilters( name, _firingFlag) );
+	  if ( filters.empty() ) continue;
+          pat::TriggerFilterRef lastFilter( filters.at( filters.size() - 1 ) );
+          if ( triggerEvent->objectInFilter( (*it), lastFilter->label() ) ) matched = true;
+	}
+	if (matched) {
+	  unsigned int val = 0;
+	  if (triggerEvent->path(name)->wasRun() && triggerEvent->path(name)->wasAccept()) val = 1;
+	  pathInfoMap.insert(std::pair<std::string, unsigned int> (name, val));
+	}
       }
     }
     if (pathInfoMap.size() > 0)  {

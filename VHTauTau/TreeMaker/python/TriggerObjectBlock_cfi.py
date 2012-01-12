@@ -5,5 +5,6 @@ triggerObjectBlock = cms.EDAnalyzer("TriggerObjectBlock",
   hltInputTag = cms.InputTag('TriggerResults','','HLT'),
   triggerEventTag = cms.InputTag('patTriggerEvent'),
   hltPathsOfInterest = cms.vstring(
-                     'HLT_Ele')
+                     'HLT_Ele'),
+  May10ReRecoData = cms.bool(False)                                  
 )
