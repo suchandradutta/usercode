@@ -17,7 +17,7 @@ void GenMETBlock::beginJob()
 {
   // Get TTree pointer
   TTree* tree = vhtm::Utility::getTree("vhtree");
-  cloneGenMET = new TClonesArray("GenMET");
+  cloneGenMET = new TClonesArray("vhtm::GenMET");
   tree->Branch("GenMET", &cloneGenMET, 32000, 2);
   tree->Branch("nGenMET", &fnGenMET,  "fnGenMET/I");
 }
