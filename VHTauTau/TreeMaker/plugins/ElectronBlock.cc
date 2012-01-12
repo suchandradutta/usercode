@@ -163,16 +163,13 @@ void ElectronBlock::analyze(const edm::Event& iEvent, const edm::EventSetup& iSe
         }
       } 
       else {
-	edm::LogError("ElectronBlock") << "Error! Can't get the product " << _vtxInputTag;
+	edm::LogError("ElectronBlock") << "Error! Failed to get the product " << _vtxInputTag;
       }      
       double pfreliso = it->userFloat("pfLooseIsoPt04")/it->pt();
-
-
- double V1= it->photonIso()+it->neutralHadronIso()-0.5*(it->userIso(0));
-      
-      double Max =0;      
-if (V1>=0 ) Max= V1;
- double UWpfreliso = (it->chargedHadronIso() +Max)/it->pt();
+      // UW prescription for pf based isolation
+      double v1 = it->photonIso() + it->neutralHadronIso() - 0.5*it->userIso(0);
+      double vmax = (v1 > 0) ? v1 : 0;
+      double UWpfreliso = (it->chargedHadronIso() + vmax)/it->pt();
 
       electronB = new ((*cloneElectron)[fnElectron++]) vhtm::Electron();
       electronB->eta         = it->eta();
