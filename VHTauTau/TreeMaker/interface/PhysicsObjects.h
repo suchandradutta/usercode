@@ -598,5 +598,16 @@ namespace vhtm {
   
     ClassDef(TriggerObject, 1)
   };
+  class CommonVertex: public TObject {
+  public:
+    CommonVertex();
+    ~CommonVertex() {}
+  
+    double chi2;
+    int ndof;
+    std::string label;
+  
+    ClassDef(CommonVertex, 1)
+  };
 }
 #endif

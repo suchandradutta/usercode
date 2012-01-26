@@ -19,5 +19,6 @@ namespace {
     vhtm::Track             rvf;
     vhtm::Photon            rvg;
     vhtm::TriggerObject     rvh;
+    vhtm::CommonVertex      rvi;
   };
 }

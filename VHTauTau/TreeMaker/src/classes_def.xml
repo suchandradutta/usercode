@@ -50,4 +50,7 @@
   <class name="vhtm::TriggerObject" ClassVersion="1">
     <version ClassVersion="1" checksum="682759659"/>
   </class>
+  <class name="vhtm::CommonVertex" ClassVersion="1">
+    <version ClassVersion="1" checksum="682759659"/>
+  </class>
 </lcgdict>

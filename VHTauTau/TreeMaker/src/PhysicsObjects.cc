@@ -469,3 +469,9 @@ vhtm::TriggerObject::TriggerObject() :
 {
   pathList.clear();
 }
+vhtm::CommonVertex::CommonVertex() :
+  chi2(-1),
+  ndof(-1),
+  label("")
+{
+}
