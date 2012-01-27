@@ -87,7 +87,8 @@ void ElectronBlock::analyze(const edm::Event& iEvent, const edm::EventSetup& iSe
   // otherwise take it from the IdealMagneticFieldRecord
   if (iEvent.isRealData()) {
     if (dcsHandle.isValid()) {
-      edm::LogInfo("ElectronBlock") << "Successfully obtained " << _dcsInputTag;
+      edm::LogInfo("ElectronBlock") << "Success >> obtained product for label:" 
+                                    << _dcsInputTag;
       // scale factor = 3.801/18166.0 which are
       // average values taken over a stable two-week period
       double currentToBFieldScaleFactor = 2.09237036221512717e-04;
@@ -95,18 +96,19 @@ void ElectronBlock::analyze(const edm::Event& iEvent, const edm::EventSetup& iSe
       evt_bField = current*currentToBFieldScaleFactor;
     } 
     else {
-      edm::LogError("ElectronBlock") << "Error! Can't get the product " << _dcsInputTag;
+      edm::LogError("ElectronBlock") << "Error >> Failed to get product for label: " 
+                                     << _dcsInputTag;
     }
   } 
   else {
     edm::ESHandle<MagneticField> magneticField;
     iSetup.get<IdealMagneticFieldRecord>().get(magneticField);
     if (magneticField.isValid()) {
-      edm::LogInfo("ElectronBlock") << "Successfully obtained IdealMagneticFieldRecord!";
+      edm::LogInfo("ElectronBlock") << "Success >> obtained IdealMagneticFieldRecord!";
       evt_bField = magneticField->inTesla(GlobalPoint(0.,0.,0.)).z();
     } 
     else {
-      edm::LogError("ElectronBlock") << "Error! Can't get IdealMagneticFieldRecord";
+      edm::LogError("ElectronBlock") << "Error >> Failed to get IdealMagneticFieldRecord";
     }
   }
 
@@ -121,10 +123,11 @@ void ElectronBlock::analyze(const edm::Event& iEvent, const edm::EventSetup& iSe
 
   if (electrons.isValid()) {
     edm::LogInfo("ElectronBlock") << "Total # PAT Electrons: " << electrons->size();
-    for (std::vector<pat::Electron>::const_iterator it = electrons->begin(); 
-                                                   it != electrons->end(); ++it) {
+    for (std::vector<pat::Electron>::const_iterator it  = electrons->begin(); 
+                                                    it != electrons->end(); ++it) {
       if (fnElectron == kMaxElectron) {
-	edm::LogInfo("ElectronBlock") << "Too many PAT Electrons, fnElectron = " << fnElectron; 
+	edm::LogInfo("ElectronBlock") << "Too many PAT Electrons, fnElectron = " 
+                                      << fnElectron; 
 	break;
       }
       // if electron is not ECAL driven, continue
@@ -135,14 +138,16 @@ void ElectronBlock::analyze(const edm::Event& iEvent, const edm::EventSetup& iSe
       double dist = -9999.;
       double dcot = -9999.;
       if (tracks.isValid()) {
-	edm::LogInfo("ElectronBlock") << "Successfully obtained " << _trkInputTag;
+	edm::LogInfo("ElectronBlock") << "Success >> obtained product for label: " 
+                                      << _trkInputTag;
 
         ConversionInfo convInfo = convFinder.getConversionInfo(*it, tracks, evt_bField);
         dist = convInfo.dist();
         dcot = convInfo.dcot();
       } 
       else {
-	edm::LogError("ElectronBlock") << "Error! Can't get the product " << _trkInputTag;
+	edm::LogError("ElectronBlock") << "Error >> Failed to get product for label: " 
+                                       << _trkInputTag;
       }
 
       // Vertex association
@@ -150,21 +155,25 @@ void ElectronBlock::analyze(const edm::Event& iEvent, const edm::EventSetup& iSe
       int indexVtx = -1;
       double vertexDistZ = 9999.;
  
-      if (primaryVertices.isValid()) {
-	edm::LogInfo("ElectronBlock") << "Total # Primary Vertices: " << primaryVertices->size();
-        for (reco::VertexCollection::const_iterator v_it = primaryVertices->begin() ; 
-                                                   v_it != primaryVertices->end() ; ++v_it) {
-          double dist3D = sqrt(pow(it->gsfTrack()->dxy(v_it->position()),2) + pow(it->gsfTrack()->dz(v_it->position()),2));
-          if (dist3D < minVtxDist3D) {
-            minVtxDist3D = dist3D;
-            indexVtx = int(std::distance(primaryVertices->begin(),v_it));
-            vertexDistZ = it->gsfTrack()->dz(v_it->position());
+      if (it->gsfTrack().isNonnull()) {
+        if (primaryVertices.isValid()) {
+	  edm::LogInfo("ElectronBlock") << "Total # Primary Vertices: " << primaryVertices->size();
+          for (reco::VertexCollection::const_iterator v_it  = primaryVertices->begin(); 
+                                                      v_it != primaryVertices->end(); ++v_it) {
+            double dist3D = sqrt(pow(it->gsfTrack()->dxy(v_it->position()), 2) 
+                               + pow(it->gsfTrack()->dz(v_it->position()), 2));
+            if (dist3D < minVtxDist3D) {
+              minVtxDist3D = dist3D;
+              indexVtx = int(std::distance(primaryVertices->begin(), v_it));
+              vertexDistZ = it->gsfTrack()->dz(v_it->position());
+            }
           }
-        }
-      } 
-      else {
-	edm::LogError("ElectronBlock") << "Error! Failed to get the product " << _vtxInputTag;
-      }      
+        } 
+        else {
+	  edm::LogError("ElectronBlock") << "Error >> Failed to get product for label: " 
+                                         << _vtxInputTag;
+        }      
+      }
       double pfreliso = it->userFloat("pfLooseIsoPt04")/it->pt();
       // UW prescription for pf based isolation
       double v1 = it->photonIso() + it->neutralHadronIso() - 0.5*it->userIso(0);
@@ -214,11 +223,16 @@ void ElectronBlock::analyze(const edm::Event& iEvent, const edm::EventSetup& iSe
       electronB->isoEcal04 = it->dr04EcalRecHitSumEt(); // ecalIso
       electronB->isoHcal04 = it->dr04HcalTowerSumEt(); // hcalIso
       electronB->isoTrk04  = it->dr04TkSumPt(); // trackIso
-      electronB->isoRel03  = (it->dr03EcalRecHitSumEt()+it->dr03HcalTowerSumEt()+it->dr03TkSumPt())/it->pt();
-      electronB->isoRel04  = (it->dr04EcalRecHitSumEt()+it->dr04HcalTowerSumEt()+it->dr04TkSumPt())/it->pt();
+      electronB->isoRel03  = (it->dr03EcalRecHitSumEt()
+                            + it->dr03HcalTowerSumEt()
+                            + it->dr03TkSumPt())/it->pt();
+      electronB->isoRel04  = (it->dr04EcalRecHitSumEt()
+                            + it->dr04HcalTowerSumEt()
+                            + it->dr04TkSumPt())/it->pt();
 
       // Conversion variables
-      electronB->missingHits = (hasGsfTrack) ? it->gsfTrack()->trackerExpectedHitsInner().numberOfHits() : -1;
+      electronB->missingHits = (hasGsfTrack) 
+               ? it->gsfTrack()->trackerExpectedHitsInner().numberOfHits() : -1;
       electronB->dist_vec    = dist;
       electronB->dCotTheta   = dcot;
 
@@ -251,7 +265,8 @@ void ElectronBlock::analyze(const edm::Event& iEvent, const edm::EventSetup& iSe
     }
   } 
   else {
-    edm::LogError("ElectronBlock") << "Error! Can't get the product " << _electronInputTag;
+    edm::LogError("ElectronBlock") << "Error >> Failed to get product for label: " 
+                                   << _electronInputTag;
   }
 }
 #include "FWCore/Framework/interface/MakerMacros.h"
