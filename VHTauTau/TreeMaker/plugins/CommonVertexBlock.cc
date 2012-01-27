@@ -141,6 +141,12 @@ void CommonVertexBlock::analyze(const edm::Event& iEvent, const edm::EventSetup&
   int nElectron = _selectedElectrons.size();
   int nTau = _selectedTaus.size();
 
+  if (_verbosity > 0)
+    std::cout << "nMuon = " << nMuon
+              << ", nElectron = " << nElectron
+              << ", nTau = " << nTau
+              << std::endl;
+
   // Now form various combinations
   vertexB = new ( (*cloneCommonVertex)[0] ) vhtm::CommonVertex();
   if ( nMuon >= 2 && nElectron == 0 && nTau >= 1 ) 
