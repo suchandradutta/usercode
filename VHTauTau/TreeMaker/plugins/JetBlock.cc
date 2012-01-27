@@ -40,15 +40,15 @@ void JetBlock::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup) 
   cloneJet->Clear();
   fnJet = 0;
 
-  bool applyResJECLocal = _applyResJEC;
-
-  edm::FileInPath fipUnc(_jecUncPath);;
-  JetCorrectionUncertainty *jecUnc = new JetCorrectionUncertainty(fipUnc.fullPath());
-
+  JetCorrectionUncertainty *jecUnc = 0;
   JetCorrectorParameters *ResJetCorPar = 0;
   FactorizedJetCorrector *JEC = 0;
+  bool applyResJECLocal = _applyResJEC;
   if (_applyResJEC) {
     try {
+      edm::FileInPath fipUnc(_jecUncPath);;
+      jecUnc = new JetCorrectionUncertainty(fipUnc.fullPath());
+
       edm::FileInPath fipRes(_resJEC);
       ResJetCorPar = new JetCorrectorParameters(fipRes.fullPath());
       std::vector<JetCorrectorParameters> vParam;
@@ -84,9 +84,10 @@ void JetBlock::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup) 
         corr = JEC->getCorrection();
       }
 
-      jecUnc->setJetEta(it->eta());
-      jecUnc->setJetPt(it->pt()*corr); // the uncertainty is a function of the corrected pt
-
+      if (jecUnc) {
+        jecUnc->setJetEta(it->eta());
+        jecUnc->setJetPt(it->pt()*corr); // the uncertainty is a function of the corrected pt
+      }
       jetB = new ((*cloneJet)[fnJet++]) vhtm::Jet();
 
       // fill in all the vectors
@@ -96,7 +97,7 @@ void JetBlock::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup) 
       jetB->pt_raw     = it->correctedJet("Uncorrected").pt();
       jetB->energy     = it->energy()*corr;
       jetB->energy_raw = it->correctedJet("Uncorrected").energy();
-      jetB->jecUnc     = jecUnc->getUncertainty(true);
+      jetB->jecUnc     = (jecUnc) ? jecUnc->getUncertainty(true) : -1;
       jetB->resJEC     = corr;
       jetB->partonFlavour               = it->partonFlavour();
 
