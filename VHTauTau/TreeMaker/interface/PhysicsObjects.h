@@ -122,7 +122,9 @@ namespace vhtm {
   
     double mva;
    
-    ClassDef(Electron,3) 
+       int selbit;
+
+    ClassDef(Electron, 4) 
   };
   class GenParticle: public TObject {
   public:
@@ -256,8 +258,10 @@ namespace vhtm {
     double ltsipt;
   
     double mva;
+    
+       int selbit;
   
-    ClassDef(Tau,3) 
+    ClassDef(Tau, 4) 
   };
   class CaloJet: public TObject {
   public:
@@ -289,8 +293,10 @@ namespace vhtm {
     double jetBProbabilityBTag;
        int passLooseID;
        int passTightID;
+
+       int selbit;
   
-    ClassDef(CaloJet, 1)
+    ClassDef(CaloJet, 2)
   };
   class Muon: public TObject {
   public:
@@ -335,7 +341,9 @@ namespace vhtm {
        unsigned int stationGapMaskDistance;
        unsigned int stationGapMaskPull;
      
-    ClassDef(Muon, 3)
+       int selbit;
+
+    ClassDef(Muon, 4)
   };
   class Jet: public TObject {
   public:
@@ -375,7 +383,9 @@ namespace vhtm {
        int passLooseID;
        int passTightID;
   
-    ClassDef(Jet, 1)
+       int selbit;
+
+    ClassDef(Jet, 2)
   };
   class SuperCluster: public TObject {
   public: 
@@ -411,7 +421,9 @@ namespace vhtm {
     double scHEEPEcalIso;
     double scHEEPTrkIso;
   
-    ClassDef(SuperCluster, 1)
+       int selbit;
+
+    ClassDef(SuperCluster, 2)
   };
   class Vertex: public TObject {
   public:
@@ -433,7 +445,9 @@ namespace vhtm {
       bool isvalid;
     double sumPt;
   
-    ClassDef(Vertex, 2)
+       int selbit;
+
+    ClassDef(Vertex, 3)
   };
   class Trigger: public TObject {
   public:
@@ -497,7 +511,9 @@ namespace vhtm {
        double vy;
        double vz;
   
-    ClassDef(Track, 1)
+          int selbit; 
+         
+    ClassDef(Track, 2)
   };
   class Photon : public TObject {
   public:
@@ -581,8 +597,10 @@ namespace vhtm {
     double dPhiTracksAtVtx;
     double dPhiTracksAtEcal;
     double dEtaTracksAtEcal;  
+
+       int selbit;
   
-    ClassDef(Photon, 1)
+    ClassDef(Photon, 2)
   };
   class TriggerObject: public TObject {
   public:

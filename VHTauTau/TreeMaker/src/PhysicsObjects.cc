@@ -1,23 +1,5 @@
 #include "VHTauTau/TreeMaker/interface/PhysicsObjects.h"
 
-//ClassImp(Event) 
-//ClassImp(GenEvent) 
-//ClassImp(Electron) 
-//ClassImp(GenParticle) 
-//ClassImp(GenJet) 
-//ClassImp(MET) 
-//ClassImp(GenMET) 
-//ClassImp(Tau) 
-//ClassImp(CaloJet)
-//ClassImp(Muon)
-//ClassImp(Jet)
-//ClassImp(SuperCluster)
-//ClassImp(Vertex)
-//ClassImp(Trigger)
-//ClassImp(Track)
-//ClassImp(Photon)
-//ClassImp(TriggerObject)
-
 vhtm::Event::Event() :
   run(0), 
   event(0), 
@@ -100,7 +82,8 @@ vhtm::Electron::Electron() :
   scHEEPTrkIso(-999),
   nBrems(-1),
   fbrem(-999),
-  mva(-999)
+  mva(-999),
+  selbit(-1)
 {}
 
 vhtm::GenParticle::GenParticle() :
@@ -200,7 +183,7 @@ vhtm::Tau::Tau() :
   etaphiMoment(-999),
   vx(-999), vy(-999), vz(-999),
   zvertex(-999), ltsipt(-999),
-  mva(-999) 
+  mva(-999), selbit(-1) 
   {}
 
 vhtm::CaloJet::CaloJet() :
@@ -229,7 +212,8 @@ vhtm::CaloJet::CaloJet() :
   jetProbabilityBTag(-999),
   jetBProbabilityBTag(-999),
   passLooseID(-1),
-  passTightID(-1) {}
+  passTightID(-1),
+  selbit(-1)  {}
 
 vhtm::Muon::Muon() :
   eta(-999),
@@ -267,7 +251,8 @@ vhtm::Muon::Muon() :
   nMatchedStations(-1),
   stationMask(0),
   stationGapMaskDistance(0),
-  stationGapMaskPull(0)
+  stationGapMaskPull(0),
+  selbit(-1) 
  {}
 
 vhtm::Jet::Jet() :
@@ -303,7 +288,8 @@ vhtm::Jet::Jet() :
   jetProbabilityBTag(-999),
   jetBProbabilityBTag(-999),
   passLooseID(-1),
-  passTightID(-1) {}
+  passTightID(-1),
+  selbit(-1) {}
 
 vhtm::SuperCluster::SuperCluster() :
   eta(-999),
@@ -333,7 +319,8 @@ vhtm::SuperCluster::SuperCluster() :
   sckOutOfTime(-1),
   scEcalIso(-999),
   scHEEPEcalIso(-999),
-  scHEEPTrkIso(-999) {}
+  scHEEPTrkIso(-999),
+  selbit(-1) {}
 
 vhtm::Vertex::Vertex() :
   x(-999),
@@ -349,7 +336,8 @@ vhtm::Vertex::Vertex() :
   ntracksw05(-1),
   isfake(true),
   isvalid(false),
-  sumPt(-999) {}
+  sumPt(-999),
+  selbit(-1) {}
 
 vhtm::Trigger::Trigger() 
 {
@@ -386,7 +374,8 @@ vhtm::Track::Track()
     dzError(-999),
     chi2(-999),
     ndof(-1),
-    vx(-999), vy(-999), vz(-999)
+    vx(-999), vy(-999), vz(-999),
+    selbit(-1)
 {}
 vhtm::Photon::Photon() :
   et(-999),
@@ -459,7 +448,8 @@ vhtm::Photon::Photon() :
   distOfMinApproach(-999),
   dPhiTracksAtVtx(-999),
   dPhiTracksAtEcal(-999),
-  dEtaTracksAtEcal(-999)  
+  dEtaTracksAtEcal(-999)  ,
+  selbit(-1)
 {}
 vhtm::TriggerObject::TriggerObject() :
   energy(-999),
