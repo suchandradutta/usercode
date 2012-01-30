@@ -140,7 +140,7 @@ void SuperClusterBlock::analyze(const edm::Event& iEvent, const edm::EventSetup&
     scB->hoe = schoe;
 
     std::vector<float> scLocalCov = EcalTool.scLocalCovariances(*it);
-    double scSigmaiEiE = sqrt(scLocalCov[0]); // same method used in GsfElectronAlgo.cc
+    double scSigmaiEiE = std::sqrt(scLocalCov[0]); // same method used in GsfElectronAlgo.cc
     scB->sigmaIEtaIEta = scSigmaiEiE;
 
     reco::SuperClusterRef tempSCRef(superClustersEBHandle,std::distance(superClustersEBHandle->begin(),it));  // get SCRef to use to make ele candidate
@@ -223,7 +223,7 @@ void SuperClusterBlock::analyze(const edm::Event& iEvent, const edm::EventSetup&
     scB->hoe = schoe;
 
     std::vector<float> scLocalCov = EcalTool.scLocalCovariances(*it);
-    double scSigmaiEiE = sqrt(scLocalCov[0]); // same method used in GsfElectronAlgo.cc
+    double scSigmaiEiE = std::sqrt(scLocalCov[0]); // same method used in GsfElectronAlgo.cc
     scB->sigmaIEtaIEta = scSigmaiEiE;
 
     reco::SuperClusterRef tempSCRef(superClustersEEHandle,std::distance(superClustersEEHandle->begin(),it));  // get SCRef to use to make ele candidate

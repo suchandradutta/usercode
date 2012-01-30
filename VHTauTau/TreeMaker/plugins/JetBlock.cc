@@ -56,7 +56,9 @@ void JetBlock::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup) 
       JEC = new FactorizedJetCorrector(vParam);
     }
     catch (std::exception& ex) {
-      edm::LogInfo("JetBlock") << "The following exception occurred:" << std::endl << ex.what();
+      edm::LogInfo("JetBlock") << "The following exception occurred:" 
+                               << std::endl 
+                               << ex.what();
       applyResJECLocal = false; 
     } 
   }
@@ -136,7 +138,8 @@ void JetBlock::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup) 
     }
   } 
   else {
-    edm::LogError("JetBlock") << "Error! Can't get the product " << _inputTag;
+    edm::LogError("JetBlock") << "Error >> Failed to get pat::Jet collection for label: " 
+                              << _inputTag;
   }
   if (jecUnc) delete jecUnc;
   if (ResJetCorPar) delete ResJetCorPar;

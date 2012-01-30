@@ -46,7 +46,8 @@ void PhotonBlock::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
     for (std::vector<pat::Photon>::const_iterator it = photons->begin(); 
                                                  it != photons->end(); ++it) {
       if (fnPhoton == kMaxPhoton) {
-	edm::LogInfo("PhotonBlock") << "Too many PAT Photon, fnPhoton = " << fnPhoton; 
+	edm::LogInfo("PhotonBlock") << "Too many PAT Photon, fnPhoton = " 
+                                    << fnPhoton; 
 	break;
       }
       photonB = new ((*clonePhoton)[fnPhoton++]) vhtm::Photon();
@@ -149,7 +150,8 @@ void PhotonBlock::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
     }
   }
   else {
-    edm::LogError("PhotonBlock") << "Error! Failed to get the product " << _photonInputTag;
+    edm::LogError("PhotonBlock") << "Error >> Failed to get pat::Photon for label: " 
+                                 << _photonInputTag;
   }
 }
 #include "FWCore/Framework/interface/MakerMacros.h"

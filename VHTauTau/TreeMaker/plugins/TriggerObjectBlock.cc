@@ -45,13 +45,14 @@ void TriggerObjectBlock::beginRun(edm::Run const& iRun, edm::EventSetup const& i
   if (hltConfig.init(iRun, iSetup, _hltInputTag.process(), changed)) {
     // if init returns TRUE, initialisation has succeeded!
     edm::LogInfo("TriggerObjectBlock") << "HLT config with process name " 
-                                     << _hltInputTag.process() << " successfully extracted";
+                                       << _hltInputTag.process() 
+                                       << " successfully extracted";
   } 
   else {
     // if init returns FALSE, initialisation has NOT succeeded, which indicates a problem
     // with the file and/or code and needs to be investigated!
     edm::LogError("TriggerObjectBlock") << "Error! HLT config extraction with process name " 
-                                      << _hltInputTag.process() << " failed";
+                                        << _hltInputTag.process() << " failed";
     // In this case, all access methods will return empty values!
   }
 }
@@ -69,15 +70,18 @@ void TriggerObjectBlock::analyze(const edm::Event& iEvent, const edm::EventSetup
   pat::TriggerObjectRefVector myObjects(triggerEvent->objectRefs());
   int nObjects = 0; 
   for (pat::TriggerObjectRefVector::const_iterator it  = myObjects.begin();                                                 
-       it != myObjects.end();    ++it) {                                 
+                                                   it != myObjects.end(); 
+                                                 ++it) {                                 
     pat::TriggerPathRefVector myPaths = triggerEvent->objectPaths((*it));
     std::map <std::string, unsigned int> pathInfoMap;
 
     for (pat::TriggerPathRefVector::const_iterator ipath = myPaths.begin();
-	 ipath != myPaths.end();    ++ipath) {
+	                                           ipath != myPaths.end();   
+                                                 ++ipath) {
       std::string name = (**ipath).name();
       for (std::vector<std::string>::const_iterator kt  = _hltPathsOfInterest.begin();
-	   kt != _hltPathsOfInterest.end(); ++kt) {
+	                                            kt != _hltPathsOfInterest.end(); 
+                                                  ++kt) {
 	std::string path_int = (*kt);
         if (name.find(path_int) == std::string::npos) continue;
         bool matched = true; 
@@ -98,8 +102,8 @@ void TriggerObjectBlock::analyze(const edm::Event& iEvent, const edm::EventSetup
     }
     if (pathInfoMap.size() > 0)  {
       if (fnTriggerObject == kMaxTriggerObject) {
-	edm::LogInfo("TriggerObjectBlock") 
-	  << "Too many Trigger Muons (HLT), fnTriggerObject = " << fnTriggerObject; 
+	edm::LogInfo("TriggerObjectBlock") << "Too many Trigger Muons (HLT), fnTriggerObject = " 
+                                           << fnTriggerObject; 
 	break;
       }
       nObjects++;
@@ -108,7 +112,9 @@ void TriggerObjectBlock::analyze(const edm::Event& iEvent, const edm::EventSetup
       _triggerObject->phi = (**it).phi();
       _triggerObject->pt  = (**it).pt();
       _triggerObject->energy  = (**it).energy();
-      for (std::map <std::string, unsigned int>::iterator imap = pathInfoMap.begin(); imap != pathInfoMap.end(); imap++) {
+      for (std::map <std::string, unsigned int>::iterator imap  = pathInfoMap.begin(); 
+                                                          imap != pathInfoMap.end(); 
+                                                        ++imap) {
 	_triggerObject->pathList.insert(std::pair<std::string, unsigned int> (imap->first, imap->second));
       }
       if (_verbosity) {
@@ -118,10 +124,11 @@ void TriggerObjectBlock::analyze(const edm::Event& iEvent, const edm::EventSetup
 		  << ":" << _triggerObject->energy
 		  << std::endl;
 	for (std::map<std::string, unsigned int>::const_iterator jt  = _triggerObject->pathList.begin();
-	     jt != _triggerObject->pathList.end(); ++jt)
-	  {
-	    std::cout << jt->first << " flag " << jt->second << std::endl;
-	  }
+	                                                         jt != _triggerObject->pathList.end(); 
+                                                               ++jt)
+        {
+	  std::cout << jt->first << " flag " << jt->second << std::endl;
+	}
       }
     }
   }

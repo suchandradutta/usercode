@@ -44,7 +44,8 @@ void GenParticleBlock::analyze(const edm::Event& iEvent, const edm::EventSetup& 
       for (reco::GenParticleCollection::const_iterator it = genParticles->begin(); 
                                                       it != genParticles->end(); ++it ) {
         if (fnGenParticle == kMaxGenParticle) {
-	  edm::LogInfo("GenParticleBlock") << "Too many GenParticles, fnGenParticle = " << fnGenParticle;
+	  edm::LogInfo("GenParticleBlock") << "Too many GenParticles, fnGenParticle = " 
+                                           << fnGenParticle;
 	  break;
         }
         // Do not store low energy gluons
@@ -89,7 +90,8 @@ void GenParticleBlock::analyze(const edm::Event& iEvent, const edm::EventSetup& 
                                                           mit != genParticles->end(); ++mit) {
             if (m == &(*mit) ) { // -- keep all the entries && it->pdgId() != mit->pdgId() ) {
 	      int idx = std::distance(genParticles->begin(), mit);
-	      if (_verbosity > 0) std::cout << "mother index/pdgId: " << idx << "/" << mit->pdgId() << std::endl;
+	      if (_verbosity > 0) 
+                std::cout << "mother index/pdgId: " << idx << "/" << mit->pdgId() << std::endl;
               genParticleB->motherIndices.push_back(idx);
               //_motherIndices->push_back(idx);
               break;
@@ -102,7 +104,8 @@ void GenParticleBlock::analyze(const edm::Event& iEvent, const edm::EventSetup& 
                                                           mit != genParticles->end(); ++mit) {
             if (d == &(*mit) ) { // -- keep all the entries  && it->pdgId() != mit->pdgId() ) {
 	      int idx = std::distance(genParticles->begin(), mit);
-	      if (_verbosity > 0) std::cout << "daughter index/pdgId: " << idx << "/" << mit->pdgId() << std::endl;
+	      if (_verbosity > 0) 
+                std::cout << "daughter index/pdgId: " << idx << "/" << mit->pdgId() << std::endl;
               genParticleB->daughtIndices.push_back(idx);
               //_daughtIndices->push_back(idx);
               break;
@@ -115,7 +118,8 @@ void GenParticleBlock::analyze(const edm::Event& iEvent, const edm::EventSetup& 
       }
     } 
     else {
-      edm::LogError("GenParticleBlock") << "Error! Can't get the product " << _inputTag;
+      edm::LogError("GenParticleBlock") << "Error >> Failed to get GenParticleCollection for label: " 
+                                        << _inputTag;
     }
   }
 }

@@ -87,7 +87,8 @@ void TrackBlock::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup
     }
   } 
   else {
-    edm::LogError("TrackBlock") << "Error! Failed to get the product " << _inputTag;
+    edm::LogError("TrackBlock") << "Error! Failed to get reco::Track collection for label: " 
+                                << _inputTag;
   }
 }
 #include "FWCore/Framework/interface/MakerMacros.h"

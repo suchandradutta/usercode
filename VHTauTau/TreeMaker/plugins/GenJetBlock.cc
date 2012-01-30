@@ -1,3 +1,5 @@
+#include <iostream>
+
 #include "TTree.h"
 #include "TClonesArray.h"
 #include "VHTauTau/TreeMaker/plugins/GenJetBlock.h"
@@ -50,7 +52,8 @@ void GenJetBlock::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
       }
     } 
     else {
-      edm::LogError("GenJetBlock") << "Error! Can't get the product " << _inputTag;
+      edm::LogError("GenJetBlock") << "Error >> Failed to get GenJetCollection for label: " 
+                                   << _inputTag;
     }
   }
 }

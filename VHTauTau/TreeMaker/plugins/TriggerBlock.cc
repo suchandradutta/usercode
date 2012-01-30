@@ -81,18 +81,20 @@ void TriggerBlock::analyze(const edm::Event& iEvent, const edm::EventSetup& iSet
   iEvent.getByLabel(_l1InputTag, l1GtReadoutRecord);
 
   if (l1GtReadoutRecord.isValid()) {
-    edm::LogInfo("TriggerBlock") << "Successfully obtained " << _l1InputTag;
+    edm::LogInfo("TriggerBlock") << "Successfully obtained L1GlobalTriggerReadoutRecord for label: " 
+                                 << _l1InputTag;
     for (unsigned int i = 0; i < NmaxL1AlgoBit; ++i) {
       //triggerB->l1physbits.push_back(l1GtReadoutRecord->decisionWord()[i] ? 1 : 0);
       _l1physbits->push_back(l1GtReadoutRecord->decisionWord()[i] ? 1 : 0);
     }
     for (unsigned int i = 0; i < NmaxL1TechBit; ++i) {
       //triggerB->l1techbits.push_back( l1GtReadoutRecord->technicalTriggerWord()[i] ? 1 : 0 );
-      _l1techbits->push_back( l1GtReadoutRecord->technicalTriggerWord()[i] ? 1 : 0 );
+      _l1techbits->push_back(l1GtReadoutRecord->technicalTriggerWord()[i] ? 1 : 0 );
     }
   } 
   else {
-    edm::LogError("TriggerBlock") << "Error! Can't get the product " << _l1InputTag;
+    edm::LogError("TriggerBlock") << "Error >> Failed to get L1GlobalTriggerReadoutRecord for label: " 
+                                  << _l1InputTag;
   }
   edm::Handle<edm::TriggerResults> triggerResults;
   iEvent.getByLabel(_hltInputTag, triggerResults);
@@ -125,7 +127,7 @@ void TriggerBlock::analyze(const edm::Event& iEvent, const edm::EventSetup& iSet
 
       int prescale = -1;
       if (hltConfig.prescaleSet(iEvent, iSetup) < 0) {
-	edm::LogError("TriggerBlock") << "Error! The prescale set index number could not be obtained";
+	edm::LogError("TriggerBlock") << "Error >> The prescale set index number could not be obtained";
       } 
       else {
         prescale = hltConfig.prescaleValue(iEvent, iSetup, *it);
@@ -134,7 +136,8 @@ void TriggerBlock::analyze(const edm::Event& iEvent, const edm::EventSetup& iSet
       _hltprescales->push_back(prescale);
     }
   } else {
-    edm::LogError("TriggerBlock") << "Error! Can't get the product " << _hltInputTag;
+    edm::LogError("TriggerBlock") << "Error >> Failed to get TriggerResults for label: " 
+                                  << _hltInputTag;
   }
 }
 #include "FWCore/Framework/interface/MakerMacros.h"

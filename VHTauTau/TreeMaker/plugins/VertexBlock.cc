@@ -54,7 +54,8 @@ void VertexBlock::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
     }
   } 
   else {
-    edm::LogError("VertexBlock") << "Error! Can't get the product " << _inputTag;
+    edm::LogError("VertexBlock") << "Error >> Failed to get VertexCollection for label: " 
+                                 << _inputTag;
   }
 }
 #include "FWCore/Framework/interface/MakerMacros.h"

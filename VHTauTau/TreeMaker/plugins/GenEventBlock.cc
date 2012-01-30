@@ -45,24 +45,29 @@ void GenEventBlock::analyze(const edm::Event& iEvent, const edm::EventSetup& iSe
     edm::Handle<GenEventInfoProduct> genEvtInfoProduct;
     iEvent.getByLabel(_genEvtInfoInputTag, genEvtInfoProduct);
     if (genEvtInfoProduct.isValid()) {
-      edm::LogInfo("GenEventBlock") << "Successfully obtained " << _genEvtInfoInputTag;
+      edm::LogInfo("GenEventBlock") << "Success >> obtained GenEventInfoProduct for label:" 
+                                    << _genEvtInfoInputTag;
       genEventB->processID = genEvtInfoProduct->signalProcessID();
-      genEventB->ptHat     = (genEvtInfoProduct->hasBinningValues() ? genEvtInfoProduct->binningValues()[0] : 0.);
+      genEventB->ptHat     = genEvtInfoProduct->hasBinningValues() 
+                         ? genEvtInfoProduct->binningValues()[0] : 0.;
     } 
     else {
-      edm::LogError("GenEventBlock") << "Error! Can't get the product " << _genEvtInfoInputTag;
+      edm::LogError("GenEventBlock") << "Error >> Failed to get GenEventInfoProduct for label: " 
+                                     << _genEvtInfoInputTag;
     }
     // PDF Weights Part
     if (_storePDFWeights) {
       edm::Handle<std::vector<double> > pdfWeightsHandle;
       iEvent.getByLabel(_pdfWeightsInputTag, pdfWeightsHandle);
       if (pdfWeightsHandle.isValid()) {
-	edm::LogInfo("GenEventBlock") << "Successfully obtained " << _pdfWeightsInputTag;
+	edm::LogInfo("GenEventBlock") << "Success >> obtained PDF handle for label: " 
+                                      << _pdfWeightsInputTag;
 	copy(pdfWeightsHandle->begin(), pdfWeightsHandle->end(), genEventB->pdfWeights.begin());
 	copy(pdfWeightsHandle->begin(), pdfWeightsHandle->end(), _pdfWeights->begin());
       } 
       else {
-	edm::LogError("GenEventBlock") << "Error! Can't get the product " << _pdfWeightsInputTag;
+	edm::LogError("GenEventBlock") << "Error >>  Failed to get PDF handle for label: " 
+                                       << _pdfWeightsInputTag;
       }
     }
   }

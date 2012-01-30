@@ -1,3 +1,5 @@
+#include <iostream>
+
 #include "TTree.h"
 #include "TClonesArray.h"
 
@@ -47,9 +49,6 @@ void MuonBlock::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
   edm::Handle<reco::PFCandidateCollection> pfMuons;
   iEvent.getByLabel(_pfMuonInputTag, pfMuons);
 
-  //Define a Trigger Match Helper to retrieve trigger matches
-  //  const pat::helper::TriggerMatchHelper matchHelper;
-  
   if (muons.isValid()) {
     edm::LogInfo("MuonBlock") << "Total # Muons: " << muons->size();
     for (std::vector<pat::Muon>::const_iterator it  = muons->begin(); 
@@ -64,7 +63,8 @@ void MuonBlock::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
       double trkd0 = it->track()->d0();
       if (_beamSpotCorr && beamSpot.isValid()) trkd0 = -(it->track()->dxy(beamSpot->position()));
       else if (_beamSpotCorr && !beamSpot.isValid()) 
-        edm::LogError("MuonsBlock") << "Error! Can't get the offlineBeamSpot";
+        edm::LogError("MuonsBlock") << "Error >> Failed to get BeamSpot for label: "
+                                    << _beamSpotInputTag;
       double reliso = (it->trackIso() + it->ecalIso() + it->hcalIso())/it->pt();
 
       // Vertex association
@@ -76,8 +76,8 @@ void MuonBlock::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
 
         for (reco::VertexCollection::const_iterator v_it = primaryVertices->begin(); 
                                                    v_it != primaryVertices->end(); ++v_it) {
-          double dist3D = sqrt(pow(it->track()->dxy(v_it->position()),2) 
-                             + pow(it->track()->dz(v_it->position()),2));
+          double dist3D = std::sqrt(pow(it->track()->dxy(v_it->position()),2) 
+                                  + pow(it->track()->dz(v_it->position()),2));
           if (dist3D<minVtxDist3D) {
             minVtxDist3D = dist3D;
                 indexVtx = int(std::distance(primaryVertices->begin(),v_it));
@@ -86,7 +86,8 @@ void MuonBlock::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
         }
       } 
       else {
-	edm::LogError("MuonBlock") << "Error! Can't get the product " << _vtxInputTag;
+	edm::LogError("MuonBlock") << "Error >> Failed to get VertexCollection for label: " 
+                                   << _vtxInputTag;
       }
 
       // PF-Isolation
@@ -146,7 +147,8 @@ void MuonBlock::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
     }
   } 
   else {
-    edm::LogError("MuonBlock") << "Error! Can't get the product " << _muonInputTag;
+    edm::LogError("MuonBlock") << "Error >> Failed to get pat::Muon collection for label: " 
+                               << _muonInputTag;
   }
 }
 #include "FWCore/Framework/interface/MakerMacros.h"

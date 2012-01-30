@@ -70,9 +70,12 @@ void TauBlock::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup) 
       tauB->mass   = it->mass();
 
       // Leading particle pT
-      tauB->leadChargedParticlePt = it->leadPFChargedHadrCand().isNonnull() ? it->leadPFChargedHadrCand()->et(): 0.;
-      tauB->leadNeutralParticlePt = it->leadPFNeutralCand().isNonnull() ? it->leadPFNeutralCand()->et(): 0.;
-      tauB->leadParticlePt        = it->leadPFCand().isNonnull() ? it->leadPFCand()->et(): 0.;      
+      tauB->leadChargedParticlePt = it->leadPFChargedHadrCand().isNonnull() 
+                                      ? it->leadPFChargedHadrCand()->et(): 0.;
+      tauB->leadNeutralParticlePt = it->leadPFNeutralCand().isNonnull() 
+                                      ? it->leadPFNeutralCand()->et(): 0.;
+      tauB->leadParticlePt        = it->leadPFCand().isNonnull() 
+                                      ? it->leadPFCand()->et(): 0.;      
 
       // Number of charged/neutral candidates and photons in different cones
       tauB->numChargedHadronsSignalCone = it->signalPFChargedHadrCands().size();
@@ -142,7 +145,8 @@ void TauBlock::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup) 
     }
   }
   else {
-    edm::LogError("TauBlock") << "Error! Failed to get the product: " << _inputTag;
+    edm::LogError("TauBlock") << "Error! Failed to get pat::Tau collection for label: " 
+                              << _inputTag;
   }
 }
 #include "FWCore/Framework/interface/MakerMacros.h"

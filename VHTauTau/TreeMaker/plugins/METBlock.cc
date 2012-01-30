@@ -49,7 +49,8 @@ void METBlock::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup) 
     }
   } 
   else {
-    edm::LogError("METBlock") << "Error! Can't get the product " << _inputTag;
+    edm::LogError("METBlock") << "Error >> Failed to get pat::MET collection for label: " 
+                              << _inputTag;
   }
 }
 #include "FWCore/Framework/interface/MakerMacros.h"

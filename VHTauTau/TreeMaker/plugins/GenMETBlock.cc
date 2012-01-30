@@ -46,7 +46,8 @@ void GenMETBlock::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
       }
     } 
     else {
-      edm::LogError("GenMETBlock") << "Error! Can't get the product " << _inputTag;
+      edm::LogError("GenMETBlock") << "Error >>  Failed to get GenMETCollection for label: " 
+                                   << _inputTag;
     }
   }
 }

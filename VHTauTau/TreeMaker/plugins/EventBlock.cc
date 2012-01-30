@@ -42,8 +42,8 @@ void EventBlock::beginJob() {
   cloneEvent = new TClonesArray("vhtm::Event");
   tree->Branch("Event", &cloneEvent, 32000, 2);
 
-  tree->Branch("nPU", "vector<int>", &_nPU);
-  tree->Branch("bunchCrossing", "vector<int>", &_bunchCrossing);
+  tree->Branch("nPU", "std::vector<int>", &_nPU);
+  tree->Branch("bunchCrossing", "std::vector<int>", &_bunchCrossing);
   tree->Branch("trueNInt", "std::vector<int>", &_trueNInt);
 }
 void EventBlock::analyze(edm::Event const& iEvent, edm::EventSetup const& iSetup) {
@@ -74,7 +74,8 @@ void EventBlock::analyze(edm::Event const& iEvent, edm::EventSetup const& iSetup
 
   // Technical Trigger Part
   if (l1GtReadoutRecord.isValid()) {
-    edm::LogInfo("EventBlock") << "Successfully obtained " << _l1InputTag;
+    edm::LogInfo("EventBlock") << "Successfully obtained L1GlobalTriggerReadoutRecord for label: " 
+                               << _l1InputTag;
 
     L1GtFdlWord fdlWord = l1GtReadoutRecord->gtFdlWord();
     if (fdlWord.physicsDeclared() == 1)
@@ -96,7 +97,8 @@ void EventBlock::analyze(edm::Event const& iEvent, edm::EventSetup const& iSetup
       eventB->isBSCBeamHalo = true;
   } 
   else {
-    edm::LogError("EventBlock") << "Error! Can't get the product " << _l1InputTag;
+    edm::LogError("EventBlock") << "Error >> Failed to get L1GlobalTriggerReadoutRecord for label:" 
+                                << _l1InputTag;
   }
 
   // Good Primary Vertex Part
@@ -117,7 +119,8 @@ void EventBlock::analyze(edm::Event const& iEvent, edm::EventSetup const& iSetup
     }
   } 
   else {
-    edm::LogError("EventBlock") << "Error! Can't get the product " << _vtxInputTag;
+    edm::LogError("EventBlock") << "Error >> Failed to get VertexCollection for label:" 
+                                << _vtxInputTag;
   }
 
   // Scraping Events Part
@@ -141,23 +144,24 @@ void EventBlock::analyze(edm::Event const& iEvent, edm::EventSetup const& iSetup
     }
   } 
   else {
-    edm::LogError("EventBlock") << "Error! Can't get the product " << _trkInputTag;
+    edm::LogError("EventBlock") << "Error >> Failed to get TrackCollection for label:" 
+                                << _trkInputTag;
   }
 #if 0
   // Hcal Noise Part
   edm::Handle<bool> hbheFilterResult;
   iEvent.getByLabel(_hcalNoiseInputTag, hbheFilterResult);
   if (hbheFilterResult.isValid()) {
-    edm::LogInfo("EventBlock") << "Successfully obtained " << _hcalNoiseInputTag;
+    edm::LogInfo("EventBlock") << "Success >> obtained result for label: " << _hcalNoiseInputTag;
     eventB->passHBHENoiseFilter = *hbheFilterResult;
   } 
   else {
-    edm::LogError("EventBlock") << "Error! Can't get the product " << _hcalNoiseInputTag;
+    edm::LogError("EventBlock") << "Error >> Failed to get result for label:" 
+                                << _hcalNoiseInputTag;
   }
 #endif
   // Access PU information
   if (!iEvent.isRealData()) {
-    //if (isMC) {
     edm::Handle<std::vector<PileupSummaryInfo> > PupInfo;
     iEvent.getByLabel("addPileupInfo", PupInfo);
 

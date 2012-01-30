@@ -93,7 +93,7 @@ void CommonVertexBlock::analyze(const edm::Event& iEvent, const edm::EventSetup&
   }
   else {
     edm::LogError("CommonVertexBlock") 
-      << "Error! Failed to get PAT Muon Collection for tag = " 
+      << "Error >> Failed to get pat::Muon Collection for label: " 
       << _patMuonSrc;
   }
 
@@ -114,7 +114,7 @@ void CommonVertexBlock::analyze(const edm::Event& iEvent, const edm::EventSetup&
   }
   else {
     edm::LogError("CommonVertexBlock") 
-      << "Error! Failed to get PAT Electron Collection for tag = " 
+      << "Error >> Failed to get pat::Electron Collection for label: " 
       << _patElectronSrc;
   }
 
@@ -134,7 +134,7 @@ void CommonVertexBlock::analyze(const edm::Event& iEvent, const edm::EventSetup&
   }
   else {
     edm::LogError("CommonVertexBlock") 
-      << "Error! Failed to get PAT Tau Collection for tag = " 
+      << "Error >> Failed to get pat::Tau Collection for label: " 
       << _patTauSrc;
   }
   int nMuon = _selectedMuons.size();
