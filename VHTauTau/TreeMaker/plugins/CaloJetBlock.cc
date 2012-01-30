@@ -47,17 +47,28 @@ void CaloJetBlock::analyze(const edm::Event& iEvent, const edm::EventSetup& iSet
   cloneCaloJet->Clear();
   fnCaloJet = 0;
 
-  edm::FileInPath fipUnc(_jecUncPath);;
-  JetCorrectionUncertainty *jecUnc = new JetCorrectionUncertainty(fipUnc.fullPath());
-
+  JetCorrectionUncertainty *jecUnc = 0;
   JetCorrectorParameters *ResJetCorPar = 0;
   FactorizedJetCorrector *JEC = 0;
+
+  bool applyResJECLocal = _applyResJEC;
   if (_applyResJEC) {
-    edm::FileInPath fipRes(_resJEC);
-    ResJetCorPar = new JetCorrectorParameters(fipRes.fullPath());
-    std::vector<JetCorrectorParameters> vParam;
-    vParam.push_back(*ResJetCorPar);
-    JEC = new FactorizedJetCorrector(vParam);
+    try {
+      edm::FileInPath fipUnc(_jecUncPath);;
+      jecUnc = new JetCorrectionUncertainty(fipUnc.fullPath());
+
+      edm::FileInPath fipRes(_resJEC);
+      ResJetCorPar = new JetCorrectorParameters(fipRes.fullPath());
+      std::vector<JetCorrectorParameters> vParam;
+      vParam.push_back(*ResJetCorPar);
+      JEC = new FactorizedJetCorrector(vParam);
+    }
+    catch (std::exception& ex) {
+      edm::LogInfo("CaloJetBlock") << "The following exception occurred:" 
+                                   << std::endl 
+                                   << ex.what();
+      applyResJECLocal = false; 
+    } 
   }
 
   edm::Handle<std::vector<pat::Jet> > jets;
@@ -129,25 +140,27 @@ void CaloJetBlock::analyze(const edm::Event& iEvent, const edm::EventSetup& iSet
         }
       }
       double corr = 1.;
-      if (_applyResJEC && iEvent.isRealData()) {
+      if (applyResJECLocal && iEvent.isRealData()) {
         JEC->setJetEta(it->eta());
         JEC->setJetPt(it->pt()); // here you put the L2L3 Corrected jet pt
         corr = JEC->getCorrection();
       }
 
-      jecUnc->setJetEta(it->eta());
-      jecUnc->setJetPt(it->pt()*corr); // the uncertainty is a function of the corrected pt
+      if (jecUnc) {
+        jecUnc->setJetEta(it->eta());
+        jecUnc->setJetPt(it->pt()*corr); // the uncertainty is a function of the corrected pt
+      }
 
       caloJetB = new ((*cloneCaloJet)[fnCaloJet++]) vhtm::CaloJet();
 
       // fill in all the vectors
       caloJetB->eta        = it->eta();
       caloJetB->phi        = it->phi();
-      caloJetB->pt         = it->pt()*corr;
+      caloJetB->pt         = it->pt() * corr;
       caloJetB->pt_raw     = it->correctedJet("Uncorrected").pt();
-      caloJetB->energy     = it->energy()*corr;
+      caloJetB->energy     = it->energy() * corr;
       caloJetB->energy_raw = it->correctedJet("Uncorrected").energy();
-      caloJetB->jecUnc     =  jecUnc->getUncertainty(true);
+      caloJetB->jecUnc     = jecUnc->getUncertainty(true);
       caloJetB->resJEC     = corr;
       caloJetB->overlaps   = ovrlps;
       caloJetB->partonFlavour = it->partonFlavour();
@@ -157,24 +170,25 @@ void CaloJetBlock::analyze(const edm::Event& iEvent, const edm::EventSetup& iSet
       caloJetB->n90Hits       = it->jetID().n90Hits;
       caloJetB->fHPD          = it->jetID().fHPD;
       caloJetB->fRBX          = it->jetID().fRBX;
-      caloJetB->sigmaEta      = sqrt(it->etaetaMoment());
-      caloJetB->sigmaPhi      = sqrt(it->phiphiMoment());
+      caloJetB->sigmaEta      = std::sqrt(it->etaetaMoment());
+      caloJetB->sigmaPhi      = std::sqrt(it->phiphiMoment());
       caloJetB->trackCountingHighEffBTag         = it->bDiscriminator("trackCountingHighEffBJetTags");
       caloJetB->trackCountingHighPurBTag         = it->bDiscriminator("trackCountingHighPurBJetTags");
       caloJetB->simpleSecondaryVertexHighEffBTag = it->bDiscriminator("simpleSecondaryVertexHighEffBJetTags");
       caloJetB->simpleSecondaryVertexHighPurBTag = it->bDiscriminator("simpleSecondaryVertexHighPurBJetTags");
       caloJetB->jetProbabilityBTag               = it->bDiscriminator("jetProbabilityBJetTags");
       caloJetB->jetBProbabilityBTag              = it->bDiscriminator("jetBProbabilityBJetTags");
-      caloJetB->passLooseID =  passjetLoose;
-      caloJetB->passTightID =  passjetTight;
+      caloJetB->passLooseID = passjetLoose;
+      caloJetB->passTightID = passjetTight;
     }
   } 
   else {
-    edm::LogError("CaloJetBlock") << "Error! Can't get the product " << _inputTag;
+    edm::LogError("CaloJetBlock") << "Error >> Failed to get pat::Jet collection for label = " 
+                                  << _inputTag;
   }
-  delete jecUnc;
-  delete ResJetCorPar;
-  delete JEC;
+  if (jecUnc) delete jecUnc;
+  if (ResJetCorPar) delete ResJetCorPar;
+  if (JEC) delete JEC;
 }
 #include "FWCore/Framework/interface/MakerMacros.h"
 DEFINE_FWK_MODULE(CaloJetBlock);
