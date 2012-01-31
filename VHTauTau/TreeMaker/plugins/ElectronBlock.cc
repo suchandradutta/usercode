@@ -87,7 +87,7 @@ void ElectronBlock::analyze(const edm::Event& iEvent, const edm::EventSetup& iSe
   // otherwise take it from the IdealMagneticFieldRecord
   if (iEvent.isRealData()) {
     if (dcsHandle.isValid()) {
-      edm::LogInfo("ElectronBlock") << "Success >> obtained product for label:" 
+      edm::LogInfo("ElectronBlock") << "Success >> obtained DcsStatusCollection for label:" 
                                     << _dcsInputTag;
       // scale factor = 3.801/18166.0 which are
       // average values taken over a stable two-week period
@@ -96,7 +96,7 @@ void ElectronBlock::analyze(const edm::Event& iEvent, const edm::EventSetup& iSe
       evt_bField = current*currentToBFieldScaleFactor;
     } 
     else {
-      edm::LogError("ElectronBlock") << "Error >> Failed to get product for label: " 
+      edm::LogError("ElectronBlock") << "Error >> Failed to get DcsStatusCollection for label: " 
                                      << _dcsInputTag;
     }
   } 
@@ -138,7 +138,7 @@ void ElectronBlock::analyze(const edm::Event& iEvent, const edm::EventSetup& iSe
       double dist = -9999.;
       double dcot = -9999.;
       if (tracks.isValid()) {
-	edm::LogInfo("ElectronBlock") << "Success >> obtained product for label: " 
+	edm::LogInfo("ElectronBlock") << "Success >> obtained TrackCollection for label: " 
                                       << _trkInputTag;
 
         ConversionInfo convInfo = convFinder.getConversionInfo(*it, tracks, evt_bField);
@@ -146,7 +146,7 @@ void ElectronBlock::analyze(const edm::Event& iEvent, const edm::EventSetup& iSe
         dcot = convInfo.dcot();
       } 
       else {
-	edm::LogError("ElectronBlock") << "Error >> Failed to get product for label: " 
+	edm::LogError("ElectronBlock") << "Error >> Failed to get TrackCollection for label: " 
                                        << _trkInputTag;
       }
 
@@ -160,8 +160,8 @@ void ElectronBlock::analyze(const edm::Event& iEvent, const edm::EventSetup& iSe
 	  edm::LogInfo("ElectronBlock") << "Total # Primary Vertices: " << primaryVertices->size();
           for (reco::VertexCollection::const_iterator v_it  = primaryVertices->begin(); 
                                                       v_it != primaryVertices->end(); ++v_it) {
-            double dist3D = sqrt(pow(it->gsfTrack()->dxy(v_it->position()), 2) 
-                               + pow(it->gsfTrack()->dz(v_it->position()), 2));
+            double dist3D = std::sqrt(pow(it->gsfTrack()->dxy(v_it->position()), 2) 
+                                    + pow(it->gsfTrack()->dz(v_it->position()), 2));
             if (dist3D < minVtxDist3D) {
               minVtxDist3D = dist3D;
               indexVtx = int(std::distance(primaryVertices->begin(), v_it));
@@ -170,7 +170,7 @@ void ElectronBlock::analyze(const edm::Event& iEvent, const edm::EventSetup& iSe
           }
         } 
         else {
-	  edm::LogError("ElectronBlock") << "Error >> Failed to get product for label: " 
+	  edm::LogError("ElectronBlock") << "Error >> Failed to get VertexCollection for label: " 
                                          << _vtxInputTag;
         }      
       }
@@ -188,7 +188,8 @@ void ElectronBlock::analyze(const edm::Event& iEvent, const edm::EventSetup& iSe
       electronB->hasGsfTrack = hasGsfTrack;
       electronB->trackPt     = (hasGsfTrack) ? it->gsfTrack()->pt() : -1;
       electronB->energy      = it->energy();
-      electronB->caloEnergy  = it->caloEnergy();
+      electronB->caloEnergy  = it->ecalEnergy();
+      electronB->caloEnergyError = it->ecalEnergyError();
       electronB->charge      = it->charge();
       electronB->nValidHits  = (hasGsfTrack) ? it->gsfTrack()->numberOfValidHits() : -1; 
 
@@ -206,7 +207,8 @@ void ElectronBlock::analyze(const edm::Event& iEvent, const edm::EventSetup& iSe
                              = it->electronID("simpleEleId95cIso");
 
       // ID variables
-      electronB->hoe           = it->hadronicOverEm();
+      electronB->hoe           = it->hcalOverEcal();
+      electronB->hoeDepth1     = it->hcalDepth1OverEcal();
       electronB->eop           = it->eSuperClusterOverP(); 
       electronB->sigmaEtaEta   = it->sigmaEtaEta();
       electronB->sigmaIEtaIEta = it->sigmaIetaIeta();
@@ -250,9 +252,17 @@ void ElectronBlock::analyze(const edm::Event& iEvent, const edm::EventSetup& iSe
       electronB->relIso    = (it->trackIso() + it->ecalIso() + it->hcalIso())/it->pt();
       electronB->pfRelIso  = UWpfreliso;
 
+      // PFlow isolation information
+      electronB->chargedHadronIso = it->pfIsolationVariables().chargedHadronIso;
+      electronB->neutralHadronIso = it->pfIsolationVariables().neutralHadronIso;
+      electronB->photonIso        = it->pfIsolationVariables().photonIso;
+  
       // IP information
       electronB->dB  = it->dB(pat::Electron::PV2D);
       electronB->edB = it->edB(pat::Electron::PV2D);
+
+      electronB->dB3d  = it->dB(pat::Electron::PV3D);
+      electronB->edB3d = it->edB(pat::Electron::PV3D);
 
       // Bremstrahlung information
       electronB->nBrems = it->numberOfBrems();
@@ -262,10 +272,21 @@ void ElectronBlock::analyze(const edm::Event& iEvent, const edm::EventSetup& iSe
       EcalClusterLazyTools lazyTools(iEvent, iSetup, _ecalEBInputTag, _ecalEEInputTag);
       const pat::Electron& ele = *it;
       electronB->mva = fMVA->MVAValue(&ele,  lazyTools);
+
+      // Fiducial flag 
+      int fidFlag = 0;
+      if (it->isEB())        fidFlag |= (1 << 0);
+      if (it->isEE())        fidFlag |= (1 << 1);
+      if (it->isEBEtaGap())  fidFlag |= (1 << 2);
+      if (it->isEBPhiGap())  fidFlag |= (1 << 3);
+      if (it->isEERingGap()) fidFlag |= (1 << 4);
+      if (it->isEEDeeGap())  fidFlag |= (1 << 5);
+      if (it->isEBEEGap())   fidFlag |= (1 << 6);
+      electronB->fidFlag = fidFlag;
     }
   } 
   else {
-    edm::LogError("ElectronBlock") << "Error >> Failed to get product for label: " 
+    edm::LogError("ElectronBlock") << "Error >> Failed to get pat::Electron Collection for label: " 
                                    << _electronInputTag;
   }
 }

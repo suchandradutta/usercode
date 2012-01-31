@@ -135,6 +135,9 @@ void MuonBlock::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
       muonB->dB  = it->dB(pat::Muon::PV2D);
       muonB->edB = it->edB(pat::Muon::PV2D);
 
+      muonB->dB3d  = it->dB(pat::Muon::PV3D);
+      muonB->edB3d = it->edB(pat::Muon::PV3D);
+
       // UW recommendation
       muonB->isGlobalMuonPromptTight = muon::isGoodMuon(*it, muon::GlobalMuonPromptTight);
       muonB->isAllArbitrated         = muon::isGoodMuon(*it, muon::AllArbitrated);

@@ -43,22 +43,23 @@ void PhotonBlock::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
 
   if (photons.isValid()) {
     edm::LogInfo("PhotonBlock") << "Total # PAT Photons: " << photons->size();
-    for (std::vector<pat::Photon>::const_iterator it = photons->begin(); 
-                                                 it != photons->end(); ++it) {
+    for (std::vector<pat::Photon>::const_iterator it  = photons->begin(); 
+                                                  it != photons->end(); 
+                                                ++it) {
       if (fnPhoton == kMaxPhoton) {
 	edm::LogInfo("PhotonBlock") << "Too many PAT Photon, fnPhoton = " 
                                     << fnPhoton; 
 	break;
       }
       photonB = new ((*clonePhoton)[fnPhoton++]) vhtm::Photon();
-      photonB->et      = it->et();
-      photonB->eta     = it->eta();
-      photonB->phi     = it->phi();
-      photonB->energy  = it->energy();
-      photonB->theta   = it->theta();
-      photonB->vx      = it->vx();
-      photonB->vy      = it->vy();
-      photonB->vz      = it->vz();
+      photonB->et     = it->et();
+      photonB->eta    = it->eta();
+      photonB->phi    = it->phi();
+      photonB->energy = it->energy();
+      photonB->theta  = it->theta();
+      photonB->vx     = it->vx();
+      photonB->vy     = it->vy();
+      photonB->vz     = it->vz();
 
       const reco::SuperClusterRef sCluster = it->superCluster(); 
       photonB->scEnergy    = sCluster->energy();
@@ -96,6 +97,17 @@ void PhotonBlock::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
       photonB->neutralHadIso      = it->neutralHadronIso();
       photonB->photonIso          = it->photonIso();
 
+
+      int fidFlag = 0;
+      if (it->isEB())        fidFlag |= (1 << 0);
+      if (it->isEE())        fidFlag |= (1 << 1);
+      if (it->isEBEtaGap())  fidFlag |= (1 << 2);
+      if (it->isEBPhiGap())  fidFlag |= (1 << 3);
+      if (it->isEERingGap()) fidFlag |= (1 << 4);
+      if (it->isEEDeeGap())  fidFlag |= (1 << 5);
+      if (it->isEBEEGap())   fidFlag |= (1 << 6);
+      photonB->fidFlag = fidFlag;
+
       photonB->isEB               = it->isEB() ? true : false;
       photonB->isEE               = it->isEE() ? true : false;
       photonB->isEBGap            = it->isEBGap() ? true : false ;
@@ -117,8 +129,9 @@ void PhotonBlock::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
       photonB->hasConversionTracks = it->hasConversionTracks();      
       if (it->hasConversionTracks()) {
         const reco::ConversionRefVector conversions = it->conversions();
-        for (edm::RefVector<reco::ConversionCollection>::const_iterator jt = conversions.begin();
-                                                                       jt != conversions.end(); ++jt) 
+        for (edm::RefVector<reco::ConversionCollection>::const_iterator jt  = conversions.begin();
+                                                                        jt != conversions.end(); 
+                                                                      ++jt) 
 	{
           const reco::Conversion& obj = (**jt);
 	  if (obj.nTracks() < 2 or
