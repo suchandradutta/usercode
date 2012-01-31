@@ -58,6 +58,7 @@ namespace vhtm {
     double trackPt;
     double energy;
     double caloEnergy;
+    double caloEnergyError;
        int charge;
        int nValidHits;
      float simpleEleId60cIso;
@@ -69,6 +70,7 @@ namespace vhtm {
   
     // ID variables
     double hoe;
+    double hoeDepth1;
     double eop;
     double sigmaEtaEta;
     double sigmaIEtaIEta;
@@ -107,8 +109,16 @@ namespace vhtm {
     double relIso;
     double pfRelIso;
   
+    // PFlow isolation variable
+    float chargedHadronIso;
+    float neutralHadronIso;
+    float photonIso;
+
     double dB;
     double edB;
+  
+    double dB3d;
+    double edB3d;
   
     double scE1E9;
     double scS4S1;
@@ -123,6 +133,7 @@ namespace vhtm {
     double mva;
    
        int selbit;
+       int fidFlag;
 
     ClassDef(Electron, 4) 
   };
@@ -328,8 +339,12 @@ namespace vhtm {
        int matches;
     double pfRelIso;
       bool isTrackerMuon;
+
     double dB;  // PV2D
     double edB;   
+
+    double dB3d; // PV3D
+    double edB3d;
   
     // UW Recommendation
       bool isGlobalMuonPromptTight;
@@ -559,6 +574,7 @@ namespace vhtm {
       bool isEBGap;
       bool isEEGap;
       bool isEBEEGap;
+       int fidFlag;
   
       bool hasPixelSeed;
     double ecalIso;
