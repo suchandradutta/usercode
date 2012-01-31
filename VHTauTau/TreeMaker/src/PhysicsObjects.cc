@@ -20,12 +20,14 @@ vhtm::Event::Event() :
   bunchCrossing.clear();
   trueNInt.clear();
 }
+
 vhtm::GenEvent::GenEvent() :
   processID(0),
   ptHat(-999)
 {
   pdfWeights.clear();
 }
+
 vhtm::Electron::Electron() :
   eta(-999),
   phi(-999),
@@ -83,8 +85,7 @@ vhtm::Electron::Electron() :
   nBrems(-1),
   fbrem(-999),
   mva(-999),
-  selbit(-1)
-{}
+  selbit(0) {}
 
 vhtm::GenParticle::GenParticle() :
   eta(-999),
@@ -183,9 +184,7 @@ vhtm::Tau::Tau() :
   etaphiMoment(-999),
   vx(-999), vy(-999), vz(-999),
   zvertex(-999), ltsipt(-999),
-  mva(-999), selbit(-1) 
-  {}
-
+  mva(-999), selbit(0) {}
 vhtm::CaloJet::CaloJet() :
   eta(-999),
   phi(-999),
@@ -213,7 +212,7 @@ vhtm::CaloJet::CaloJet() :
   jetBProbabilityBTag(-999),
   passLooseID(-1),
   passTightID(-1),
-  selbit(-1)  {}
+  selbit(0) {}
 
 vhtm::Muon::Muon() :
   eta(-999),
@@ -252,8 +251,7 @@ vhtm::Muon::Muon() :
   stationMask(0),
   stationGapMaskDistance(0),
   stationGapMaskPull(0),
-  selbit(-1) 
- {}
+  selbit(0) {}
 
 vhtm::Jet::Jet() :
   eta(-999),
@@ -289,7 +287,7 @@ vhtm::Jet::Jet() :
   jetBProbabilityBTag(-999),
   passLooseID(-1),
   passTightID(-1),
-  selbit(-1) {}
+  selbit(0) {}
 
 vhtm::SuperCluster::SuperCluster() :
   eta(-999),
@@ -320,7 +318,7 @@ vhtm::SuperCluster::SuperCluster() :
   scEcalIso(-999),
   scHEEPEcalIso(-999),
   scHEEPTrkIso(-999),
-  selbit(-1) {}
+  selbit(0) {}
 
 vhtm::Vertex::Vertex() :
   x(-999),
@@ -337,7 +335,7 @@ vhtm::Vertex::Vertex() :
   isfake(true),
   isvalid(false),
   sumPt(-999),
-  selbit(-1) {}
+  selbit(0) {}
 
 vhtm::Trigger::Trigger() 
 {
@@ -347,6 +345,7 @@ vhtm::Trigger::Trigger()
   hltresults.clear();
   hltprescales.clear();
 }
+
 vhtm::Track::Track()
   : eta(-999),
     etaError(-999),
@@ -375,8 +374,8 @@ vhtm::Track::Track()
     chi2(-999),
     ndof(-1),
     vx(-999), vy(-999), vz(-999),
-    selbit(-1)
-{}
+    selbit(0) {}
+
 vhtm::Photon::Photon() :
   et(-999),
   eta(-999),
@@ -448,9 +447,9 @@ vhtm::Photon::Photon() :
   distOfMinApproach(-999),
   dPhiTracksAtVtx(-999),
   dPhiTracksAtEcal(-999),
-  dEtaTracksAtEcal(-999)  ,
-  selbit(-1)
-{}
+  dEtaTracksAtEcal(-999),
+  selbit(0) {}
+
 vhtm::TriggerObject::TriggerObject() :
   energy(-999),
   pt(-999),
@@ -459,9 +458,8 @@ vhtm::TriggerObject::TriggerObject() :
 {
   pathList.clear();
 }
+
 vhtm::CommonVertex::CommonVertex() :
   chi2(-1),
   ndof(-1),
-  label("")
-{
-}
+  label("") {}
