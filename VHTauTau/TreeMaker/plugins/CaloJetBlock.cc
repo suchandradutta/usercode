@@ -160,7 +160,7 @@ void CaloJetBlock::analyze(const edm::Event& iEvent, const edm::EventSetup& iSet
       caloJetB->pt_raw     = it->correctedJet("Uncorrected").pt();
       caloJetB->energy     = it->energy() * corr;
       caloJetB->energy_raw = it->correctedJet("Uncorrected").energy();
-      caloJetB->jecUnc     = jecUnc->getUncertainty(true);
+      caloJetB->jecUnc     = (jecUnc) ? jecUnc->getUncertainty(true) : -1;
       caloJetB->resJEC     = corr;
       caloJetB->overlaps   = ovrlps;
       caloJetB->partonFlavour = it->partonFlavour();

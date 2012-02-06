@@ -537,7 +537,9 @@ namespace vhtm {
   
     double et;
     double eta;
+    double clusterEta;
     double phi;
+    double clusterPhi;
     double energy;
     double theta; 
     double vx;
@@ -640,6 +642,7 @@ namespace vhtm {
     double chi2;
     int ndof;
     std::string label;
+    int indices[3];
   
     ClassDef(CommonVertex, 1)
   };

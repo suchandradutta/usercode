@@ -20,6 +20,19 @@ class TransientTrackBuilder;
 class TClonesArray;
 class CommonVertex;
 
+namespace vhtm {
+  template <class T>
+  class Lepton {
+  public:
+    Lepton(const T* obj, int indx) : _obj(obj), _indx(indx){}
+    virtual ~Lepton() {}
+    const T* obj() const {return _obj;}
+    int indx() const {return _indx;}
+  private:
+    const T* _obj;   
+    int _indx;
+  };
+}
 class CommonVertexBlock : public edm::EDAnalyzer 
 {
 private:
@@ -33,9 +46,12 @@ public:
   virtual ~CommonVertexBlock() {}
 
   void FitVertex(const TransientTrackBuilder* builder, vhtm::CommonVertex* v,
-	   int nMuon, int nElectron, int nTau, std::string label);
+		 int nMuon, int iMuon[], 
+                 int nElectron, int iElectron[], 
+                 int nTau, int iTau[], std::string label);
 private:
   TClonesArray* cloneCommonVertex; 
+  int  fnCommonVertex;
 
   int _verbosity;
   edm::InputTag _patMuonSrc;
@@ -46,9 +62,9 @@ private:
   double _minPtElectron;
   double _minPtTau;
 
-  std::vector<const pat::Muon*> _selectedMuons;
-  std::vector<const pat::Electron*> _selectedElectrons;
-  std::vector<const pat::Tau*> _selectedTaus;
+  std::vector<vhtm::Lepton <pat::Muon> > _selectedMuons;
+  std::vector<vhtm::Lepton <pat::Electron> > _selectedElectrons;
+  std::vector<vhtm::Lepton <pat::Tau> > _selectedTaus;
 
   vhtm::CommonVertex* vertexB;
 };

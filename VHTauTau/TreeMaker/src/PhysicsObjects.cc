@@ -1,5 +1,7 @@
 #include "VHTauTau/TreeMaker/interface/PhysicsObjects.h"
 
+#define NEL(x) (sizeof((x))/sizeof((x)[0]))
+
 vhtm::Event::Event() :
   run(0), 
   event(0), 
@@ -389,7 +391,9 @@ vhtm::Track::Track()
 vhtm::Photon::Photon() :
   et(-999),
   eta(-999),
+  clusterEta(-999),
   phi(-999),
+  clusterPhi(-999),
   energy(-999),
   theta(-999),
   vx(-999),
@@ -473,4 +477,9 @@ vhtm::TriggerObject::TriggerObject() :
 vhtm::CommonVertex::CommonVertex() :
   chi2(-1),
   ndof(-1),
-  label("") {}
+  label("") 
+{
+  for (unsigned int i = 0; i < NEL(indices); ++i) {
+    indices[i] = 0;
+  }
+}

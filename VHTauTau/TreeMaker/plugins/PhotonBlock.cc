@@ -31,7 +31,7 @@ void PhotonBlock::beginJob()
   TTree* tree = vhtm::Utility::getTree(_treeName);
   clonePhoton = new TClonesArray("vhtm::Photon");
   tree->Branch("Photon", &clonePhoton, 32000, 2);
-  tree->Branch("nPhoton", &fnPhoton,  "fnPhoton/I");
+  tree->Branch("nPhoton", &fnPhoton, "fnPhoton/I");
 }
 void PhotonBlock::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup) {
   // Reset the TClonesArray and the nObj variables
@@ -54,7 +54,9 @@ void PhotonBlock::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
       photonB = new ((*clonePhoton)[fnPhoton++]) vhtm::Photon();
       photonB->et     = it->et();
       photonB->eta    = it->eta();
+      photonB->clusterEta = it->caloPosition().eta();
       photonB->phi    = it->phi();
+      photonB->clusterPhi = it->caloPosition().phi();
       photonB->energy = it->energy();
       photonB->theta  = it->theta();
       photonB->vx     = it->vx();
@@ -67,12 +69,12 @@ void PhotonBlock::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
       photonB->scPhi       = sCluster->phi();
       photonB->scSize      = sCluster->clustersSize();
       photonB->scEtaWidth  = sCluster->etaWidth();
-      photonB->scPhiWidth  = sCluster->etaWidth();
+      photonB->scPhiWidth  = sCluster->phiWidth();
       photonB->scEt        = sCluster->energy()/cosh(sCluster->eta());
       photonB->scRawEnergy = sCluster->rawEnergy();
       photonB->scx         = sCluster->x();
-      photonB->scx         = sCluster->y();
-      photonB->scx         = sCluster->z();
+      photonB->scy         = sCluster->y();
+      photonB->scz         = sCluster->z();
 
       photonB->isoEcalRecHit03    = it->ecalRecHitSumEtConeDR03();
       photonB->isoHcalRecHit03    = it->hcalTowerSumEtConeDR03();
