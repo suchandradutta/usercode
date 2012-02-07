@@ -204,6 +204,10 @@ namespace vhtm {
        int charge;
     double mass;
   
+    double leadTrkPt; 
+    double leadTrkEta;
+    double leadTrkPhi;
+
     // Leading particle pT
     double leadChargedParticlePt;
     double leadNeutralParticlePt;
@@ -250,6 +254,7 @@ namespace vhtm {
     double jetEta;
     double jetPhi;
   
+    float emFraction;
     float maximumHCALPFClusterEt;
     float ecalStripSumEOverPLead;
     float bremsRecoveryEOverPLead;
@@ -458,7 +463,7 @@ namespace vhtm {
        int ntracksw05;
       bool isfake;
       bool isvalid;
-    double sumPt;
+      double sumPt; // vector sum
   
        int selbit;
 
@@ -504,7 +509,8 @@ namespace vhtm {
     double ptError;
     double qoverp;
     double qoverpError;
-  
+     float charge;
+
        int nValidHits;
        int nLostHits;
     double validFraction;

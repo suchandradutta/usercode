@@ -61,15 +61,16 @@ void TrackBlock::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup
       trackB->ptError     = track.ptError();
       trackB->qoverp      = track.qoverp();
       trackB->qoverpError = track.qoverpError(); 
+      trackB->charge      = track.charge();
 
       trackB->nValidHits  = track.numberOfValidHits();
       trackB->nLostHits   = track.numberOfLostHits();
       trackB->validFraction = track.validFraction();
 
       const reco::HitPattern& hitp = track.hitPattern();
-      trackB->nValidTrackerHits     = hitp.numberOfValidTrackerHits();      
-      trackB->nValidPixelHits       = hitp.numberOfValidPixelHits();
-      trackB->nValidStripHits       = hitp.numberOfValidStripHits();
+      trackB->nValidTrackerHits  = hitp.numberOfValidTrackerHits();      
+      trackB->nValidPixelHits    = hitp.numberOfValidPixelHits();
+      trackB->nValidStripHits    = hitp.numberOfValidStripHits();
       trackB->trackerLayersWithMeasurement = hitp.trackerLayersWithMeasurement(); 
       trackB->pixelLayersWithMeasurement   = hitp.pixelLayersWithMeasurement();
       trackB->stripLayersWithMeasurement   = hitp.stripLayersWithMeasurement();

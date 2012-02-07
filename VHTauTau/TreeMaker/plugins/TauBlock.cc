@@ -69,6 +69,10 @@ void TauBlock::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup) 
       tauB->charge = it->charge();
       tauB->mass   = it->mass();
 
+      tauB->leadTrkPt = it->leadTrack()->pt();
+      tauB->leadTrkEta = it->leadTrack()->eta();
+      tauB->leadTrkPhi = it->leadTrack()->phi();
+
       // Leading particle pT
       tauB->leadChargedParticlePt = it->leadPFChargedHadrCand().isNonnull() 
                                       ? it->leadPFChargedHadrCand()->et(): 0.;
@@ -76,7 +80,6 @@ void TauBlock::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup) 
                                       ? it->leadPFNeutralCand()->et(): 0.;
       tauB->leadParticlePt        = it->leadPFCand().isNonnull() 
                                       ? it->leadPFCand()->et(): 0.;      
-
       // Number of charged/neutral candidates and photons in different cones
       tauB->numChargedHadronsSignalCone = it->signalPFChargedHadrCands().size();
       tauB->numNeutralHadronsSignalCone = it->signalPFNeutrHadrCands().size();
@@ -103,7 +106,8 @@ void TauBlock::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup) 
       tauB->againstElectronLoose  = it->tauID("againstElectronLoose");
       tauB->againstElectronMedium = it->tauID("againstElectronMedium");
       tauB->againstElectronTight  = it->tauID("againstElectronTight");
-      tauB->pfElectronMVA         = it->leadPFCand().isNonnull() ? it->leadPFCand()->mva_e_pi() : 1.;
+      tauB->pfElectronMVA         = it->leadPFCand().isNonnull() 
+                                  ? it->leadPFCand()->mva_e_pi() : 1.;
 
       tauB->byVLooseCombinedIsolationDeltaBetaCorr = it->tauID("byVLooseCombinedIsolationDeltaBetaCorr");
       tauB->byLooseCombinedIsolationDeltaBetaCorr  = it->tauID("byLooseCombinedIsolationDeltaBetaCorr");
@@ -120,8 +124,12 @@ void TauBlock::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup) 
       tauB->jetPhi = it->pfJetRef()->phi();
 
       // NEW quantities
+      tauB->emFraction              = it->emFraction(); 
+      tauB->maximumHCALPFClusterEt  = it->maximumHCALPFClusterEt();
       tauB->ecalStripSumEOverPLead  = it->ecalStripSumEOverPLead();
       tauB->bremsRecoveryEOverPLead = it->bremsRecoveryEOverPLead();
+      tauB->hcalTotOverPLead        = it->hcalTotOverPLead();
+      tauB->hcalMaxOverPLead        = it->hcalMaxOverPLead();
       tauB->hcal3x3OverPLead        = it->hcal3x3OverPLead();
 
       tauB->etaetaMoment = it->etaetaMoment();
