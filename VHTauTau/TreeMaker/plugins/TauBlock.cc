@@ -4,6 +4,8 @@
 
 #include "FWCore/MessageLogger/interface/MessageLogger.h"
 #include "DataFormats/PatCandidates/interface/Tau.h"
+#include "DataFormats/ParticleFlowCandidate/interface/PFCandidate.h"
+#include "DataFormats/ParticleFlowCandidate/interface/PFCandidateFwd.h"
 
 #include "Utilities/General/interface/FileInPath.h"
 #include "Bianchi/Utilities/interface/AntiElectronIDMVA.h"
@@ -53,8 +55,8 @@ void TauBlock::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup) 
   if (taus.isValid()) {
     edm::LogInfo("TauBlock") << "Total # PAT Taus: " << taus->size();
     
-    for (std::vector<pat::Tau>::const_iterator it = taus->begin(); 
-                                              it != taus->end(); ++it) {
+    for (std::vector<pat::Tau>::const_iterator it  = taus->begin(); 
+                                               it != taus->end(); ++it) {
       if (fnTau == kMaxTau) {
 	edm::LogInfo("TauBlock") << "Too many PAT Taus, fnTau = " << fnTau;
 	break;
@@ -67,15 +69,18 @@ void TauBlock::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup) 
       tauB->pt     = it->pt();
       tauB->energy = it->energy();
       tauB->charge = it->charge();
-      tauB->mass   = it->mass();
+      //tauB->mass   = it->mass();
 
-      tauB->leadTrkPt = it->leadTrack()->pt();
-      tauB->leadTrkEta = it->leadTrack()->eta();
-      tauB->leadTrkPhi = it->leadTrack()->phi();
+      if (it->leadTrack().isAvailable()) {
+	reco::TrackRef trk = it->leadTrack();
+        tauB->leadTrkPt = trk->pt();
+        tauB->leadTrkEta = trk->eta();
+        tauB->leadTrkPhi = trk->phi();
+      }
 
       // Leading particle pT
       tauB->leadChargedParticlePt = it->leadPFChargedHadrCand().isNonnull() 
-                                      ? it->leadPFChargedHadrCand()->et(): 0.;
+                                      ? it->leadPFChargedHadrCand()->pt(): 0.;
       tauB->leadNeutralParticlePt = it->leadPFNeutralCand().isNonnull() 
                                       ? it->leadPFNeutralCand()->et(): 0.;
       tauB->leadParticlePt        = it->leadPFCand().isNonnull() 
@@ -85,14 +90,23 @@ void TauBlock::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup) 
       tauB->numNeutralHadronsSignalCone = it->signalPFNeutrHadrCands().size();
       tauB->numPhotonsSignalCone        = it->signalPFGammaCands().size();
       tauB->numParticlesSignalCone      = it->signalPFCands().size();
+      //tauB->numPi0SignalCone            = it->signalPiZeroCandidates().size();
       
       tauB->numChargedHadronsIsoCone = it->isolationPFChargedHadrCands().size();
       tauB->numNeutralHadronsIsoCone = it->isolationPFNeutrHadrCands().size();
       tauB->numPhotonsIsoCone        = it->isolationPFGammaCands().size();
       tauB->numParticlesIsoCone      = it->isolationPFCands().size();
+      //tauB->numPi0IsoCone            = it->isolationPiZeroCandidates().size();
       
       tauB->ptSumPFChargedHadronsIsoCone = it->isolationPFChargedHadrCandsPtSum();
       tauB->ptSumPhotonsIsoCone          = it->isolationPFGammaCandsEtSum();
+      const reco::PFCandidateRefVector & nvList = it->isolationPFNeutrHadrCands();
+      double ptSum = 0;
+      for (reco::PFCandidateRefVector::const_iterator iCand  = nvList.begin(); 
+                                                      iCand != nvList.end(); ++iCand) {
+	ptSum += std::abs((**iCand).pt());
+      }  
+      tauB->ptSumPFNeutralHadronsIsoCone = ptSum;
 
       // tau id. discriminators
       tauB->decayModeFinding = it->tauID("decayModeFinding");
@@ -119,9 +133,12 @@ void TauBlock::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup) 
       tauB->byTightIsolationDeltaBetaCorr          = it->tauID("byTightIsolationDeltaBetaCorr");
 
       // kinematic variables for PFJet associated to PFTau
-      tauB->jetPt  = it->pfJetRef()->pt();
-      tauB->jetEta = it->pfJetRef()->eta();
-      tauB->jetPhi = it->pfJetRef()->phi();
+      if (it->pfJetRef().isAvailable() && it->pfJetRef().isNonnull()) {
+	const reco::PFJetRef &jtr = it->pfJetRef();
+        tauB->jetPt  = jtr->pt();
+        tauB->jetEta = jtr->eta();
+        tauB->jetPhi = jtr->phi();
+      }
 
       // NEW quantities
       tauB->emFraction              = it->emFraction(); 

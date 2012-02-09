@@ -218,11 +218,14 @@ namespace vhtm {
        int numNeutralHadronsSignalCone;
        int numPhotonsSignalCone;
        int numParticlesSignalCone;
+       //int numPi0SignalCone;
        int numChargedHadronsIsoCone;
        int numNeutralHadronsIsoCone;
        int numPhotonsIsoCone;
        int numParticlesIsoCone;
+       //int numPi0IsoCone;
     double ptSumPFChargedHadronsIsoCone;
+    double ptSumPFNeutralHadronsIsoCone;
     double ptSumPhotonsIsoCone;
     
     // tau id. discriminators

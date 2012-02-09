@@ -5,6 +5,7 @@
 #include "CommonTools/UtilAlgos/interface/TFileService.h"
 #include "DataFormats/Common/interface/View.h"
 #include "DataFormats/TrackReco/interface/Track.h"
+#include "DataFormats/TrackReco/interface/TrackFwd.h"
 #include "DataFormats/TrackReco/interface/HitPattern.h"
 #include "DataFormats/BeamSpot/interface/BeamSpot.h"
 #include "Math/GenVector/VectorUtil.h"
@@ -34,15 +35,15 @@ void TrackBlock::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup
   edm::Handle<reco::BeamSpot> beamSpot;
   iEvent.getByLabel(_beamSpot, beamSpot);
 
-  edm::Handle<std::vector<const reco::Track*> > tracks;
+  edm::Handle<reco::TrackCollection> tracks;
   iEvent.getByLabel(_inputTag, tracks);
 
   if (tracks.isValid()) {
     edm::LogInfo("TrackBlock") << "Total # of Tracks: " << tracks->size();
     reco::Track::TrackQuality quality = reco::Track::qualityByName("loose");
-    for (std::vector<const reco::Track*>::const_iterator it = tracks->begin(); 
-                                                        it != tracks->end(); ++it) {
-      const reco::Track &track = **it;
+    for (reco::TrackCollection::const_iterator  it  = tracks->begin(); 
+                                                it != tracks->end(); ++it) {
+      const reco::Track &track = *it;
       if (!track.quality(quality)) continue;
 
       if (fnTrack == kMaxTrack) {
@@ -88,7 +89,7 @@ void TrackBlock::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup
     }
   } 
   else {
-    edm::LogError("TrackBlock") << "Error! Failed to get reco::Track collection for label: " 
+    edm::LogError("TrackBlock") << "Error! Failed to get reco::Track collection, " 
                                 << _inputTag;
   }
 }
