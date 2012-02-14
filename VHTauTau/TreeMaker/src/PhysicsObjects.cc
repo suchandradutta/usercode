@@ -151,6 +151,7 @@ vhtm::Tau::Tau() :
   leadTrkPt(-999),
   leadTrkEta(-999),
   leadTrkPhi(-999),
+  leadTrkCharge(-999),
   leadChargedParticlePt(-999),
   leadNeutralParticlePt(-999),
   leadParticlePt(-999),

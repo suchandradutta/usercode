@@ -76,6 +76,7 @@ void TauBlock::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup) 
         tauB->leadTrkPt = trk->pt();
         tauB->leadTrkEta = trk->eta();
         tauB->leadTrkPhi = trk->phi();
+        tauB->leadTrkCharge = trk->charge();
       }
 
       // Leading particle pT

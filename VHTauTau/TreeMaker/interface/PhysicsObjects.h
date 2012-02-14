@@ -207,6 +207,7 @@ namespace vhtm {
     double leadTrkPt; 
     double leadTrkEta;
     double leadTrkPhi;
+    double leadTrkCharge;
 
     // Leading particle pT
     double leadChargedParticlePt;
