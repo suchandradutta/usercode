@@ -4,15 +4,16 @@ process = cms.Process("HTauTauTree")
 # Message Logger Settings
 #------------------------
 process.load("FWCore.MessageLogger.MessageLogger_cfi")
-process.MessageLogger.cerr.FwkReport.reportEvery = 200
+process.MessageLogger.cerr.FwkReport.reportEvery = 1
 #--------------------------------------
 # Event Source & # of Events to process
 #---------------------------------------
 process.source = cms.Source("PoolSource",
-                   fileNames = cms.untracked.vstring()
+                   fileNames = cms.untracked.vstring(),
+                   #eventsToProcess = cms.untracked.VEventRange('165514:420143886')
                  )
 process.maxEvents = cms.untracked.PSet(
-                      input = cms.untracked.int32(50)
+                      input = cms.untracked.int32(-1)
                     )
 #-----------------------------
 # Geometry
@@ -39,15 +40,6 @@ process.TFileService = cms.Service("TFileService",
 process.load("VHTauTau.TreeMaker.TreeCreator_cfi")
 process.load("VHTauTau.TreeMaker.TreeWriter_cfi")
 process.load("VHTauTau.TreeMaker.TreeContentConfig_data_cff")
-process.triggerBlock.hltPathsOfInterest=cms.vstring ("HLT_DoubleMu","HLT_Mu","HLT_TripleMu","LooseIsoPFTau",
-                                                     "TightIsoPFTau", "DoubleIsoPFTau", "TrkIsoT")
-process.load("VHTauTau.TreeMaker.TriggerObjectBlock_cfi")
-process.triggerObjectBlock.hltPathsOfInterest=cms.vstring ("HLT_DoubleMu7_v", "HLT_Mu13_Mu8_v", "HLT_Mu17_Mu8_v", "HLT_Mu8_v",
-                                                           "HLT_Mu15_v", "HLT_Mu20_v", "HLT_Mu24_v",
-                                                           "HLT_IsoMu15_v", "HLT_IsoMu20_v", "HLT_IsoMu24_v",
-                                                           "HLT_Mu17_Ele8_Calo", "HLT_Mu8_Ele17_",
-                                                           "LooseIsoPFTau", "TightIsoPFTau", "DoubleIsoPFTau")
-
 #-------------------------------------------------------
 # PAT 
 #------------------------------------------------------
@@ -241,6 +233,6 @@ stod.switchToData(process)
 # List File names here
 #---------------------------------------
 process.PoolSource.fileNames = [
-  'file:./infn_mmt_events.root'
+  'file:/tmp/sarkar/06622A8A-CA86-E011-AC03-001617C3B65A.root'
 ]
 
