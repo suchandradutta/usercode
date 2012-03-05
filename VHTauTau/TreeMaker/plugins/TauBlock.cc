@@ -69,13 +69,11 @@ void TauBlock::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup) 
       tauB->pt     = it->pt();
       tauB->energy = it->energy();
       tauB->charge = it->charge();
-      //tauB->mass   = it->mass();
-
       if (it->leadTrack().isAvailable()) {
 	reco::TrackRef trk = it->leadTrack();
-        tauB->leadTrkPt = trk->pt();
-        tauB->leadTrkEta = trk->eta();
-        tauB->leadTrkPhi = trk->phi();
+        tauB->leadTrkPt     = trk->pt();
+        tauB->leadTrkEta    = trk->eta();
+        tauB->leadTrkPhi    = trk->phi();
         tauB->leadTrkCharge = trk->charge();
       }
 

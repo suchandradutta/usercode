@@ -134,6 +134,13 @@ void TriggerBlock::analyze(const edm::Event& iEvent, const edm::EventSetup& iSet
       }
       //triggerB->hltprescales.push_back(prescale);
       _hltprescales->push_back(prescale);
+
+
+      if (_verbosity)
+	std::cout << ">>> Path: " << (*it) 
+                  << ", prescale: " << prescale 
+                  << ", fired: " << fired
+                  << endl; 
     }
   } else {
     edm::LogError("TriggerBlock") << "Error >> Failed to get TriggerResults for label: " 

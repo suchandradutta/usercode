@@ -57,7 +57,11 @@ CommonVertexBlock::CommonVertexBlock(const edm::ParameterSet& iConfig) :
   _patElectronSrc(iConfig.getParameter<edm::InputTag>("patElectronSrc")),
   _patTauSrc(iConfig.getParameter<edm::InputTag>("patTauSrc")),
   _minPtMuon(iConfig.getParameter<double>("minPtMuon")),
+  _maxEtaMuon(iConfig.getParameter<double>("maxEtaMuon")),
+  _maxChi2Muon(iConfig.getParameter<double>("maxChi2Muon")),
+  _minTrkHitsMuon(iConfig.getParameter<double>("minTrkHitsMuon")),
   _minPtElectron(iConfig.getParameter<double>("minPtElectron")),
+  _maxEtaElectron(iConfig.getParameter<double>("maxEtaElectron")),
   _minPtTau(iConfig.getParameter<double>("minPtTau"))
 {}
 void CommonVertexBlock::beginJob() {
@@ -88,7 +92,15 @@ void CommonVertexBlock::analyze(const edm::Event& iEvent, const edm::EventSetup&
 	                                        it != muons->end(); ++it, indx++) {
       // if not global continue
       if (!it->isGlobalMuon()) continue;
+      if (!it->isTrackerMuon()) continue;
       if (it->pt() <= _minPtMuon) continue;
+      if (std::abs(it->eta()) > _maxEtaMuon) continue;
+      if (it->track()->normalizedChi2() > _maxChi2Muon) continue;
+
+      reco::TrackRef tk = it->innerTrack();
+      const reco::HitPattern& hitp = tk->hitPattern(); 
+      if (hitp.numberOfValidPixelHits() 
+        + hitp.numberOfValidTrackerHits() < _minTrkHitsMuon) continue;
 
       vhtm::Lepton <pat::Muon> m(&(*it), indx);
       _selectedMuons.push_back(m);
@@ -111,7 +123,9 @@ void CommonVertexBlock::analyze(const edm::Event& iEvent, const edm::EventSetup&
 	                                            it != electrons->end(); ++it, jndx++) {
       // if not ECAL driven, continue
       if (!it->ecalDrivenSeed()) continue;
+      if (!it->gsfTrack().isNonnull()) continue;
       if (it->pt() <= _minPtElectron) continue;
+      if (abs(it->eta()) > _maxEtaElectron) continue;
 
       vhtm::Lepton <pat::Electron> e(&(*it), jndx);
       _selectedElectrons.push_back(e);
@@ -134,6 +148,9 @@ void CommonVertexBlock::analyze(const edm::Event& iEvent, const edm::EventSetup&
 	                                       it != taus->end(); ++it, kndx++) {
       if (it->pt() <= _minPtTau) continue;
       if (it->tauID("decayModeFinding") <= 0.5) continue;
+      if (it->tauID("againstMuonTight") <= 0.5) continue;
+      if (it->tauID("againstElectronLoose") <= 0.5) continue;
+      if (it->tauID("byLooseCombinedIsolationDeltaBetaCorr") <= 0.5) continue;
 
       vhtm::Lepton <pat::Tau> t(&(*it), kndx);
       _selectedTaus.push_back(t);

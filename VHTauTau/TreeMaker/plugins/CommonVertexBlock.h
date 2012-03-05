@@ -59,7 +59,11 @@ private:
   edm::InputTag _patTauSrc;
 
   double _minPtMuon;
+  double _maxEtaMuon;
+  double _maxChi2Muon;
+  double _minTrkHitsMuon;
   double _minPtElectron;
+  double _maxEtaElectron;
   double _minPtTau;
 
   std::vector<vhtm::Lepton <pat::Muon> > _selectedMuons;
