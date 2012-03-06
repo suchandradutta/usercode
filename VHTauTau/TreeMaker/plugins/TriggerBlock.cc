@@ -140,7 +140,7 @@ void TriggerBlock::analyze(const edm::Event& iEvent, const edm::EventSetup& iSet
 	std::cout << ">>> Path: " << (*it) 
                   << ", prescale: " << prescale 
                   << ", fired: " << fired
-                  << endl; 
+                  << std::endl; 
     }
   } else {
     edm::LogError("TriggerBlock") << "Error >> Failed to get TriggerResults for label: " 
