@@ -5,7 +5,7 @@
 #include "TROOT.h"
 #include "TStopwatch.h"
 
-#include "AnaBase.h"
+#include "MuTauTau.h"
 
 using std::cout;
 using std::cerr;
@@ -21,10 +21,10 @@ int main(int argc, char* argv[]) {
   string jobFile(argv[1]);
 
    // Create  analysis object 
-   AnaBase myana;
+   MuTauTau myana;
 
    // Read job input
-   int nFiles;
+   int nFiles = 0;
    bool succeed = myana.readJob(jobFile, nFiles);
    if (!succeed) exit(1);
    if (myana.getEntries() <= 0) {
@@ -36,7 +36,7 @@ int main(int argc, char* argv[]) {
 
    // Now go
    TStopwatch timer;
-   cout << "Start event loop now with " << nFiles << " files" << endl;
+   cout << "Start event loop now with <" << nFiles << "> file(s)" << endl;
    timer.Start();
    myana.eventLoop();
    timer.Stop();

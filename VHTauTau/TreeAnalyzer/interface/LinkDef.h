@@ -1,4 +1,4 @@
-#include "../interface/PhysicsObjects.h"
+#include "interface/PhysicsObjects.h"
 
 #ifdef __CINT__
 
@@ -8,21 +8,26 @@
 #pragma link off all functions;
 #pragma link C++ nestedclass;
 #pragma link C++ nestedtypedef;
-#pragma link C++ class Event+;
-#pragma link C++ class GenEvent+;
-#pragma link C++ class Electron+;
-#pragma link C++ class GenParticle+;
-#pragma link C++ class GenJet+;
-#pragma link C++ class GenMET+;
-#pragma link C++ class MET+;
-#pragma link C++ class Tau+;
-#pragma link C++ class CaloJet+;
-#pragma link C++ class Muon+;
-#pragma link C++ class Jet+;
-#pragma link C++ class SuperCluster+;
-#pragma link C++ class Vertex+;
-#pragma link C++ class Trigger+;
-#pragma link C++ class Track+;
-#pragma link C++ class Photon+;
-
+#pragma link C++ class vhtm::Event+;
+#pragma link C++ class vhtm::GenEvent+;
+#pragma link C++ class vhtm::Electron+;
+#pragma link C++ class vhtm::GenParticle+;
+#pragma link C++ class vhtm::GenJet+;
+#pragma link C++ class vhtm::GenMET+;
+#pragma link C++ class vhtm::MET+;
+#pragma link C++ class vhtm::Tau+;
+#pragma link C++ class vhtm::CaloJet+;
+#pragma link C++ class vhtm::Muon+;
+#pragma link C++ class vhtm::Jet+;
+#pragma link C++ class vhtm::SuperCluster+;
+#pragma link C++ class vhtm::Vertex+;
+#pragma link C++ class vhtm::Trigger+;
+#pragma link C++ class vhtm::Track+;
+#pragma link C++ class vhtm::Photon+;
+#pragma link C++ class vhtm::TriggerObject+;
+#pragma link C++ class vhtm::CommonVertex+;
+#pragma link C++ class std::vector<std::string>+;
+#pragma link C++ class std::map<std::string,unsigned int>+;
+#pragma link C++ class std::pair<std::string,unsigned int>+;
 #endif
+

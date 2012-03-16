@@ -1,24 +1,8 @@
 #include "interface/PhysicsObjects.h"
 
-ClassImp(Event) 
-ClassImp(GenEvent) 
-ClassImp(Electron) 
-ClassImp(GenParticle) 
-ClassImp(GenJet) 
-ClassImp(MET) 
-ClassImp(GenMET) 
-ClassImp(Tau) 
-ClassImp(CaloJet)
-ClassImp(Muon)
-ClassImp(Jet)
-ClassImp(SuperCluster)
-ClassImp(Vertex)
-ClassImp(Trigger)
-ClassImp(Track)
-ClassImp(Photon)
+#define NEL(x) (sizeof((x))/sizeof((x)[0]))
 
-
-Event::Event() :
+vhtm::Event::Event() :
   run(0), 
   event(0), 
   lumis(0), 
@@ -36,15 +20,17 @@ Event::Event() :
 {
   nPU.clear();
   bunchCrossing.clear();
+  trueNInt.clear();
 }
 
-GenEvent::GenEvent() :
+vhtm::GenEvent::GenEvent() :
   processID(0),
   ptHat(-999)
 {
   pdfWeights.clear();
 }
-Electron::Electron() :
+
+vhtm::Electron::Electron() :
   eta(-999),
   phi(-999),
   pt(-999),
@@ -52,9 +38,18 @@ Electron::Electron() :
   trackPt(-999),
   energy(-999),
   caloEnergy(-999),
-  charge(-9),
+  caloEnergyError(-999),
+  charge(-999),
+  nValidHits(-1),
+  simpleEleId60cIso(-999),
+  simpleEleId70cIso(-999),
+  simpleEleId80cIso(-999),
+  simpleEleId85cIso(-999),
+  simpleEleId90cIso(-999),
   simpleEleId95cIso(-999),
   hoe(-999),
+  hoeDepth1(-999),
+  eop(-999),
   sigmaEtaEta(-999),
   sigmaIEtaIEta(-999),
   deltaPhiTrkSC(-999),
@@ -81,18 +76,28 @@ Electron::Electron() :
   vtxDist3D(-999),
   vtxIndex(-1),
   vtxDistZ(-999),
+  relIso(-999), 
   pfRelIso(-999), 
+  chargedHadronIso(-999),
+  neutralHadronIso(-999),
+  photonIso(-999),
   dB(-999),
   edB(-999),
+  dB3d(-999),
+  edB3d(-999),
   scE1E9(-999),
   scS4S1(-999),
   sckOutOfTime(-999),
   scEcalIso(-999),
   scHEEPEcalIso(-999),
-  scHEEPTrkIso(-999)
-{}
+  scHEEPTrkIso(-999),
+  nBrems(-1),
+  fbrem(-999),
+  mva(-999),
+  selbit(0),
+  fidFlag(0) {}
 
-GenParticle::GenParticle() :
+vhtm::GenParticle::GenParticle() :
   eta(-999),
   phi(-999),
   p(-999),
@@ -114,7 +119,7 @@ GenParticle::GenParticle() :
   daughtIndices.clear();
 }
 
-GenJet::GenJet() :
+vhtm::GenJet::GenJet() :
   eta(-999),
   phi(-999),
   p(-999),
@@ -123,7 +128,7 @@ GenJet::GenJet() :
   emf(-999),
   hadf(-999) {}
 
-MET::MET() :
+vhtm::MET::MET() :
   met(-999),
   metphi(-999),
   sumet(-999),
@@ -131,18 +136,22 @@ MET::MET() :
   metphiuncorr(-999),
   sumetuncorr(-999) {}
 
-GenMET::GenMET() :
+vhtm::GenMET::GenMET() :
   met(-999),
   metphi(-999),
   sumet(-999) {}
 
-Tau::Tau() :
+vhtm::Tau::Tau() :
   eta(-999),
   phi(-999),
   pt(-999),
   energy(-999),
   charge(-999),
   mass(-999),
+  leadTrkPt(-999),
+  leadTrkEta(-999),
+  leadTrkPhi(-999),
+  leadTrkCharge(-999),
   leadChargedParticlePt(-999),
   leadNeutralParticlePt(-999),
   leadParticlePt(-999),
@@ -150,11 +159,14 @@ Tau::Tau() :
   numNeutralHadronsSignalCone(-1),
   numPhotonsSignalCone(-1),
   numParticlesSignalCone(-1),
+  //numPi0SignalCone(-1),
   numChargedHadronsIsoCone(-1),
   numNeutralHadronsIsoCone(-1),
   numPhotonsIsoCone(-1),
   numParticlesIsoCone(-1),
+  //numPi0IsoCone(-1),
   ptSumPFChargedHadronsIsoCone(-999),
+  ptSumPFNeutralHadronsIsoCone(-999),
   ptSumPhotonsIsoCone(-999),
   decayModeFinding(-1),
   looseIsolation(-1),
@@ -166,6 +178,7 @@ Tau::Tau() :
   againstElectronMedium(-1), 
   againstElectronTight(-1), 
   pfElectronMVA(-999),
+  againstElectronMVA(-1),
   byVLooseCombinedIsolationDeltaBetaCorr(-1),
   byLooseCombinedIsolationDeltaBetaCorr(-1),
   byMediumCombinedIsolationDeltaBetaCorr(-1),
@@ -177,6 +190,7 @@ Tau::Tau() :
   jetPt(-999),
   jetEta(-999),
   jetPhi(-999),
+  emFraction(-999),
   maximumHCALPFClusterEt(-999),
   ecalStripSumEOverPLead(-999),
   bremsRecoveryEOverPLead(-999),
@@ -187,10 +201,9 @@ Tau::Tau() :
   phiphiMoment(-999),
   etaphiMoment(-999),
   vx(-999), vy(-999), vz(-999),
-  zvertex(-999), ltsipt(-999) 
-  {}
-
-CaloJet::CaloJet() :
+  zvertex(-999), ltsipt(-999),
+  mva(-999), selbit(0) {}
+vhtm::CaloJet::CaloJet() :
   eta(-999),
   phi(-999),
   pt(-999),
@@ -216,9 +229,10 @@ CaloJet::CaloJet() :
   jetProbabilityBTag(-999),
   jetBProbabilityBTag(-999),
   passLooseID(-1),
-  passTightID(-1) {}
+  passTightID(-1),
+  selbit(0) {}
 
-Muon::Muon() :
+vhtm::Muon::Muon() :
   eta(-999),
   phi(-999),
   pt(-999),
@@ -246,9 +260,20 @@ Muon::Muon() :
   pfRelIso(-999),
   isTrackerMuon(false),
   dB(-999), 
-  edB(-999) {}
+  edB(-999),
+  dB3d(-999),
+  edB3d(-999),
+  isGlobalMuonPromptTight(false),
+  isAllArbitrated(false),
+  nChambers(-1),
+  nMatches(-1),
+  nMatchedStations(-1),
+  stationMask(0),
+  stationGapMaskDistance(0),
+  stationGapMaskPull(0),
+  selbit(0) {}
 
-Jet::Jet() :
+vhtm::Jet::Jet() :
   eta(-999),
   phi(-999),
   pt(-999),
@@ -281,9 +306,10 @@ Jet::Jet() :
   jetProbabilityBTag(-999),
   jetBProbabilityBTag(-999),
   passLooseID(-1),
-  passTightID(-1) {}
+  passTightID(-1),
+  selbit(0) {}
 
-SuperCluster::SuperCluster() :
+vhtm::SuperCluster::SuperCluster() :
   eta(-999),
   phi(-999),
   pt(-999),
@@ -311,9 +337,10 @@ SuperCluster::SuperCluster() :
   sckOutOfTime(-1),
   scEcalIso(-999),
   scHEEPEcalIso(-999),
-  scHEEPTrkIso(-999) {}
+  scHEEPTrkIso(-999),
+  selbit(0) {}
 
-Vertex::Vertex() :
+vhtm::Vertex::Vertex() :
   x(-999),
   y(-999),
   z(-999),
@@ -327,9 +354,10 @@ Vertex::Vertex() :
   ntracksw05(-1),
   isfake(true),
   isvalid(false),
-  sumPt(-999) {}
+  sumPt(-999),
+  selbit(0) {}
 
-Trigger::Trigger() 
+vhtm::Trigger::Trigger() 
 {
   l1physbits.clear();
   l1techbits.clear();
@@ -337,7 +365,8 @@ Trigger::Trigger()
   hltresults.clear();
   hltprescales.clear();
 }
-Track::Track()
+
+vhtm::Track::Track()
   : eta(-999),
     etaError(-999),
     theta(-999),
@@ -349,6 +378,7 @@ Track::Track()
     ptError(-999),
     qoverp(-999),
     qoverpError(-999),
+    charge(-999),
     nValidHits(-1),
     nLostHits(-1),
     validFraction(-999),
@@ -364,12 +394,15 @@ Track::Track()
     dzError(-999),
     chi2(-999),
     ndof(-1),
-    vx(-999), vy(-999), vz(-999)
-{}
-Photon::Photon() :
+    vx(-999), vy(-999), vz(-999),
+    selbit(0) {}
+
+vhtm::Photon::Photon() :
   et(-999),
   eta(-999),
+  clusterEta(-999),
   phi(-999),
+  clusterPhi(-999),
   energy(-999),
   theta(-999),
   vx(-999),
@@ -403,6 +436,7 @@ Photon::Photon() :
   isEBGap(false),
   isEEGap(false),
   isEBEEGap(false),
+  fidFlag(0),
   hasPixelSeed(false),
   ecalIso(-9999),
   hcalIso(-999),
@@ -437,5 +471,24 @@ Photon::Photon() :
   distOfMinApproach(-999),
   dPhiTracksAtVtx(-999),
   dPhiTracksAtEcal(-999),
-  dEtaTracksAtEcal(-999)  
-{}
+  dEtaTracksAtEcal(-999),
+  selbit(0) {}
+
+vhtm::TriggerObject::TriggerObject() :
+  energy(-999),
+  pt(-999),
+  eta(-999),
+  phi(-999)
+{
+  pathList.clear();
+}
+
+vhtm::CommonVertex::CommonVertex() :
+  chi2(-1),
+  ndof(-1),
+  label("") 
+{
+  for (unsigned int i = 0; i < NEL(indices); ++i) {
+    indices[i] = 0;
+  }
+}
