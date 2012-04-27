@@ -38,6 +38,7 @@ private:
   int  fnTau;
   int _verbosity;
   edm::InputTag _inputTag;
+  edm::InputTag _vtxInputTag;
 
   vhtm::Tau* tauB;
   AntiElectronIDMVA* antiE;

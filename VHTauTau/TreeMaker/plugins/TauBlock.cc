@@ -7,6 +7,10 @@
 #include "DataFormats/ParticleFlowCandidate/interface/PFCandidate.h"
 #include "DataFormats/ParticleFlowCandidate/interface/PFCandidateFwd.h"
 
+#include "DataFormats/BeamSpot/interface/BeamSpot.h"
+#include "DataFormats/VertexReco/interface/Vertex.h"
+#include "DataFormats/VertexReco/interface/VertexFwd.h"
+
 #include "Utilities/General/interface/FileInPath.h"
 #include "Bianchi/Utilities/interface/AntiElectronIDMVA.h"
 
@@ -15,7 +19,8 @@
 
 TauBlock::TauBlock(const edm::ParameterSet& iConfig) :
   _verbosity(iConfig.getParameter<int>("verbosity")),
-  _inputTag(iConfig.getParameter<edm::InputTag>("patTauSrc"))
+  _inputTag(iConfig.getParameter<edm::InputTag>("patTauSrc")),
+  _vtxInputTag(iConfig.getParameter<edm::InputTag>("vertexSrc"))
 {
   std::string method = iConfig.getParameter<std::string>("methodName");
   edm::FileInPath weightsX0BL = iConfig.getParameter<edm::FileInPath>("weightsX0BL");
@@ -49,6 +54,9 @@ void TauBlock::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup) 
   cloneTau->Clear();
   fnTau = 0;
 
+  edm::Handle<reco::VertexCollection> primaryVertices;
+  iEvent.getByLabel(_vtxInputTag, primaryVertices);
+
   edm::Handle<std::vector<pat::Tau> > taus;
   iEvent.getByLabel(_inputTag, taus);
   
@@ -76,6 +84,36 @@ void TauBlock::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup) 
         tauB->leadTrkPhi    = trk->phi();
         tauB->leadTrkCharge = trk->charge();
       }
+
+      // IP of leadPFChargedHadrCand wrt PV
+      // Vertex association
+      double minVtxDist3D = 9999.;
+      int indexVtx = -1;
+      double vertexDz = 9999.;
+      double vertexDxy = 9999.;
+      if (primaryVertices.isValid()) {
+	edm::LogInfo("TauBlock") << "Total # Primary Vertices: " << primaryVertices->size();
+
+        for (reco::VertexCollection::const_iterator v_it  = primaryVertices->begin(); 
+                                                    v_it != primaryVertices->end(); ++v_it) {
+          double dxy = it->track()->dxy(v_it->position());
+          double dz  = it->track()->dz(v_it->position());
+          double dist3D = std::sqrt(pow(dxy,2) + pow(dz,2));
+          if (dist3D < minVtxDist3D) {
+            minVtxDist3D = dist3D;
+            indexVtx = int(std::distance(primaryVertices->begin(), v_it));
+            vertexDxy = dxy;
+            vertexDz = dz;
+          }
+        }
+      } 
+      else {
+	edm::LogError("TauBlock") << "Error >> Failed to get VertexCollection for label: " 
+                                  << _vtxInputTag;
+      }
+      tauB->vtxIndex = indexVtx;
+      tauB->vtxDxy   = vertexDxy;
+      tauB->vtxDz    = vertexDz;
 
       // Leading particle pT
       tauB->leadChargedParticlePt = it->leadPFChargedHadrCand().isNonnull() 

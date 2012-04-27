@@ -72,16 +72,17 @@ void MuonBlock::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
       int indexVtx = -1;
       double vertexDistZ = 9999.;
       if (primaryVertices.isValid()) {
-	edm::LogInfo("MuonsBlock") << "Total # Primary Vertices: " << primaryVertices->size();
+	edm::LogInfo("MuonBlock") << "Total # Primary Vertices: " << primaryVertices->size();
 
-        for (reco::VertexCollection::const_iterator v_it = primaryVertices->begin(); 
-                                                   v_it != primaryVertices->end(); ++v_it) {
-          double dist3D = std::sqrt(pow(it->track()->dxy(v_it->position()),2) 
-                                  + pow(it->track()->dz(v_it->position()),2));
-          if (dist3D<minVtxDist3D) {
+        for (reco::VertexCollection::const_iterator v_it  = primaryVertices->begin(); 
+                                                    v_it != primaryVertices->end(); ++v_it) {
+          double dxy = it->track()->dxy(v_it->position());
+          double dz  = it->track()->dz(v_it->position());
+          double dist3D = std::sqrt(pow(dxy,2) + pow(dz,2));
+          if (dist3D < minVtxDist3D) {
             minVtxDist3D = dist3D;
-                indexVtx = int(std::distance(primaryVertices->begin(),v_it));
-             vertexDistZ = it->track()->dz(v_it->position());
+            indexVtx = int(std::distance(primaryVertices->begin(), v_it));
+            vertexDistZ = dz;
           }
         }
       } 
