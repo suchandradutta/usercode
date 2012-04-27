@@ -1,26 +1,59 @@
 <lcgdict>
-  <class name="vhtm::Event" ClassVersion="2" />
-  <class name="vhtm::GenEvent" ClassVersion="1" />
-  <class name="vhtm::Electron" ClassVersion="4" >
-    <version ClassVersion="4" checksum="3284366117"/>
+  <class name="vhtm::Event" ClassVersion="2">
+    <version ClassVersion="2" checksum="3180746745" />
   </class>
-  <class name="vhtm::GenParticle" ClassVersion="3" />
-  <class name="vhtm::GenJet" ClassVersion="1" />
-  <class name="vhtm::GenMET" ClassVersion="1" />
-  <class name="vhtm::MET" ClassVersion="1" />
-  <class name="vhtm::Tau" ClassVersion="4" />
-  <class name="vhtm::CaloJet" ClassVersion="2" />
-  <class name="vhtm::Muon" ClassVersion="4" />
-  <class name="vhtm::Jet" ClassVersion="2" />
-  <class name="vhtm::SuperCluster" ClassVersion="2" />
-  <class name="vhtm::Vertex" ClassVersion="3" >
-    <version ClassVersion="3" checksum="246323024"/>
+  <class name="vhtm::GenEvent" ClassVersion="1">
+    <version ClassVersion="1" checksum="3121422649" />
   </class>
-  <class name="vhtm::Trigger" ClassVersion="2" />
-  <class name="vhtm::Track" ClassVersion="2" />
-  <class name="vhtm::Photon" ClassVersion="2" />
-  <class name="vhtm::TriggerObject" ClassVersion="1" >
-    <version ClassVersion="1" checksum="420020926"/>
+  <class name="vhtm::Electron" ClassVersion="4">
+    <version ClassVersion="4" checksum="3284366117" />
   </class>
-  <class name="vhtm::CommonVertex" ClassVersion="1" />
+  <class name="vhtm::GenParticle" ClassVersion="3">
+    <version ClassVersion="3" checksum="2970351518" />
+  </class>
+  <class name="vhtm::GenJet" ClassVersion="1">
+    <version ClassVersion="1" checksum="1304197886" />
+  </class>
+  <class name="vhtm::GenMET" ClassVersion="1">
+    <version ClassVersion="1" checksum="3208282312" />
+  </class>
+  <class name="vhtm::MET" ClassVersion="1">
+    <version ClassVersion="1" checksum="1036931265" />
+  </class>
+  <class name="vhtm::Tau" ClassVersion="4">
+    <version ClassVersion="4" checksum="1043289623" />
+  </class>
+  <class name="vhtm::CaloJet" ClassVersion="2">
+    <version ClassVersion="2" checksum="1958684311" />
+  </class>
+  <class name="vhtm::Muon" ClassVersion="4">
+    <version ClassVersion="4" checksum="832635318" />
+  </class>
+  <class name="vhtm::Jet" ClassVersion="2">
+    <version ClassVersion="2" checksum="671778272" />
+  </class>
+  <class name="vhtm::SuperCluster" ClassVersion="2">
+    <version ClassVersion="2" checksum="2834975247" />
+  </class>
+  <class name="vhtm::Vertex" ClassVersion="3">
+    <version ClassVersion="3" checksum="246323024" />
+  </class>
+  <class name="vhtm::Trigger" ClassVersion="2">
+    <version ClassVersion="2" checksum="3872423106" />
+  </class>
+  <class name="vhtm::Track" ClassVersion="2">
+    <version ClassVersion="2" checksum="2444896046" />
+  </class> 
+  <class name="vhtm::Photon" ClassVersion="2">
+    <version ClassVersion="2" checksum="2620978091" />
+  </class>
+  <class name="vhtm::TriggerObject" ClassVersion="1">
+    <version ClassVersion="1" checksum="420020926" />
+  </class>
+  <class name="vhtm::CommonVertex" ClassVersion="1">
+    <version ClassVersion="1" checksum="134088440" />
+  </class>
+  <class name="vhtm::SVDiTau" ClassVersion="1">
+    <version ClassVersion="1" checksum="164088440" />
+  </class>
 </lcgdict>

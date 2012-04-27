@@ -152,6 +152,9 @@ vhtm::Tau::Tau() :
   leadTrkEta(-999),
   leadTrkPhi(-999),
   leadTrkCharge(-999),
+  vtxIndex(-1),
+  vtxDxy(-999),
+  vtxDz(-999),
   leadChargedParticlePt(-999),
   leadNeutralParticlePt(-999),
   leadParticlePt(-999),
@@ -492,3 +495,7 @@ vhtm::CommonVertex::CommonVertex() :
     indices[i] = 0;
   }
 }
+vhtm::SVDiTau::SVDiTau() :
+  mass(-999),
+  isValidSolution(false), 
+  isGenMatched(false) {}

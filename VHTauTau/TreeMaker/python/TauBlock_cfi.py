@@ -4,5 +4,6 @@ from VHTauTau.TreeMaker.AntiElectronIDMVA_cfi import antiElectronMVAIDcfg
 tauBlock = cms.EDAnalyzer("TauBlock",
   antiElectronMVAIDcfg,
   verbosity = cms.int32(0),
-  patTauSrc = cms.InputTag('selectedPatTaus')
+  patTauSrc = cms.InputTag('selectedPatTaus'),
+  vertexSrc = cms.InputTag('offlinePrimaryVerticesWithBS')
 )

@@ -20,5 +20,6 @@ namespace {
     vhtm::Photon            rvg;
     vhtm::TriggerObject     rvh;
     vhtm::CommonVertex      rvi;
+    vhtm::SVDiTau           rvj;
   };
 }

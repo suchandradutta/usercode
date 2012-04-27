@@ -209,6 +209,10 @@ namespace vhtm {
     double leadTrkPhi;
     double leadTrkCharge;
 
+       int vtxIndex;
+    double vtxDxy;
+    double vtxDz;
+
     // Leading particle pT
     double leadChargedParticlePt;
     double leadNeutralParticlePt;
@@ -655,6 +659,17 @@ namespace vhtm {
     int indices[3];
   
     ClassDef(CommonVertex, 1)
+  };
+  class SVDiTau: public TObject {
+  public:
+    SVDiTau();
+    ~SVDiTau() {}
+  
+    double mass;
+    bool isValidSolution;
+    bool isGenMatched;
+  
+    ClassDef(SVDiTau, 1)
   };
 }
 #endif
