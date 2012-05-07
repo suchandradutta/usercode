@@ -18,7 +18,6 @@
 #include "RecoEgamma/EgammaTools/interface/ConversionFinder.h"
 #include "DataFormats/VertexReco/interface/Vertex.h"
 #include "DataFormats/VertexReco/interface/VertexFwd.h"
-#include "CommonTools/UtilAlgos/interface/TFileService.h"
 
 #include "RecoEcal/EgammaCoreTools/interface/EcalClusterLazyTools.h"
 #include "Utilities/General/interface/FileInPath.h"

@@ -77,7 +77,7 @@ void TauBlock::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup) 
       tauB->pt     = it->pt();
       tauB->energy = it->energy();
       tauB->charge = it->charge();
-      if (it->leadTrack().isAvailable()) {
+      if (it->leadTrack().isAvailable() && it->leadTrack().isNonnull()) {
 	reco::TrackRef trk = it->leadTrack();
         tauB->leadTrkPt     = trk->pt();
         tauB->leadTrkEta    = trk->eta();
@@ -91,13 +91,13 @@ void TauBlock::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup) 
       int indexVtx = -1;
       double vertexDz = 9999.;
       double vertexDxy = 9999.;
-      if (primaryVertices.isValid()) {
+      if (primaryVertices.isValid() && it->leadTrack().isAvailable() && it->leadTrack().isNonnull()) {
 	edm::LogInfo("TauBlock") << "Total # Primary Vertices: " << primaryVertices->size();
 
         for (reco::VertexCollection::const_iterator v_it  = primaryVertices->begin(); 
                                                     v_it != primaryVertices->end(); ++v_it) {
-          double dxy = it->track()->dxy(v_it->position());
-          double dz  = it->track()->dz(v_it->position());
+          double dxy = it->leadTrack()->dxy(v_it->position());
+          double dz  = it->leadTrack()->dz(v_it->position());
           double dist3D = std::sqrt(pow(dxy,2) + pow(dz,2));
           if (dist3D < minVtxDist3D) {
             minVtxDist3D = dist3D;
@@ -137,7 +137,7 @@ void TauBlock::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup) 
       
       tauB->ptSumPFChargedHadronsIsoCone = it->isolationPFChargedHadrCandsPtSum();
       tauB->ptSumPhotonsIsoCone          = it->isolationPFGammaCandsEtSum();
-      const reco::PFCandidateRefVector & nvList = it->isolationPFNeutrHadrCands();
+      const reco::PFCandidateRefVector& nvList = it->isolationPFNeutrHadrCands();
       double ptSum = 0;
       for (reco::PFCandidateRefVector::const_iterator iCand  = nvList.begin(); 
                                                       iCand != nvList.end(); ++iCand) {

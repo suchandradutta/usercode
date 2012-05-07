@@ -2,7 +2,6 @@
 #include <algorithm>
 
 #include "FWCore/MessageLogger/interface/MessageLogger.h"
-#include "CommonTools/UtilAlgos/interface/TFileService.h"
 
 #include "PhysicsTools/PatUtils/interface/TriggerHelper.h"
 #include "DataFormats/PatCandidates/interface/TriggerEvent.h"
@@ -34,11 +33,7 @@ void TriggerObjectBlock::beginJob()
   tree->Branch("TriggerObject", &cloneTriggerObject, 32000, 2);
   tree->Branch("nTriggerObject", &fnTriggerObject, "fnTriggerObject/I");
 
-  // Now book histograms
-  edm::Service<TFileService> fileService;
-
-  if (_may10ReRecoData) _firingFlag = false;
-  else _firingFlag = true; 
+  _firingFlag = (_may10ReRecoData) ? false : true; 
 }
 void TriggerObjectBlock::beginRun(edm::Run const& iRun, edm::EventSetup const& iSetup) {
   bool changed = true;
@@ -61,6 +56,10 @@ void TriggerObjectBlock::analyze(const edm::Event& iEvent, const edm::EventSetup
   cloneTriggerObject->Clear();
   fnTriggerObject = 0;  
 
+  if (_verbosity) {
+    std::cout << setiosflags(std::ios::fixed); 
+    std::cout << "Indx     Eta     Phi      Pt  Energy            =Trigger path list=" << std::endl;
+  }
   // trigger event
   edm::Handle<pat::TriggerEvent> triggerEvent;
   iEvent.getByLabel(_triggerEventTag, triggerEvent);
@@ -68,14 +67,13 @@ void TriggerObjectBlock::analyze(const edm::Event& iEvent, const edm::EventSetup
   // get the trigger objects corresponding to the used matching (HLT muons) and
   // loop over selected trigger objects
   pat::TriggerObjectRefVector myObjects(triggerEvent->objectRefs());
-  int nObjects = 0; 
   for (pat::TriggerObjectRefVector::const_iterator it  = myObjects.begin();                                                 
                                                    it != myObjects.end(); 
                                                  ++it) {                                 
     pat::TriggerPathRefVector myPaths = triggerEvent->objectPaths((*it));
     std::map <std::string, unsigned int> pathInfoMap;
 
-    for (pat::TriggerPathRefVector::const_iterator ipath = myPaths.begin();
+    for (pat::TriggerPathRefVector::const_iterator ipath  = myPaths.begin();
 	                                           ipath != myPaths.end();   
                                                  ++ipath) {
       std::string name = (**ipath).name();
@@ -106,33 +104,34 @@ void TriggerObjectBlock::analyze(const edm::Event& iEvent, const edm::EventSetup
                                            << fnTriggerObject; 
 	break;
       }
-      nObjects++;
       _triggerObject = new ((*cloneTriggerObject)[fnTriggerObject++]) vhtm::TriggerObject();
-      _triggerObject->eta = (**it).eta();
-      _triggerObject->phi = (**it).phi();
-      _triggerObject->pt  = (**it).pt();
-      _triggerObject->energy  = (**it).energy();
+      _triggerObject->eta    = (**it).eta();
+      _triggerObject->phi    = (**it).phi();
+      _triggerObject->pt     = (**it).pt();
+      _triggerObject->energy = (**it).energy();
       for (std::map <std::string, unsigned int>::iterator imap  = pathInfoMap.begin(); 
                                                           imap != pathInfoMap.end(); 
                                                         ++imap) {
 	_triggerObject->pathList.insert(std::pair<std::string, unsigned int> (imap->first, imap->second));
       }
       if (_verbosity) {
-	std::cout << _triggerObject->eta 
-		  << ":" << _triggerObject->phi 
-		  << ":" << _triggerObject->pt 
-		  << ":" << _triggerObject->energy
+	std::cout << std::setprecision(2);
+	std::cout << std::setw(4) << fnTriggerObject
+                  << std::setw(8) << _triggerObject->eta 
+		  << std::setw(8) << _triggerObject->phi 
+		  << std::setw(8) << _triggerObject->pt 
+		  << std::setw(8) << _triggerObject->energy
 		  << std::endl;
 	for (std::map<std::string, unsigned int>::const_iterator jt  = _triggerObject->pathList.begin();
 	                                                         jt != _triggerObject->pathList.end(); 
                                                                ++jt)
         {
-	  std::cout << jt->first << " flag " << jt->second << std::endl;
+	  std::cout << "\t\t\t\t\t" << jt->first << " " << jt->second << std::endl;
 	}
       }
     }
   }
-  if (_verbosity) std::cout << " # of Trigger Objects " << nObjects << std::endl;
+  if (_verbosity) std::cout << " # of Trigger Objects " << fnTriggerObject << std::endl;
 }
 #include "FWCore/Framework/interface/MakerMacros.h"
 DEFINE_FWK_MODULE(TriggerObjectBlock);

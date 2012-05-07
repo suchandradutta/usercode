@@ -18,8 +18,6 @@ triggerObjectBlock = cms.EDAnalyzer("TriggerObjectBlock",
                                     "HLT_IsoMu4",
                                     "HLT_Mu17_Ele8_Calo",
                                     "HLT_Mu8_Ele17_",
-                                    "LooseIsoPFTau",
-                                    "TightIsoPFTau",
-                                    "DoubleIsoPFTau"),
+                                    "IsoPFTau"),
   May10ReRecoData = cms.bool(False)
 )
