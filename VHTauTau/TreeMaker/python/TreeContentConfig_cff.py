@@ -11,7 +11,7 @@ from VHTauTau.TreeMaker.GenParticleBlock_cfi import genParticleBlock
 from VHTauTau.TreeMaker.GenJetBlock_cfi import genJetBlock
 from VHTauTau.TreeMaker.GenMETBlock_cfi import genMETBlock
 from VHTauTau.TreeMaker.TriggerBlock_cfi import triggerBlock
-from VHTauTau.TreeMaker.TriggerBlock_cfi import triggerObjectBlock
+from VHTauTau.TreeMaker.TriggerObjectBlock_cfi import triggerObjectBlock
 
 treeContentSequence = cms.Sequence(
    eventBlock
