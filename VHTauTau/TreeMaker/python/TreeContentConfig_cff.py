@@ -10,15 +10,12 @@ from VHTauTau.TreeMaker.TauBlock_cfi import tauBlock
 from VHTauTau.TreeMaker.GenParticleBlock_cfi import genParticleBlock
 from VHTauTau.TreeMaker.GenJetBlock_cfi import genJetBlock
 from VHTauTau.TreeMaker.GenMETBlock_cfi import genMETBlock
-from VHTauTau.TreeMaker.TrackBlock_cfi import trackBlock
 from VHTauTau.TreeMaker.TriggerBlock_cfi import triggerBlock
-from VHTauTau.TreeMaker.PhotonBlock_cfi import photonBlock
-from VHTauTau.TreeMaker.CommonVertexBlock_cfi import commonVertexBlock
+from VHTauTau.TreeMaker.TriggerObjectBlock_cfi import triggerObjectBlock
 
 treeContentSequence = cms.Sequence(
    eventBlock
  + vertexBlock
- + commonVertexBlock
  + electronBlock
  + genParticleBlock
  + genJetBlock
@@ -27,7 +24,6 @@ treeContentSequence = cms.Sequence(
  + metBlock
  + muonBlock
  + tauBlock
- + trackBlock
  + triggerBlock
- + photonBlock
+ + triggerObjectBlock
 )

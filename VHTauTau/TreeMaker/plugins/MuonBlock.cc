@@ -60,11 +60,21 @@ void MuonBlock::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
 	edm::LogInfo("MuonBlock") << "Too many PAT Muons, fnMuon = " << fnMuon; 
 	break;
       }
-      double trkd0 = it->track()->d0();
-      if (_beamSpotCorr && beamSpot.isValid()) trkd0 = -(it->track()->dxy(beamSpot->position()));
-      else if (_beamSpotCorr && !beamSpot.isValid()) 
-        edm::LogError("MuonsBlock") << "Error >> Failed to get BeamSpot for label: "
-                                    << _beamSpotInputTag;
+
+      reco::TrackRef tk  = it->innerTrack();  // tracker segment only
+      reco::TrackRef gtk = it->globalTrack(); 
+
+      double trkd0 = gtk->d0();
+      double trkdz = gtk->dz();
+      if (_beamSpotCorr) {
+        if (beamSpot.isValid()) {
+          trkd0 = -(gtk->dxy(beamSpot->position()));
+          trkdz = gtk->dz(beamSpot->position());
+        }
+        else
+          edm::LogError("MuonsBlock") << "Error >> Failed to get BeamSpot for label: "
+                                      << _beamSpotInputTag;
+      }
       double reliso = (it->trackIso() + it->ecalIso() + it->hcalIso())/it->pt();
 
       // Vertex association
@@ -72,16 +82,17 @@ void MuonBlock::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
       int indexVtx = -1;
       double vertexDistZ = 9999.;
       if (primaryVertices.isValid()) {
-	edm::LogInfo("MuonsBlock") << "Total # Primary Vertices: " << primaryVertices->size();
+	edm::LogInfo("MuonBlock") << "Total # Primary Vertices: " << primaryVertices->size();
 
-        for (reco::VertexCollection::const_iterator v_it = primaryVertices->begin(); 
-                                                   v_it != primaryVertices->end(); ++v_it) {
-          double dist3D = std::sqrt(pow(it->track()->dxy(v_it->position()),2) 
-                                  + pow(it->track()->dz(v_it->position()),2));
-          if (dist3D<minVtxDist3D) {
+        for (reco::VertexCollection::const_iterator v_it  = primaryVertices->begin(); 
+                                                    v_it != primaryVertices->end(); ++v_it) {
+          double dxy = gtk->dxy(v_it->position());
+          double dz  = gtk->dz(v_it->position());
+          double dist3D = std::sqrt(pow(dxy,2) + pow(dz,2));
+          if (dist3D < minVtxDist3D) {
             minVtxDist3D = dist3D;
-                indexVtx = int(std::distance(primaryVertices->begin(),v_it));
-             vertexDistZ = it->track()->dz(v_it->position());
+            indexVtx = int(std::distance(primaryVertices->begin(), v_it));
+            vertexDistZ = dz;
           }
         }
       } 
@@ -99,20 +110,19 @@ void MuonBlock::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
       double vmax = (v1 > 0) ? v1 : 0;
       double UWpfreliso = (it->chargedHadronIso() + vmax)/it->pt();
 
-      reco::TrackRef tk = it->innerTrack();
-
       muonB = new ((*cloneMuon)[fnMuon++]) vhtm::Muon();
       muonB->eta        = it->eta();
       muonB->phi        = it->phi();
       muonB->pt         = it->pt();
       muonB->p          = it->p();
+      //muonB->ptError    = gtk->ptError();
       muonB->energy     = it->energy();
       muonB->charge     = it->charge();
       muonB->trkD0      = trkd0;
-      muonB->trkD0Error = it->track()->d0Error();
-      muonB->trkDz      = it->track()->dz();
-      muonB->trkDzError = it->track()->dzError();
-      muonB->globalChi2 = it->track()->normalizedChi2();
+      muonB->trkD0Error = gtk->d0Error();
+      muonB->trkDz      = trkdz;
+      muonB->trkDzError = gtk->dzError();
+      muonB->globalChi2 = it->normChi2();
       muonB->trkIso     = it->trackIso();
       muonB->ecalIso    = it->ecalIso();
       muonB->hcalIso    = it->hcalIso();
@@ -122,7 +132,7 @@ void MuonBlock::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
       muonB->vtxDist3D  = minVtxDist3D;
       muonB->vtxIndex   = indexVtx;
       muonB->vtxDistZ   = vertexDistZ;
-      const reco::HitPattern& hitp = tk->hitPattern(); 
+      const reco::HitPattern& hitp = gtk->hitPattern(); 
       muonB->pixHits    = hitp.numberOfValidPixelHits();
       muonB->trkHits    = hitp.numberOfValidTrackerHits();
       muonB->muoHits    = hitp.numberOfValidMuonHits();
@@ -147,6 +157,12 @@ void MuonBlock::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
       muonB->stationMask            = it->stationMask();
       muonB->stationGapMaskDistance = it->stationGapMaskDistance();
       muonB->stationGapMaskPull     = it->stationGapMaskPull();
+
+      // Vertex information
+      //const reco::Candidate::Point& vertex = it->vertex();
+      //muonB->vx = vertex.x();             
+      //muonB->vy = vertex.y();             
+      //muonB->vz = vertex.z();             
     }
   } 
   else {

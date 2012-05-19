@@ -8,9 +8,7 @@ triggerBlock = cms.EDAnalyzer("TriggerBlock",
                                     "HLT_Mu",
                                     "HLT_IsoMu", 
                                     "HLT_TripleMu",
-                                    "LooseIsoPFTau",
-                                    "TightIsoPFTau", 
-                                    "DoubleIsoPFTau", 
+                                    "IsoPFTau",
                                     "TrkIsoT", 
                                     "HLT_Ele")
 )
