@@ -3,6 +3,7 @@
 #include "TROOT.h"
 #include "TClonesArray.h"
 #include "TVector3.h"
+#include "TMath.h"
 
 #include "DataFormats/HepMCCandidate/interface/GenParticle.h"
 #include "DataFormats/HepMCCandidate/interface/GenParticleFwd.h"
@@ -127,6 +128,8 @@ void SVfitBlock::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup
     const NSVfitSingleParticleHypothesisBase* svFitLegPos = (svFitLeg1->particle()->charge() > 0 ? svFitLeg1 : svFitLeg2);
     svDiTauB->mass = svFitResonanceHypothesis->mass();
     svDiTauB->isValidSolution = svFitResonanceHypothesis->isValidSolution();
+    svDiTauB->sigmaUp = svFitResonanceHypothesis->massErrUp();
+    svDiTauB->sigmaDn = svFitResonanceHypothesis->massErrDown();
 
     if (ROOT::Math::VectorUtil::DeltaR(svFitLegNeg->particle()->p4(), tauNeg->p4()) < 0.1 &&
         ROOT::Math::VectorUtil::DeltaR(svFitLegPos->particle()->p4(), tauPos->p4()) < 0.1 &&
