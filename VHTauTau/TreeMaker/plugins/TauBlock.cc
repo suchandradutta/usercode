@@ -12,7 +12,6 @@
 #include "DataFormats/VertexReco/interface/VertexFwd.h"
 
 #include "Utilities/General/interface/FileInPath.h"
-#include "Bianchi/Utilities/interface/AntiElectronIDMVA.h"
 
 #include "VHTauTau/TreeMaker/plugins/TauBlock.h"
 #include "VHTauTau/TreeMaker/interface/Utility.h"
@@ -21,26 +20,8 @@ TauBlock::TauBlock(const edm::ParameterSet& iConfig) :
   _verbosity(iConfig.getParameter<int>("verbosity")),
   _inputTag(iConfig.getParameter<edm::InputTag>("patTauSrc")),
   _vtxInputTag(iConfig.getParameter<edm::InputTag>("vertexSrc"))
-{
-  std::string method = iConfig.getParameter<std::string>("methodName");
-  edm::FileInPath weightsX0BL = iConfig.getParameter<edm::FileInPath>("weightsX0BL");
-  edm::FileInPath weights11BL = iConfig.getParameter<edm::FileInPath>("weights11BL");
-  edm::FileInPath weights01BL = iConfig.getParameter<edm::FileInPath>("weights01BL");
-  edm::FileInPath weightsX0EC = iConfig.getParameter<edm::FileInPath>("weightsX0EC");
-  edm::FileInPath weights11EC = iConfig.getParameter<edm::FileInPath>("weights11EC");
-  edm::FileInPath weights01EC = iConfig.getParameter<edm::FileInPath>("weights01EC");
-
-  antiE = new AntiElectronIDMVA();
-  antiE->Initialize(method,
-                    weightsX0BL.fullPath(), 
-                    weights11BL.fullPath(), 
-                    weights01BL.fullPath(), 
-                    weightsX0EC.fullPath(), 
-                    weights11EC.fullPath(), 
-                    weights01EC.fullPath() 
-  );
-}
-TauBlock::~TauBlock() { delete antiE; }
+{}
+TauBlock::~TauBlock() { }
 void TauBlock::beginJob() 
 {
   // Get TTree pointer
@@ -79,10 +60,15 @@ void TauBlock::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup) 
       tauB->charge = it->charge();
       if (it->leadTrack().isAvailable() && it->leadTrack().isNonnull()) {
 	reco::TrackRef trk = it->leadTrack();
-        tauB->leadTrkPt     = trk->pt();
-        tauB->leadTrkEta    = trk->eta();
-        tauB->leadTrkPhi    = trk->phi();
-        tauB->leadTrkCharge = trk->charge();
+        tauB->leadTrkPt      = trk->pt();
+        tauB->leadTrkPtError = trk->ptError();
+        tauB->leadTrkEta     = trk->eta();
+        tauB->leadTrkPhi     = trk->phi();
+        tauB->leadTrkCharge  = trk->charge();
+        tauB->leadTrkD0      = trk->d0();
+        tauB->leadTrkD0Error = trk->d0Error();
+        tauB->leadTrkDz      = trk->dz();
+        tauB->leadTrkDzError = trk->dzError();
       }
 
       // IP of leadPFChargedHadrCand wrt PV
@@ -127,13 +113,11 @@ void TauBlock::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup) 
       tauB->numNeutralHadronsSignalCone = it->signalPFNeutrHadrCands().size();
       tauB->numPhotonsSignalCone        = it->signalPFGammaCands().size();
       tauB->numParticlesSignalCone      = it->signalPFCands().size();
-      //tauB->numPi0SignalCone            = it->signalPiZeroCandidates().size();
       
       tauB->numChargedHadronsIsoCone = it->isolationPFChargedHadrCands().size();
       tauB->numNeutralHadronsIsoCone = it->isolationPFNeutrHadrCands().size();
       tauB->numPhotonsIsoCone        = it->isolationPFGammaCands().size();
       tauB->numParticlesIsoCone      = it->isolationPFCands().size();
-      //tauB->numPi0IsoCone            = it->isolationPiZeroCandidates().size();
       
       tauB->ptSumPFChargedHadronsIsoCone = it->isolationPFChargedHadrCandsPtSum();
       tauB->ptSumPhotonsIsoCone          = it->isolationPFGammaCandsEtSum();
@@ -159,6 +143,9 @@ void TauBlock::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup) 
       tauB->againstElectronTight  = it->tauID("againstElectronTight");
       tauB->pfElectronMVA         = it->leadPFCand().isNonnull() 
                                   ? it->leadPFCand()->mva_e_pi() : 1.;
+
+      // ElectronIDMVA, electron faking tau
+      tauB->againstElectronMVA    = it->tauID("againstElectronMVA");
 
       tauB->byVLooseCombinedIsolationDeltaBetaCorr = it->tauID("byVLooseCombinedIsolationDeltaBetaCorr");
       tauB->byLooseCombinedIsolationDeltaBetaCorr  = it->tauID("byLooseCombinedIsolationDeltaBetaCorr");
@@ -199,11 +186,6 @@ void TauBlock::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup) 
       tauB->zvertex = it->vz(); // distance from the primary vertex
       tauB->mass    = it->p4().M();
       tauB->ltsipt  = TMath::Abs(it->leadPFChargedHadrCandsignedSipt());
-
-      // ElectronIDMVA, electron faking tau
-      const pat::Tau& tau = *it;  
-      tauB->mva = (it->leadPFChargedHadrCand().isNonnull()) ? antiE->MVAValue(&tau) : -1;
-      tauB->againstElectronMVA = it->tauID("againstElectronMVA");
     }
   }
   else {

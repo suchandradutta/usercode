@@ -26,6 +26,7 @@ private:
 public:
   explicit MuonBlock(const edm::ParameterSet& iConfig);
   virtual ~MuonBlock() {}
+  void fillIsoDeposit(const pat::Muon& muo, vhtm::Muon* muonB);
 
   enum {
     kMaxMuon = 100

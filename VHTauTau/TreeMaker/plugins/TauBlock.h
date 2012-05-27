@@ -15,7 +15,6 @@
 
 class TClonesArray;
 class Tau;
-class AntiElectronIDMVA;
 
 class TauBlock : public edm::EDAnalyzer 
 {
@@ -41,6 +40,5 @@ private:
   edm::InputTag _vtxInputTag;
 
   vhtm::Tau* tauB;
-  AntiElectronIDMVA* antiE;
 };
 #endif

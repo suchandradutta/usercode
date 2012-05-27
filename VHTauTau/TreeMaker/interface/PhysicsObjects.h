@@ -56,6 +56,7 @@ namespace vhtm {
     double pt;
       bool hasGsfTrack;
     double trackPt;
+    double trackPtError;
     double energy;
     double caloEnergy;
     double caloEnergyError;
@@ -94,7 +95,13 @@ namespace vhtm {
        int missingHits;
     double dist_vec;
     double dCotTheta;
-  
+      bool hasMatchedConv; 
+
+    // Vertex
+    double vx;
+    double vy;
+    double vz;
+
     // SC associated with electron
     double scEn;
     double scEta;
@@ -135,7 +142,19 @@ namespace vhtm {
        int selbit;
        int fidFlag;
 
-    ClassDef(Electron, 4) 
+     float pfRelIso03v1;
+     float pfRelIso03v2;
+     float pfRelIsoDB03v1;
+     float pfRelIsoDB03v2;
+     float pfRelIsoDB03v3;
+       
+     float pfRelIso04v1;
+     float pfRelIso04v2;
+     float pfRelIsoDB04v1;
+     float pfRelIsoDB04v2;
+     float pfRelIsoDB04v3;
+
+    ClassDef(Electron, 5) 
   };
   class GenParticle: public TObject {
   public:
@@ -155,13 +174,14 @@ namespace vhtm {
     double vy;
     double vz;
        int status;
+    double charge; 
        int numDaught;
        int numMother;
        int motherIndex;
     std::vector<int> motherIndices;
     std::vector<int> daughtIndices;
   
-    ClassDef(GenParticle,3) 
+    ClassDef(GenParticle,4) 
   };
   class GenJet: public TObject {
   public:
@@ -205,9 +225,14 @@ namespace vhtm {
     double mass;
   
     double leadTrkPt; 
+    double leadTrkPtError; 
     double leadTrkEta;
     double leadTrkPhi;
     double leadTrkCharge;
+    double leadTrkD0;
+    double leadTrkD0Error;
+    double leadTrkDz;
+    double leadTrkDzError;
 
        int vtxIndex;
     double vtxDxy;
@@ -281,11 +306,9 @@ namespace vhtm {
     double zvertex;
     double ltsipt;
   
-    double mva;
-    
        int selbit;
   
-    ClassDef(Tau, 4) 
+    ClassDef(Tau, 5) 
   };
   class CaloJet: public TObject {
   public:
@@ -329,6 +352,7 @@ namespace vhtm {
     double eta;
     double phi;
     double pt;
+    double ptError;
     double p;
     double energy;
        int charge;
@@ -353,6 +377,10 @@ namespace vhtm {
     double pfRelIso;
       bool isTrackerMuon;
 
+    double vx;
+    double vy;
+    double vz;
+
     double dB;  // PV2D
     double edB;   
 
@@ -371,7 +399,17 @@ namespace vhtm {
      
        int selbit;
 
-    ClassDef(Muon, 4)
+     float pfRelIso03v1;
+     float pfRelIso03v2;
+     float pfRelIsoDB03v1;
+     float pfRelIsoDB03v2;
+       
+     float pfRelIso04v1;
+     float pfRelIso04v2;
+     float pfRelIsoDB04v1;
+     float pfRelIsoDB04v2;
+
+     ClassDef(Muon, 5)
   };
   class Jet: public TObject {
   public:
@@ -667,6 +705,8 @@ namespace vhtm {
   
     double mass;
     bool isValidSolution;
+    double sigmaUp;
+    double sigmaDn;
     bool isGenMatched;
   
     ClassDef(SVDiTau, 1)

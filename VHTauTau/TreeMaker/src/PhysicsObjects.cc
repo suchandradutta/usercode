@@ -36,6 +36,7 @@ vhtm::Electron::Electron() :
   pt(-999),
   hasGsfTrack(false),
   trackPt(-999),
+  trackPtError(-999),
   energy(-999),
   caloEnergy(-999),
   caloEnergyError(-999),
@@ -68,6 +69,10 @@ vhtm::Electron::Electron() :
   missingHits(-1),
   dist_vec(-999),
   dCotTheta(-999),
+  hasMatchedConv(false),
+  vx(-999),
+  vy(-999),
+  vz(-999),
   scEn(-999),
   scEta(-999),
   scPhi(-999),
@@ -95,7 +100,17 @@ vhtm::Electron::Electron() :
   fbrem(-999),
   mva(-999),
   selbit(0),
-  fidFlag(0) {}
+  fidFlag(0), 
+  pfRelIso03v1(-999),
+  pfRelIsoDB03v1(-999),
+  pfRelIso03v2(-999),
+  pfRelIsoDB03v2(-999),
+  pfRelIsoDB03v3(-999),
+  pfRelIso04v1(-999),
+  pfRelIsoDB04v1(-999),
+  pfRelIso04v2(-999),
+  pfRelIsoDB04v2(-999),
+  pfRelIsoDB04v3(-999) {}
 
 vhtm::GenParticle::GenParticle() :
   eta(-999),
@@ -111,6 +126,7 @@ vhtm::GenParticle::GenParticle() :
   vy(-999),
   vz(-999),
   status(-999),
+  charge(-999),
   numDaught(-1),
   numMother(-1),
   motherIndex(-1)
@@ -149,9 +165,14 @@ vhtm::Tau::Tau() :
   charge(-999),
   mass(-999),
   leadTrkPt(-999),
+  leadTrkPtError(-999),
   leadTrkEta(-999),
   leadTrkPhi(-999),
   leadTrkCharge(-999),
+  leadTrkD0(-999),
+  leadTrkD0Error(-999),
+  leadTrkDz(-999),
+  leadTrkDzError(-999),
   vtxIndex(-1),
   vtxDxy(-999),
   vtxDz(-999),
@@ -205,7 +226,7 @@ vhtm::Tau::Tau() :
   etaphiMoment(-999),
   vx(-999), vy(-999), vz(-999),
   zvertex(-999), ltsipt(-999),
-  mva(-999), selbit(0) {}
+  selbit(0) {}
 vhtm::CaloJet::CaloJet() :
   eta(-999),
   phi(-999),
@@ -239,6 +260,7 @@ vhtm::Muon::Muon() :
   eta(-999),
   phi(-999),
   pt(-999),
+  ptError(-999),
   p(-999),
   energy(-999),
   charge(-999),
@@ -262,6 +284,9 @@ vhtm::Muon::Muon() :
   matches(-1),
   pfRelIso(-999),
   isTrackerMuon(false),
+  vx(-999),
+  vy(-999),
+  vz(-999),
   dB(-999), 
   edB(-999),
   dB3d(-999),
@@ -274,7 +299,15 @@ vhtm::Muon::Muon() :
   stationMask(0),
   stationGapMaskDistance(0),
   stationGapMaskPull(0),
-  selbit(0) {}
+  selbit(0),
+  pfRelIso03v1(-999),
+  pfRelIso03v2(-999),
+  pfRelIsoDB03v1(-999),
+  pfRelIsoDB03v2(-999),
+  pfRelIso04v1(-999),
+  pfRelIso04v2(-999),
+  pfRelIsoDB04v1(-999),
+  pfRelIsoDB04v2(-999) {}
 
 vhtm::Jet::Jet() :
   eta(-999),
@@ -498,4 +531,6 @@ vhtm::CommonVertex::CommonVertex() :
 vhtm::SVDiTau::SVDiTau() :
   mass(-999),
   isValidSolution(false), 
+  sigmaUp(-999),
+  sigmaDn(-999),
   isGenMatched(false) {}

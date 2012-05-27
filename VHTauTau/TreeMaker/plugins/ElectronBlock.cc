@@ -10,6 +10,9 @@
 #include "FWCore/MessageLogger/interface/MessageLogger.h"
 #include "FWCore/Framework/interface/ESHandle.h"
 #include "DataFormats/PatCandidates/interface/Electron.h"
+#include "DataFormats/GsfTrackReco/interface/GsfTrack.h"
+#include "DataFormats/EgammaCandidates/interface/GsfElectron.h"
+#include "DataFormats/EgammaCandidates/interface/GsfElectronFwd.h"
 #include "DataFormats/TrackReco/interface/Track.h"
 #include "DataFormats/TrackReco/interface/TrackFwd.h"
 #include "DataFormats/Scalers/interface/DcsStatus.h"
@@ -18,10 +21,17 @@
 #include "RecoEgamma/EgammaTools/interface/ConversionFinder.h"
 #include "DataFormats/VertexReco/interface/Vertex.h"
 #include "DataFormats/VertexReco/interface/VertexFwd.h"
+#include "DataFormats/EgammaCandidates/interface/Conversion.h"
+#include "DataFormats/BeamSpot/interface/BeamSpot.h"
+#include "RecoEgamma/EgammaTools/interface/ConversionTools.h"
 
 #include "RecoEcal/EgammaCoreTools/interface/EcalClusterLazyTools.h"
 #include "Utilities/General/interface/FileInPath.h"
 #include "HiggsAnalysis/HiggsToWW2Leptons/interface/ElectronIDMVA.h"
+
+#include "DataFormats/RecoCandidate/interface/IsoDepositVetos.h"
+#include "DataFormats/RecoCandidate/interface/IsoDeposit.h"
+#include "DataFormats/PatCandidates/interface/Isolation.h"
 
 #include "VHTauTau/TreeMaker/plugins/ElectronBlock.h"
 #include "VHTauTau/TreeMaker/interface/Utility.h"
@@ -29,9 +39,11 @@
 // Constructor
 ElectronBlock::ElectronBlock(const edm::ParameterSet& iConfig) :
   _verbosity(iConfig.getParameter<int>("verbosity")),
+  _bsInputTag(iConfig.getParameter<edm::InputTag>("offlineBeamSpot")),
   _trkInputTag(iConfig.getParameter<edm::InputTag>("trackSrc")),
   _dcsInputTag(iConfig.getParameter<edm::InputTag>("dcsSrc")),
   _vtxInputTag(iConfig.getParameter<edm::InputTag>("vertexSrc")),
+  _convInputTag(iConfig.getParameter<edm::InputTag>("convSrc")),
   _electronInputTag(iConfig.getParameter<edm::InputTag>("electronSrc")),
   _pfElectronInputTag(iConfig.getParameter<edm::InputTag>("pfElectronSrc")),
   _ecalEBInputTag(iConfig.getParameter<edm::InputTag>("ecalEBInputTag")),
@@ -75,8 +87,23 @@ void ElectronBlock::analyze(const edm::Event& iEvent, const edm::EventSetup& iSe
   edm::Handle<reco::TrackCollection> tracks;
   iEvent.getByLabel(_trkInputTag, tracks);
 
+  edm::Handle<reco::BeamSpot> beamSpot;
+  iEvent.getByLabel(_bsInputTag, beamSpot);
+
   edm::Handle<DcsStatusCollection> dcsHandle;
   iEvent.getByLabel(_dcsInputTag, dcsHandle);
+
+  edm::Handle<reco::ConversionCollection> hConversions;
+  iEvent.getByLabel(_convInputTag, hConversions);
+
+  edm::Handle<reco::VertexCollection> primaryVertices;
+  iEvent.getByLabel(_vtxInputTag, primaryVertices);
+
+  edm::Handle<std::vector<pat::Electron> > electrons;
+  iEvent.getByLabel(_electronInputTag, electrons);
+
+  edm::Handle<reco::PFCandidateCollection> pfElectrons;
+  iEvent.getByLabel(_pfElectronInputTag, pfElectrons);
 
   double evt_bField = 3.8;
   // need the magnetic field
@@ -111,15 +138,6 @@ void ElectronBlock::analyze(const edm::Event& iEvent, const edm::EventSetup& iSe
     }
   }
 
-  edm::Handle<reco::VertexCollection> primaryVertices;
-  iEvent.getByLabel(_vtxInputTag, primaryVertices);
-
-  edm::Handle<std::vector<pat::Electron> > electrons;
-  iEvent.getByLabel(_electronInputTag, electrons);
-
-  edm::Handle<reco::PFCandidateCollection> pfElectrons;
-  iEvent.getByLabel(_pfElectronInputTag, pfElectrons);
-
   if (electrons.isValid()) {
     edm::LogInfo("ElectronBlock") << "Total # PAT Electrons: " << electrons->size();
     for (std::vector<pat::Electron>::const_iterator it  = electrons->begin(); 
@@ -132,66 +150,19 @@ void ElectronBlock::analyze(const edm::Event& iEvent, const edm::EventSetup& iSe
       // if electron is not ECAL driven, continue
       if (!it->ecalDrivenSeed()) continue;
 
-      // Conversion
-      ConversionFinder convFinder;
-      double dist = -9999.;
-      double dcot = -9999.;
-      if (tracks.isValid()) {
-	edm::LogInfo("ElectronBlock") << "Success >> obtained TrackCollection for label: " 
-                                      << _trkInputTag;
-
-        ConversionInfo convInfo = convFinder.getConversionInfo(*it, tracks, evt_bField);
-        dist = convInfo.dist();
-        dcot = convInfo.dcot();
-      } 
-      else {
-	edm::LogError("ElectronBlock") << "Error >> Failed to get TrackCollection for label: " 
-                                       << _trkInputTag;
-      }
-
-      // Vertex association
-      double minVtxDist3D = 9999.;
-      int indexVtx = -1;
-      double vertexDistZ = 9999.;
- 
-      if (it->gsfTrack().isNonnull()) {
-        if (primaryVertices.isValid()) {
-	  edm::LogInfo("ElectronBlock") << "Total # Primary Vertices: " << primaryVertices->size();
-          for (reco::VertexCollection::const_iterator v_it  = primaryVertices->begin(); 
-                                                      v_it != primaryVertices->end(); ++v_it) {
-            double dist3D = std::sqrt(pow(it->gsfTrack()->dxy(v_it->position()), 2) 
-                                    + pow(it->gsfTrack()->dz(v_it->position()), 2));
-            if (dist3D < minVtxDist3D) {
-              minVtxDist3D = dist3D;
-              indexVtx = int(std::distance(primaryVertices->begin(), v_it));
-              vertexDistZ = it->gsfTrack()->dz(v_it->position());
-            }
-          }
-        } 
-        else {
-	  edm::LogError("ElectronBlock") << "Error >> Failed to get VertexCollection for label: " 
-                                         << _vtxInputTag;
-        }      
-      }
-      double pfreliso = it->userFloat("pfLooseIsoPt04")/it->pt();
-      // UW prescription for pf based isolation
-      double v1 = it->photonIso() + it->neutralHadronIso() - 0.5*it->userIso(0);
-      double vmax = (v1 > 0) ? v1 : 0;
-      double UWpfreliso = (it->chargedHadronIso() + vmax)/it->pt();
+      bool hasGsfTrack  = it->gsfTrack().isNonnull() ? true : false;
+      reco::GsfTrackRef tk = it->gsfTrack();
 
       electronB = new ((*cloneElectron)[fnElectron++]) vhtm::Electron();
       electronB->eta         = it->eta();
       electronB->phi         = it->phi();
       electronB->pt          = it->pt();
-      bool hasGsfTrack = it->gsfTrack().isNonnull() ? true : false;
       electronB->hasGsfTrack = hasGsfTrack;
-      electronB->trackPt     = (hasGsfTrack) ? it->gsfTrack()->pt() : -1;
       electronB->energy      = it->energy();
       electronB->caloEnergy  = it->ecalEnergy();
       electronB->caloEnergyError = it->ecalEnergyError();
       electronB->charge      = it->charge();
-      electronB->nValidHits  = (hasGsfTrack) ? it->gsfTrack()->numberOfValidHits() : -1; 
-
+  
       electronB->simpleEleId60cIso 
                              = it->electronID("simpleEleId60cIso");
       electronB->simpleEleId70cIso 
@@ -205,6 +176,12 @@ void ElectronBlock::analyze(const edm::Event& iEvent, const edm::EventSetup& iSe
       electronB->simpleEleId95cIso 
                              = it->electronID("simpleEleId95cIso");
 
+      if (hasGsfTrack) {
+        electronB->trackPt      = tk->pt();
+        electronB->trackPtError = tk->ptError();
+        electronB->nValidHits   = tk->numberOfValidHits(); 
+        electronB->missingHits  = tk->trackerExpectedHitsInner().numberOfHits();
+      }
       // ID variables
       electronB->hoe           = it->hcalOverEcal();
       electronB->hoeDepth1     = it->hcalDepth1OverEcal();
@@ -232,10 +209,26 @@ void ElectronBlock::analyze(const edm::Event& iEvent, const edm::EventSetup& iSe
                             + it->dr04TkSumPt())/it->pt();
 
       // Conversion variables
-      electronB->missingHits = (hasGsfTrack) 
-               ? it->gsfTrack()->trackerExpectedHitsInner().numberOfHits() : -1;
-      electronB->dist_vec    = dist;
-      electronB->dCotTheta   = dcot;
+      ConversionFinder convFinder;
+      double dist = -9999.;
+      double dcot = -9999.;
+      if (tracks.isValid()) {
+	edm::LogInfo("ElectronBlock") << "Success >> obtained TrackCollection for label: " 
+                                      << _trkInputTag;
+        ConversionInfo convInfo = convFinder.getConversionInfo(*it, tracks, evt_bField);
+        dist = convInfo.dist();
+        dcot = convInfo.dcot();
+      } 
+      else {
+	edm::LogError("ElectronBlock") << "Error >> Failed to get TrackCollection for label: " 
+                                       << _trkInputTag;
+      }
+      electronB->dist_vec  = dist;
+      electronB->dCotTheta = dcot;
+
+      const reco::GsfElectron* aGsf = static_cast<const reco::GsfElectron*>(&(*it));
+      int hasMatchedConv = ConversionTools::hasMatchedConversion(*aGsf, hConversions, beamSpot->position(), true, 2.0, 1e-06,0);
+      electronB->hasMatchedConv = hasMatchedConv;
 
       // SC associated with electron
       electronB->scEn        = it->superCluster()->energy();
@@ -244,12 +237,42 @@ void ElectronBlock::analyze(const edm::Event& iEvent, const edm::EventSetup& iSe
       electronB->scET        = it->superCluster()->energy()/cosh(it->superCluster()->eta());
       electronB->scRawEnergy = it->superCluster()->rawEnergy();
 
+      // Vertex association
+      double minVtxDist3D = 9999.;
+      int indexVtx = -1;
+      double vertexDistZ = 9999.;
+      if (hasGsfTrack) {
+        if (primaryVertices.isValid()) {
+	  edm::LogInfo("ElectronBlock") << "Total # Primary Vertices: " << primaryVertices->size();
+          for (reco::VertexCollection::const_iterator vit  = primaryVertices->begin(); 
+                                                      vit != primaryVertices->end(); ++vit) {
+            double dxy = tk->dxy(vit->position());
+            double dz  = tk->dz(vit->position());
+            double dist3D = std::sqrt(pow(dxy, 2) + pow(dz, 2));
+            if (dist3D < minVtxDist3D) {
+              minVtxDist3D = dist3D;
+              indexVtx = int(std::distance(primaryVertices->begin(), vit));
+              vertexDistZ = dz;
+            }
+          }
+        } 
+        else {
+	  edm::LogError("ElectronBlock") << "Error >> Failed to get VertexCollection for label: " 
+                                         << _vtxInputTag;
+        }      
+      }
       // Vertex association variables
       electronB->vtxDist3D = minVtxDist3D;
       electronB->vtxIndex  = indexVtx;
       electronB->vtxDistZ  = vertexDistZ;
-      electronB->relIso    = (it->trackIso() + it->ecalIso() + it->hcalIso())/it->pt();
-      electronB->pfRelIso  = UWpfreliso;
+
+      // UW prescription for pf based isolation
+      double v1 = it->photonIso() + it->neutralHadronIso() - 0.5*it->userIso(0);
+      double vmax = (v1 > 0) ? v1 : 0;
+      double UWpfreliso = (it->chargedHadronIso() + vmax)/it->pt();
+
+      electronB->relIso   = (it->trackIso() + it->ecalIso() + it->hcalIso())/it->pt();
+      electronB->pfRelIso = UWpfreliso;
 
       // PFlow isolation information
       electronB->chargedHadronIso = it->pfIsolationVariables().chargedHadronIso;
@@ -282,11 +305,155 @@ void ElectronBlock::analyze(const edm::Event& iEvent, const edm::EventSetup& iSe
       if (it->isEEDeeGap())  fidFlag |= (1 << 5);
       if (it->isEBEEGap())   fidFlag |= (1 << 6);
       electronB->fidFlag = fidFlag;
+
+      // Vertex information
+      const reco::Candidate::Point& vertex = it->vertex();
+      electronB->vx = vertex.x();             
+      electronB->vy = vertex.y();             
+      electronB->vz = vertex.z();             
+
+      // Iso deposit and PF Isolaiton
+      fillIsoDeposit(*it, electronB);
     }
   } 
   else {
     edm::LogError("ElectronBlock") << "Error >> Failed to get pat::Electron Collection for label: " 
                                    << _electronInputTag;
+  }
+}
+void ElectronBlock::fillIsoDeposit(const pat::Electron& ele, vhtm::Electron* electronB) {
+  double pt = ele.pt();
+  double eta = ele.eta();
+  double phi = ele.phi();
+
+  reco::isodeposit::AbsVetos v10Charged;
+  reco::isodeposit::AbsVetos v10Neutral;  
+  reco::isodeposit::AbsVetos v10Photons;
+  reco::isodeposit::AbsVetos v11Charged; 
+  reco::isodeposit::AbsVetos v11Neutral;  
+  reco::isodeposit::AbsVetos v11Photons;
+  reco::isodeposit::AbsVetos v11EECharged; 
+  reco::isodeposit::AbsVetos v11EENeutral;  
+  reco::isodeposit::AbsVetos v11EEPhotons;
+
+  v10Charged.push_back(new reco::isodeposit::ConeVeto(reco::isodeposit::Direction(eta, phi),0.01));
+  v10Charged.push_back(new reco::isodeposit::ThresholdVeto(0.5));
+
+  v10Neutral.push_back(new reco::isodeposit::ConeVeto(reco::isodeposit::Direction(eta,phi),0.08));
+  v10Neutral.push_back(new reco::isodeposit::ThresholdVeto(1.0));
+
+  v10Photons.push_back(new reco::isodeposit::ConeVeto(reco::isodeposit::Direction(eta, phi),0.05));
+  v10Photons.push_back(new reco::isodeposit::ThresholdVeto(1.0));
+
+  v11Charged.push_back(new reco::isodeposit::ConeVeto(reco::isodeposit::Direction(eta, phi),0.03));
+  v11Charged.push_back(new reco::isodeposit::ThresholdVeto(0.5));
+
+  v11Neutral.push_back(new reco::isodeposit::ConeVeto(reco::isodeposit::Direction(eta, phi),0.08));
+  v11Neutral.push_back(new reco::isodeposit::ThresholdVeto(0.5));
+
+  v11Photons.push_back(new reco::isodeposit::ConeVeto(reco::isodeposit::Direction(eta, phi),0.05));
+  v11Photons.push_back(new reco::isodeposit::ThresholdVeto(0.5));
+
+  v11EECharged.push_back(new reco::isodeposit::ConeVeto(reco::isodeposit::Direction(eta, phi),0.03));
+  v11EECharged.push_back(new reco::isodeposit::ThresholdVeto(0.5));
+
+  v11EENeutral.push_back(new reco::isodeposit::ConeVeto(reco::isodeposit::Direction(eta, phi),0.08));
+  v11EENeutral.push_back(new reco::isodeposit::ThresholdVeto(0.5));
+
+  v11EEPhotons.push_back(new reco::isodeposit::ConeVeto(reco::isodeposit::Direction(eta, phi),0.05));
+  v11EEPhotons.push_back(new reco::isodeposit::ThresholdVeto(0.5));
+
+  float chIso03v1   = ele.isoDeposit(pat::PfChargedHadronIso)->depositAndCountWithin(0.3, v10Charged).first;
+  float nhIso03v1   = ele.isoDeposit(pat::PfNeutralHadronIso)->depositAndCountWithin(0.3, v10Neutral).first;
+  float phIso03v1   = ele.isoDeposit(pat::PfGammaIso)->depositAndCountWithin(0.3, v10Photons).first;
+  float nhIsoPU03v1 = ele.isoDeposit(pat::PfAllParticleIso)->depositAndCountWithin(0.3, v10Neutral).first;
+  float phIsoPU03v1 = ele.isoDeposit(pat::PfAllParticleIso)->depositAndCountWithin(0.3, v10Photons).first;
+
+  float chIso04v1   = ele.isoDeposit(pat::PfChargedHadronIso)->depositAndCountWithin(0.4, v10Charged).first;
+  float nhIso04v1   = ele.isoDeposit(pat::PfNeutralHadronIso)->depositAndCountWithin(0.4, v10Neutral).first;
+  float phIso04v1   = ele.isoDeposit(pat::PfGammaIso)->depositAndCountWithin(0.4, v10Photons).first;
+  float nhIsoPU04v1 = ele.isoDeposit(pat::PfAllParticleIso)->depositAndCountWithin(0.4, v10Neutral).first;
+  float phIsoPU04v1 = ele.isoDeposit(pat::PfAllParticleIso)->depositAndCountWithin(0.4, v10Photons).first;
+
+  float chIso03v2   = ele.isoDeposit(pat::PfChargedHadronIso)->depositAndCountWithin(0.3, v11Charged).first;
+  float nhIso03v2   = ele.isoDeposit(pat::PfNeutralHadronIso)->depositAndCountWithin(0.3, v11Neutral).first;
+  float phIso03v2   = ele.isoDeposit(pat::PfGammaIso)->depositAndCountWithin(0.3, v11Photons).first;
+  float nhIsoPU03v2 = ele.isoDeposit(pat::PfAllParticleIso)->depositAndCountWithin(0.3, v11Neutral).first;
+  float phIsoPU03v2 = ele.isoDeposit(pat::PfAllParticleIso)->depositAndCountWithin(0.3, v11Photons).first;
+
+  float chIso04v2   = ele.isoDeposit(pat::PfChargedHadronIso)->depositAndCountWithin(0.4, v11Charged).first;
+  float nhIso04v2   = ele.isoDeposit(pat::PfNeutralHadronIso)->depositAndCountWithin(0.4, v11Neutral).first;
+  float phIso04v2   = ele.isoDeposit(pat::PfGammaIso)->depositAndCountWithin(0.4, v11Photons).first;
+  float nhIsoPU04v2 = ele.isoDeposit(pat::PfAllParticleIso)->depositAndCountWithin(0.4, v11Neutral).first;
+  float phIsoPU04v2 = ele.isoDeposit(pat::PfAllParticleIso)->depositAndCountWithin(0.4, v11Photons).first;
+
+  float chIso03EEv2   = ele.isoDeposit(pat::PfChargedHadronIso)->depositAndCountWithin(0.3, v11EECharged).first;
+  float nhIso03EEv2   = ele.isoDeposit(pat::PfNeutralHadronIso)->depositAndCountWithin(0.3, v11EENeutral).first;
+  float phIso03EEv2   = ele.isoDeposit(pat::PfGammaIso)->depositAndCountWithin(0.3, v11EEPhotons).first;
+  float nhIsoPU03EEv2 = ele.isoDeposit(pat::PfAllParticleIso)->depositAndCountWithin(0.3, v11EENeutral).first;
+  float phIsoPU03EEv2 = ele.isoDeposit(pat::PfAllParticleIso)->depositAndCountWithin(0.3, v11EEPhotons).first;
+
+  float chIso04EEv2   = ele.isoDeposit(pat::PfChargedHadronIso)->depositAndCountWithin(0.4, v11EECharged).first;
+  float nhIso04EEv2   = ele.isoDeposit(pat::PfNeutralHadronIso)->depositAndCountWithin(0.4, v11EENeutral).first;
+  float phIso04EEv2   = ele.isoDeposit(pat::PfGammaIso)->depositAndCountWithin(0.4, v11EEPhotons).first;
+  float nhIsoPU04EEv2 = ele.isoDeposit(pat::PfAllParticleIso)->depositAndCountWithin(0.4, v11EENeutral).first;
+  float phIsoPU04EEv2 = ele.isoDeposit(pat::PfAllParticleIso)->depositAndCountWithin(0.4, v11EEPhotons).first;
+
+  int flagEB = (ele.isEB() ? 1 : 0);
+  int flagEE = (ele.isEE() ? 1 : 0); 
+
+  electronB->pfRelIso03v1   = (chIso03v1 + nhIso03v1 + phIso03v1)/pt;
+  electronB->pfRelIsoDB03v1 = (chIso03v1 + std::max(nhIso03v1 + phIso03v1 - 0.5 * 0.5 * (nhIsoPU03v1 + phIsoPU03v1), 0.0))/pt;
+  electronB->pfRelIso03v2   = (chIso03v2 + nhIso03v2 + phIso03v2)/pt;
+  electronB->pfRelIsoDB03v2 = (chIso03v2 + std::max(nhIso03v2 + phIso03v2 - 0.5 * 0.5 * (nhIsoPU03v2 + phIsoPU03v2), 0.0))/pt;
+  electronB->pfRelIsoDB03v3 =
+        flagEB * (chIso03v2   + std::max(nhIso03v2   + phIso03v2   - 0.5 * 0.5 * (nhIsoPU03v2 + phIsoPU03v2), 0.0))/pt
+      + flagEE * (chIso03EEv2 + std::max(nhIso03EEv2 + phIso03EEv2 - 0.5 * 0.5 * (nhIsoPU03EEv2+phIsoPU03EEv2),0.0))/pt;
+    
+  electronB->pfRelIso04v1   = (chIso04v1 + nhIso04v1 + phIso04v1)/pt;
+  electronB->pfRelIsoDB04v1 = (chIso04v1 + std::max(nhIso04v1 + phIso04v1 - 0.5 * 0.5 * (nhIsoPU04v1 + phIsoPU04v1), 0.0))/pt;
+  electronB->pfRelIso04v2   = (chIso04v2 + nhIso04v2 + phIso04v2)/pt;
+  electronB->pfRelIsoDB04v2 = (chIso04v2 + std::max(nhIso04v2 + phIso04v2 - 0.5 * 0.5 * (nhIsoPU04v2 + phIsoPU04v2), 0.0))/pt;
+  electronB->pfRelIsoDB04v3 =
+        flagEB * (chIso04v2   + std::max(nhIso04v2   + phIso04v2   - 0.5 * 0.5 * (nhIsoPU04v2   + phIsoPU04v2), 0.0))/pt
+      + flagEE * (chIso04EEv2 + std::max(nhIso04EEv2 + phIso04EEv2 - 0.5 * 0.5 * (nhIsoPU04EEv2 + phIsoPU04EEv2), 0.0))/pt;
+
+  // cleaning
+  for (std::vector<reco::isodeposit::AbsVeto*>::const_iterator it  = v10Charged.begin();
+                                                               it != v10Charged.end(); ++it) {
+    delete (*it);
+  }
+  for (std::vector<reco::isodeposit::AbsVeto*>::const_iterator it  = v10Neutral.begin();
+                                                               it != v10Neutral.end(); ++it) {
+    delete (*it);
+  }
+  for (std::vector<reco::isodeposit::AbsVeto*>::const_iterator it  = v10Photons.begin();
+                                                               it != v10Photons.end(); ++it) {
+    delete (*it);
+  }
+  for (std::vector<reco::isodeposit::AbsVeto*>::const_iterator it  = v11Charged.begin();
+                                                               it != v11Charged.end(); ++it) {
+    delete (*it);
+  }
+  for (std::vector<reco::isodeposit::AbsVeto*>::const_iterator it  = v11Neutral.begin();
+                                                               it != v11Neutral.end(); ++it) {
+    delete (*it);
+  }
+  for (std::vector<reco::isodeposit::AbsVeto*>::const_iterator it  = v11Photons.begin();
+                                                               it != v11Photons.end(); ++it) {
+    delete (*it);
+  }
+  for (std::vector<reco::isodeposit::AbsVeto*>::const_iterator it  = v11EECharged.begin();
+                                                               it != v11EECharged.end(); ++it) {
+    delete (*it);
+  }
+  for (std::vector<reco::isodeposit::AbsVeto*>::const_iterator it  = v11EENeutral.begin();
+                                                               it != v11EENeutral.end(); ++it) {
+    delete (*it);
+  }
+  for (std::vector<reco::isodeposit::AbsVeto*>::const_iterator it  = v11EEPhotons.begin();
+                                                               it != v11EEPhotons.end(); ++it) {
+    delete (*it);
   }
 }
 #include "FWCore/Framework/interface/MakerMacros.h"

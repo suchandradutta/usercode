@@ -4,16 +4,15 @@ process = cms.Process("HTauTauTree")
 # Message Logger Settings
 #------------------------
 process.load("FWCore.MessageLogger.MessageLogger_cfi")
-process.MessageLogger.cerr.FwkReport.reportEvery = 1
+process.MessageLogger.cerr.FwkReport.reportEvery = 1000
 #--------------------------------------
 # Event Source & # of Events to process
 #---------------------------------------
 process.source = cms.Source("PoolSource",
-                   fileNames = cms.untracked.vstring(),
-                   #eventsToProcess = cms.untracked.VEventRange('165514:420143886')
+                   fileNames = cms.untracked.vstring()
                  )
 process.maxEvents = cms.untracked.PSet(
-                      input = cms.untracked.int32(-1)
+                      input = cms.untracked.int32(100)
                     )
 #-----------------------------
 # Geometry
@@ -32,7 +31,7 @@ process.GlobalTag.globaltag = 'GR_R_42_V19::All'
 # Output ROOT file
 #-------------
 process.TFileService = cms.Service("TFileService",
-     fileName = cms.string('Tree.root')
+     fileName = cms.string('TauPlusX_2011B_V1.root')
 )
 #--------------------------------------------------
 # VHTauTau Tree Specific
@@ -40,6 +39,8 @@ process.TFileService = cms.Service("TFileService",
 process.load("VHTauTau.TreeMaker.TreeCreator_cfi")
 process.load("VHTauTau.TreeMaker.TreeWriter_cfi")
 process.load("VHTauTau.TreeMaker.TreeContentConfig_data_cff")
+process.triggerObjectBlock.verbosity=cms.int32(1)
+
 #-------------------------------------------------------
 # PAT 
 #------------------------------------------------------
@@ -233,6 +234,5 @@ stod.switchToData(process)
 # List File names here
 #---------------------------------------
 process.PoolSource.fileNames = [
-  'file:/tmp/sarkar/06622A8A-CA86-E011-AC03-001617C3B65A.root'
+  'file:/tmp/sarkar/9E5E5FA4-35DD-E011-9C06-003048D2C020.root'
 ]
-

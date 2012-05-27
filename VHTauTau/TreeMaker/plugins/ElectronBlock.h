@@ -35,6 +35,8 @@ public:
   explicit ElectronBlock(const edm::ParameterSet& iConfig);
   virtual ~ElectronBlock();
 
+  void fillIsoDeposit(const pat::Electron& ele, vhtm::Electron* electronB);
+ 
   enum {
     kMaxElectron = 100
   };
@@ -43,16 +45,18 @@ private:
   int fnElectron;
 
   int _verbosity;
+  edm::InputTag _bsInputTag;
   edm::InputTag _trkInputTag;
   edm::InputTag _dcsInputTag;
   edm::InputTag _vtxInputTag;
+  edm::InputTag _convInputTag;
   edm::InputTag _electronInputTag;
   edm::InputTag _pfElectronInputTag;
   edm::InputTag _ecalEBInputTag;
   edm::InputTag _ecalEEInputTag;
   edm::InputTag _ebRecHits;
   edm::InputTag _eeRecHits;
-
+  
   vhtm::Electron* electronB;
 
   ElectronIDMVA* fMVA;

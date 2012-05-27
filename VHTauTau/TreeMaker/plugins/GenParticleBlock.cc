@@ -51,8 +51,6 @@ void GenParticleBlock::analyze(const edm::Event& iEvent, const edm::EventSetup& 
         // Do not store low energy gluons
         int pdgid     = it->pdgId(); 
         double pt     = it->pt();  
-        //if (pt < 0.1) continue;                          // Do not store very low pt entries
-        //if (std::abs(pdgid) == 21 && pt < 1.0) continue; // remove Low Pt gluons 
 
         genParticleB = new ((*cloneGenParticle)[fnGenParticle++]) vhtm::GenParticle();
 
@@ -70,9 +68,9 @@ void GenParticleBlock::analyze(const edm::Event& iEvent, const edm::EventSetup& 
         genParticleB->vy        = it->vy();
         genParticleB->vz        = it->vz();
         genParticleB->status    = it->status();
+	genParticleB->charge    = it->charge();
         genParticleB->numDaught = it->numberOfDaughters();
         genParticleB->numMother = it->numberOfMothers();
-
         int idx = -1;
         for (reco::GenParticleCollection::const_iterator mit = genParticles->begin(); 
                                                         mit != genParticles->end(); ++mit ) {
