@@ -31,7 +31,7 @@ process.GlobalTag.globaltag = 'GR_R_42_V19::All'
 # Output ROOT file
 #-------------
 process.TFileService = cms.Service("TFileService",
-     fileName = cms.string('TauPlusX_2011B_V1.root')
+     fileName = cms.string('Tree.root')
 )
 #--------------------------------------------------
 # VHTauTau Tree Specific
@@ -39,7 +39,6 @@ process.TFileService = cms.Service("TFileService",
 process.load("VHTauTau.TreeMaker.TreeCreator_cfi")
 process.load("VHTauTau.TreeMaker.TreeWriter_cfi")
 process.load("VHTauTau.TreeMaker.TreeContentConfig_data_cff")
-process.triggerObjectBlock.verbosity=cms.int32(1)
 
 #-------------------------------------------------------
 # PAT 
@@ -50,7 +49,11 @@ process.load("PhysicsTools.PatAlgos.patSequences_cff")
 import PhysicsTools.PatAlgos.tools.tauTools as tauTools
 import PhysicsTools.PatAlgos.tools.jetTools as jetTools
 import PhysicsTools.PatAlgos.tools.metTools as metTools
+from VHTauTau.PatTools.customizePAT import addSelectedPFlowParticle,addPFMuonIsolation,addPFElectronIsolation
+
 tauTools.switchToPFTauHPS(process) # For HPS Taus
+addSelectedPFlowParticle(process)
+
 metTools.addTcMET(process, 'TC')
 metTools.addPfMET(process, 'PF')
 
@@ -60,7 +63,7 @@ metTools.addPfMET(process, 'PF')
 import PhysicsTools.PatAlgos.tools.trigTools as trigTools
 trigTools.switchOnTrigger( process, outputModule='' ) # This is optional and can be omitted.
 
-jec = [ 'L1FastJet', 'L1Offset', 'L2Relative', 'L3Absolute' ]
+jec = [ 'L1FastJet', 'L2Relative', 'L3Absolute' ]
 #jec.extend([ 'L2L3Residual' ])
 jetTools.addJetCollection(process, cms.InputTag('ak5PFJets'),
      'AK5', 'PF',
@@ -167,61 +170,11 @@ process.simpleEleId60cIso.dataMagneticFieldSetUp = cms.bool(True)
 process.patElectronIDs = cms.Sequence(process.simpleEleIdSequence)
 process.makePatElectrons = cms.Sequence(process.patElectronIDs*process.patElectrons) 
 
-from VHTauTau.PatTools.pfNoPileup import configurePFNoPileup
-process.pfNPU = configurePFNoPileup(process)
-
-from VHTauTau.PatTools.muons.pfIsolation import addMuPFIsolation
-from VHTauTau.PatTools.electrons.pfIsolation import addElecPFIsolation
-# Embed PF Isolation in electrons & muons
-addMuPFIsolation(process, process.patDefaultSequence)
-addElecPFIsolation(process, process.patDefaultSequence)
-# Disable tau IsoDeposits
-process.patTaus.isoDeposits = cms.PSet()
-process.patTaus.userIsolation = cms.PSet()
-        
-# PF based muon and electron isolation
-# Muon Isolation
-from TauAnalysis.RecoTools.patLeptonPFIsolationSelector_cfi import patMuonPFIsolationSelector
-patMuonPFIsolationSelector.chargedHadronIso.ptMin = cms.double(0.5)
-patMuonPFIsolationSelector.neutralHadronIso.ptMin = cms.double(0.5)
-patMuonPFIsolationSelector.photonIso.ptMin = cms.double(0.5)
-patMuonPFIsolationSelector.chargedHadronIso.dRvetoCone = cms.double(0.01)
-patMuonPFIsolationSelector.neutralHadronIso.dRvetoCone = cms.double(0.01)
-patMuonPFIsolationSelector.photonIso.dRvetoCone = cms.double(0.01)
-patMuonPFIsolationSelector.pileUpCorr.chargedToNeutralFactor = cms.double(0.5)
-process.patMuonsLoosePFIsoEmbedded04 = cms.EDProducer("PATMuonPFIsolationEmbedder",
-    patMuonPFIsolationSelector,
-    src = cms.InputTag("selectedPatMuons"),
-    userFloatName = cms.string('pfLooseIsoPt04')
-)
-process.patMuonsLoosePFIsoEmbedded04.pfCandidateSource = cms.InputTag('pfNoPileUp')
-process.muonBlock.muonSrc = cms.InputTag("patMuonsLoosePFIsoEmbedded04")
-
-# Electron Isolation
-from TauAnalysis.RecoTools.patLeptonPFIsolationSelector_cfi import patElectronPFIsolationSelector
-patElectronPFIsolationSelector.chargedHadronIso.ptMin = cms.double(0.5)
-patElectronPFIsolationSelector.neutralHadronIso.ptMin = cms.double(0.5)
-patElectronPFIsolationSelector.photonIso.ptMin = cms.double(0.5)
-patElectronPFIsolationSelector.chargedHadronIso.dRvetoCone = cms.double(0.03)
-patElectronPFIsolationSelector.neutralHadronIso.dRvetoCone = cms.double(0.08)
-patElectronPFIsolationSelector.photonIso.dRvetoCone = cms.double(0.05)
-patElectronPFIsolationSelector.pileUpCorr.chargedToNeutralFactor = cms.double(0.5)
-process.patElectronsLoosePFIsoEmbedded04 = cms.EDProducer("PATElectronPFIsolationEmbedder",
-    patElectronPFIsolationSelector,
-    src = cms.InputTag("selectedPatElectrons"),
-    userFloatName = cms.string('pfLooseIsoPt04')
-)
-process.patElectronsLoosePFIsoEmbedded04.pfCandidateSource = cms.InputTag('pfNoPileUp')
-process.electronBlock.electronSrc = cms.InputTag("patElectronsLoosePFIsoEmbedded04")
-
 process.p = cms.Path(
     process.kt6PFJets +
     process.ak5PFJets +
     process.PFTau +
-    process.pfNPU +
     process.patDefaultSequence +
-    process.patMuonsLoosePFIsoEmbedded04 +
-    process.patElectronsLoosePFIsoEmbedded04 +
     process.treeCreator +
     process.treeContentSequence +
     process.treeWriter
@@ -229,6 +182,9 @@ process.p = cms.Path(
 
 import VHTauTau.TreeMaker.SwitchToData as stod
 stod.switchToData(process)
+
+addPFMuonIsolation(process, process.patMuons)
+addPFElectronIsolation(process, process.patElectrons)
 
 #--------------------------------------
 # List File names here
