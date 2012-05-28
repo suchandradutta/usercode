@@ -104,14 +104,14 @@ void MuonBlock::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
       if (primaryVertices.isValid()) {
 	edm::LogInfo("MuonBlock") << "Total # Primary Vertices: " << primaryVertices->size();
 
-        for (reco::VertexCollection::const_iterator v_it  = primaryVertices->begin(); 
-                                                    v_it != primaryVertices->end(); ++v_it) {
-          double dxy = tk->dxy(v_it->position());
-          double dz  = tk->dz(v_it->position());
+        for (reco::VertexCollection::const_iterator vit  = primaryVertices->begin(); 
+                                                    vit != primaryVertices->end(); ++vit) {
+          double dxy = tk->dxy(vit->position());
+          double dz  = tk->dz(vit->position());
           double dist3D = std::sqrt(pow(dxy,2) + pow(dz,2));
           if (dist3D < minVtxDist3D) {
             minVtxDist3D = dist3D;
-            indexVtx = int(std::distance(primaryVertices->begin(), v_it));
+            indexVtx = int(std::distance(primaryVertices->begin(), vit));
             vertexDistZ = dz;
           }
         }

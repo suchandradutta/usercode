@@ -77,24 +77,26 @@ void TauBlock::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup) 
       int indexVtx = -1;
       double vertexDz = 9999.;
       double vertexDxy = 9999.;
-      if (primaryVertices.isValid() && it->leadTrack().isAvailable() && it->leadTrack().isNonnull()) {
-	edm::LogInfo("TauBlock") << "Total # Primary Vertices: " << primaryVertices->size();
-
-        for (reco::VertexCollection::const_iterator v_it  = primaryVertices->begin(); 
-                                                    v_it != primaryVertices->end(); ++v_it) {
-          double dxy = it->leadTrack()->dxy(v_it->position());
-          double dz  = it->leadTrack()->dz(v_it->position());
-          double dist3D = std::sqrt(pow(dxy,2) + pow(dz,2));
-          if (dist3D < minVtxDist3D) {
-            minVtxDist3D = dist3D;
-            indexVtx = int(std::distance(primaryVertices->begin(), v_it));
-            vertexDxy = dxy;
-            vertexDz = dz;
+      if (primaryVertices.isValid()) {
+        edm::LogInfo("TauBlock") << "Total # Primary Vertices: " << primaryVertices->size();
+	if (it->leadTrack().isAvailable() && it->leadTrack().isNonnull()) {
+          reco::TrackRef trk = it->leadTrack();
+          for (reco::VertexCollection::const_iterator vit  = primaryVertices->begin();
+                                                      vit != primaryVertices->end(); ++vit) {
+            double dxy = trk->dxy(vit->position());
+            double dz  = trk->dz(vit->position());
+            double dist3D = std::sqrt(pow(dxy,2) + pow(dz,2));
+            if (dist3D < minVtxDist3D) {
+              minVtxDist3D = dist3D;
+              indexVtx = int(std::distance(primaryVertices->begin(), vit));
+              vertexDxy = dxy;
+              vertexDz = dz;
+            }
           }
-        }
-      } 
+	}
+      }
       else {
-	edm::LogError("TauBlock") << "Error >> Failed to get VertexCollection for label: " 
+	edm::LogError("TauBlock") << "Error >> Failed to get VertexCollection for label: "
                                   << _vtxInputTag;
       }
       tauB->vtxIndex = indexVtx;
