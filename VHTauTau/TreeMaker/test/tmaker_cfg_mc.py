@@ -39,12 +39,7 @@ process.TFileService = cms.Service("TFileService",
 process.load("VHTauTau.TreeMaker.TreeCreator_cfi")
 process.load("VHTauTau.TreeMaker.TreeWriter_cfi")
 process.load("VHTauTau.TreeMaker.TreeContentConfig_cff")
-process.triggerBlock.hltPathsOfInterest = cms.vstring(
-    "HLT_Ele17_CaloIdT_TrkIdVL_CaloIsoVL_TrkIsoVL_Ele8_CaloIdT_TrkIdVL_CaloIsoVL_TrkIsoVL",
-    "HLT_DoubleMu7",
-    "HLT_Mu17_Ele8_CaloIdL",
-    "HLT_IsoMu12_LooseIsoPFTau10"
-)
+
 #-------------------------------------------------------
 # PAT 
 #------------------------------------------------------
@@ -54,7 +49,10 @@ process.load("PhysicsTools.PatAlgos.patSequences_cff")
 import PhysicsTools.PatAlgos.tools.tauTools as tauTools
 import PhysicsTools.PatAlgos.tools.jetTools as jetTools
 import PhysicsTools.PatAlgos.tools.metTools as metTools
+from VHTauTau.PatTools.customizePAT import addSelectedPFlowParticle,addPFMuonIsolation,addPFElectronIsolation
+
 tauTools.switchToPFTauHPS(process) # For HPS Taus
+addSelectedPFlowParticle(process)
 
 metTools.addTcMET(process, 'TC')
 metTools.addPfMET(process, 'PF')
@@ -165,67 +163,18 @@ process.simpleEleId60cIso.dataMagneticFieldSetUp = cms.bool(True)
 process.patElectronIDs = cms.Sequence(process.simpleEleIdSequence)
 process.makePatElectrons = cms.Sequence(process.patElectronIDs*process.patElectrons)
 
-from VHTauTau.PatTools.pfNoPileup import configurePFNoPileup
-process.pfNPU = configurePFNoPileup(process)
-
-from VHTauTau.PatTools.muons.pfIsolation import addMuPFIsolation
-from VHTauTau.PatTools.electrons.pfIsolation import addElecPFIsolation
-
-# Embed PF Isolation in electrons & muons
-addMuPFIsolation(process, process.patDefaultSequence)
-addElecPFIsolation(process, process.patDefaultSequence)
-
-# Disable tau IsoDeposits
-process.patTaus.isoDeposits = cms.PSet()
-process.patTaus.userIsolation = cms.PSet()
-
-# PF based muon and electron isolation
-# Muon Isolation
-from TauAnalysis.RecoTools.patLeptonPFIsolationSelector_cfi import patMuonPFIsolationSelector
-patMuonPFIsolationSelector.chargedHadronIso.ptMin = cms.double(0.5)
-patMuonPFIsolationSelector.neutralHadronIso.ptMin = cms.double(0.5)
-patMuonPFIsolationSelector.photonIso.ptMin = cms.double(0.5)
-patMuonPFIsolationSelector.chargedHadronIso.dRvetoCone = cms.double(0.01)
-patMuonPFIsolationSelector.neutralHadronIso.dRvetoCone = cms.double(0.01)
-patMuonPFIsolationSelector.photonIso.dRvetoCone = cms.double(0.01)
-patMuonPFIsolationSelector.pileUpCorr.chargedToNeutralFactor = cms.double(0.5)
-process.patMuonsLoosePFIsoEmbedded04 = cms.EDProducer("PATMuonPFIsolationEmbedder",
-    patMuonPFIsolationSelector,
-    src = cms.InputTag("selectedPatMuons"),
-    userFloatName = cms.string('pfLooseIsoPt04')
-)
-process.patMuonsLoosePFIsoEmbedded04.pfCandidateSource = cms.InputTag('pfNoPileUp')
-process.muonBlock.muonSrc = cms.InputTag("patMuonsLoosePFIsoEmbedded04")
-
-# Electron Isolation
-from TauAnalysis.RecoTools.patLeptonPFIsolationSelector_cfi import patElectronPFIsolationSelector
-patElectronPFIsolationSelector.chargedHadronIso.ptMin = cms.double(0.5)
-patElectronPFIsolationSelector.neutralHadronIso.ptMin = cms.double(0.5)
-patElectronPFIsolationSelector.photonIso.ptMin = cms.double(0.5)
-patElectronPFIsolationSelector.chargedHadronIso.dRvetoCone = cms.double(0.03)
-patElectronPFIsolationSelector.neutralHadronIso.dRvetoCone = cms.double(0.08)
-patElectronPFIsolationSelector.photonIso.dRvetoCone = cms.double(0.05)
-patElectronPFIsolationSelector.pileUpCorr.chargedToNeutralFactor = cms.double(0.5)
-process.patElectronsLoosePFIsoEmbedded04 = cms.EDProducer("PATElectronPFIsolationEmbedder",
-    patElectronPFIsolationSelector,
-    src = cms.InputTag("selectedPatElectrons"),
-    userFloatName = cms.string('pfLooseIsoPt04')
-)
-process.patElectronsLoosePFIsoEmbedded04.pfCandidateSource = cms.InputTag('pfNoPileUp')
-process.electronBlock.electronSrc = cms.InputTag("patElectronsLoosePFIsoEmbedded04")
-
 process.p = cms.Path(
    process.kt6PFJets +
    process.ak5PFJets +
    process.PFTau +
-   process.pfNPU +
    process.patDefaultSequence +
-   process.patMuonsLoosePFIsoEmbedded04 +
-   process.patElectronsLoosePFIsoEmbedded04 +
    process.treeCreator +
    process.treeContentSequence +
    process.treeWriter
 )
+
+addPFMuonIsolation(process, process.patMuons)
+addPFElectronIsolation(process, process.patElectrons)
 #--------------------------------------
 # List File names here
 #---------------------------------------
