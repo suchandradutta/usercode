@@ -102,13 +102,13 @@ vhtm::Electron::Electron() :
   selbit(0),
   fidFlag(0), 
   pfRelIso03v1(-999),
-  pfRelIsoDB03v1(-999),
   pfRelIso03v2(-999),
+  pfRelIsoDB03v1(-999),
   pfRelIsoDB03v2(-999),
   pfRelIsoDB03v3(-999),
   pfRelIso04v1(-999),
-  pfRelIsoDB04v1(-999),
   pfRelIso04v2(-999),
+  pfRelIsoDB04v1(-999),
   pfRelIsoDB04v2(-999),
   pfRelIsoDB04v3(-999) {}
 
