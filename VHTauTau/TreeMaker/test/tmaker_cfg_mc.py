@@ -14,6 +14,7 @@ process.source = cms.Source("PoolSource",
 process.maxEvents = cms.untracked.PSet(
                       input = cms.untracked.int32(50)
                     )
+process.options = cms.untracked.PSet( wantSummary = cms.untracked.bool(False) )
 #-----------------------------
 # Geometry
 #-----------------------------
@@ -39,7 +40,6 @@ process.TFileService = cms.Service("TFileService",
 process.load("VHTauTau.TreeMaker.TreeCreator_cfi")
 process.load("VHTauTau.TreeMaker.TreeWriter_cfi")
 process.load("VHTauTau.TreeMaker.TreeContentConfig_cff")
-
 #-------------------------------------------------------
 # PAT 
 #------------------------------------------------------
@@ -117,11 +117,20 @@ process.load('JetMETCorrections.Configuration.DefaultJEC_cff')
 process.load('RecoJets.Configuration.RecoPFJets_cff')
 ##-------------------- Turn-on the FastJet density calculation
 process.kt6PFJets.doRhoFastjet = True
+process.kt6PFJets.Rho_EtaMax = cms.double(4.4)
 ##-------------------- Turn-on the FastJet jet area calculation for your favorite algorithm
 process.ak5PFJets.doAreaFastjet = True
+process.ak5PFJets.Rho_EtaMax = cms.double(4.4)
 
 process.load("RecoEgamma.EgammaIsolationAlgos.egammaIsolationSequence_cff")
 #process.patElectronIsolation = cms.Sequence(process.egammaIsolationSequence)
+
+## re-run kt4PFJets within lepton acceptance to compute rho
+process.load('RecoJets.JetProducers.kt4PFJets_cfi')
+process.kt6PFJetsCentral = process.kt4PFJets.clone( rParam = 0.6, doRhoFastjet = True )
+process.kt6PFJetsCentral.Rho_EtaMax = cms.double(2.5)
+
+process.fjSequence = cms.Sequence(process.kt6PFJets+process.ak5PFJets+process.kt6PFJetsCentral)
 
 process.patElectrons.isoDeposits = cms.PSet()
 process.patElectrons.userIsolation = cms.PSet()
@@ -164,8 +173,7 @@ process.patElectronIDs = cms.Sequence(process.simpleEleIdSequence)
 process.makePatElectrons = cms.Sequence(process.patElectronIDs*process.patElectrons)
 
 process.p = cms.Path(
-   process.kt6PFJets +
-   process.ak5PFJets +
+   process.fjSequence +
    process.PFTau +
    process.patDefaultSequence +
    process.treeCreator +
@@ -181,4 +189,3 @@ addPFElectronIsolation(process, process.patElectrons)
 process.PoolSource.fileNames = [   
   'file:/home/data/sarkar/FCDB422C-A39C-E011-9E28-00261834B53C.root'
 ]
-

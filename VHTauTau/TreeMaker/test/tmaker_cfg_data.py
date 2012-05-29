@@ -4,7 +4,7 @@ process = cms.Process("HTauTauTree")
 # Message Logger Settings
 #------------------------
 process.load("FWCore.MessageLogger.MessageLogger_cfi")
-process.MessageLogger.cerr.FwkReport.reportEvery = 1000
+process.MessageLogger.cerr.FwkReport.reportEvery = 100
 #--------------------------------------
 # Event Source & # of Events to process
 #---------------------------------------
@@ -12,8 +12,10 @@ process.source = cms.Source("PoolSource",
                    fileNames = cms.untracked.vstring()
                  )
 process.maxEvents = cms.untracked.PSet(
-                      input = cms.untracked.int32(100)
+                      input = cms.untracked.int32(-1)
                     )
+process.options = cms.untracked.PSet( wantSummary = cms.untracked.bool(False) )
+
 #-----------------------------
 # Geometry
 #-----------------------------
@@ -31,7 +33,7 @@ process.GlobalTag.globaltag = 'GR_R_42_V19::All'
 # Output ROOT file
 #-------------
 process.TFileService = cms.Service("TFileService",
-     fileName = cms.string('Tree.root')
+     fileName = cms.string('SingleMu_2011B_V1.root')
 )
 #--------------------------------------------------
 # VHTauTau Tree Specific
@@ -39,7 +41,6 @@ process.TFileService = cms.Service("TFileService",
 process.load("VHTauTau.TreeMaker.TreeCreator_cfi")
 process.load("VHTauTau.TreeMaker.TreeWriter_cfi")
 process.load("VHTauTau.TreeMaker.TreeContentConfig_data_cff")
-
 #-------------------------------------------------------
 # PAT 
 #------------------------------------------------------
@@ -123,9 +124,18 @@ process.load('JetMETCorrections.Configuration.DefaultJEC_cff')
 process.load('RecoJets.Configuration.RecoPFJets_cff')
 ##-------------------- Turn-on the FastJet density calculation
 process.kt6PFJets.doRhoFastjet = True
+process.kt6PFJets.Rho_EtaMax = cms.double(4.4)
 ##-------------------- Turn-on the FastJet jet area calculation for your favorite algorithm 
 process.ak5PFJets.doAreaFastjet = True
+process.ak5PFJets.Rho_EtaMax = cms.double(4.4)
 #process.patJetCorrFactors.useRho = True
+
+## re-run kt4PFJets within lepton acceptance to compute rho
+process.load('RecoJets.JetProducers.kt4PFJets_cfi')
+process.kt6PFJetsCentral = process.kt4PFJets.clone( rParam = 0.6, doRhoFastjet = True )
+process.kt6PFJetsCentral.Rho_EtaMax = cms.double(2.5)
+
+process.fjSequence = cms.Sequence(process.kt6PFJets+process.ak5PFJets+process.kt6PFJetsCentral)
 
 process.load("RecoEgamma.EgammaIsolationAlgos.egammaIsolationSequence_cff")
 #process.patElectronIsolation = cms.Sequence(process.egammaIsolationSequence)
@@ -171,8 +181,7 @@ process.patElectronIDs = cms.Sequence(process.simpleEleIdSequence)
 process.makePatElectrons = cms.Sequence(process.patElectronIDs*process.patElectrons) 
 
 process.p = cms.Path(
-    process.kt6PFJets +
-    process.ak5PFJets +
+    process.fjSequence +
     process.PFTau +
     process.patDefaultSequence +
     process.treeCreator +
@@ -190,5 +199,5 @@ addPFElectronIsolation(process, process.patElectrons)
 # List File names here
 #---------------------------------------
 process.PoolSource.fileNames = [
-  'file:/tmp/sarkar/9E5E5FA4-35DD-E011-9C06-003048D2C020.root'
+  '/store/data/Run2011B/TauPlusX/AOD/PromptReco-v1/000/175/832/9E5E5FA4-35DD-E011-9C06-003048D2C020.root'
 ]
