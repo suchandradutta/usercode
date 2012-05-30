@@ -57,6 +57,12 @@ addSelectedPFlowParticle(process)
 metTools.addTcMET(process, 'TC')
 metTools.addPfMET(process, 'PF')
 
+## --
+## Switch on PAT trigger
+## --
+import PhysicsTools.PatAlgos.tools.trigTools as trigTools
+trigTools.switchOnTrigger( process, outputModule='' ) # This is optional and can be omitted.
+
 # Add PF jets
 jec = [ 'L1FastJet', 'L2Relative', 'L3Absolute' ]
 JetCorrectionService = cms.string('ak5PFL1FastL2L3')
