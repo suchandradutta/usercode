@@ -147,7 +147,7 @@ void TauBlock::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup) 
                                   ? it->leadPFCand()->mva_e_pi() : 1.;
 
       // ElectronIDMVA, electron faking tau
-      tauB->againstElectronMVA    = it->tauID("againstElectronMVA");
+      tauB->againstElectronMVA    = it->tauID("againstElectronTightMVA2");
 
       tauB->byVLooseCombinedIsolationDeltaBetaCorr = it->tauID("byVLooseCombinedIsolationDeltaBetaCorr");
       tauB->byLooseCombinedIsolationDeltaBetaCorr  = it->tauID("byLooseCombinedIsolationDeltaBetaCorr");
@@ -157,6 +157,11 @@ void TauBlock::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup) 
       tauB->byLooseIsolationDeltaBetaCorr          = it->tauID("byLooseIsolationDeltaBetaCorr");
       tauB->byMediumIsolationDeltaBetaCorr         = it->tauID("byMediumIsolationDeltaBetaCorr");
       tauB->byTightIsolationDeltaBetaCorr          = it->tauID("byTightIsolationDeltaBetaCorr");
+
+      // MVA based isolation
+      tauB->byLooseIsolationMVA                    = it->tauID("byLooseIsolationMVA"); 
+      tauB->byMediumIsolationMVA                   = it->tauID("byMediumIsolationMVA"); 
+      tauB->byTightIsolationMVA                    = it->tauID("byTightIsolationMVA"); 
 
       // kinematic variables for PFJet associated to PFTau
       if (it->pfJetRef().isAvailable() && it->pfJetRef().isNonnull()) {

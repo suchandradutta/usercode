@@ -2,13 +2,15 @@
 #include <algorithm>
 
 #include "FWCore/MessageLogger/interface/MessageLogger.h"
+#include "DataFormats/Common/interface/ValueMap.h"
 #include "DataFormats/PatCandidates/interface/Jet.h"
 #include "CondFormats/JetMETObjects/interface/FactorizedJetCorrector.h"
 #include "CondFormats/JetMETObjects/interface/JetCorrectorParameters.h"
 #include "CondFormats/JetMETObjects/interface/JetCorrectionUncertainty.h"
 #include "CommonTools/UtilAlgos/interface/TFileService.h"
 #include "PhysicsTools/SelectorUtils/interface/PFJetIDSelectionFunctor.h"
-
+#include "CMGTools/External/interface/PileupJetIdentifier.h"
+ 
 #include "TTree.h"
 #include "TClonesArray.h"
 
@@ -62,71 +64,89 @@ void JetBlock::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup) 
       applyResJECLocal = false; 
     } 
   }
-  edm::Handle<std::vector<pat::Jet> > jets;
+  edm::Handle<edm::View<pat::Jet> > jets;
   iEvent.getByLabel(_inputTag, jets);
 
+  edm::Handle<edm::ValueMap<float> > puJetIdMVA;
+  iEvent.getByLabel("puJetMva", "fullDiscriminant", puJetIdMVA);
+
+  edm::Handle<edm::ValueMap<int> > puJetIdFlag;
+  iEvent.getByLabel("puJetMva", "fullId", puJetIdFlag);
+
   if (jets.isValid()) {
-    edm::LogInfo("JetBlock") << "Total # PAT Jets: " << jets->size();
-    for(std::vector<pat::Jet>::const_iterator it = jets->begin(); 
-                                             it != jets->end(); ++it) {
+    unsigned int njets = jets->size();
+    edm::LogInfo("JetBlock") << "Total # PAT Jets: " << njets;
+    for (size_t i = 0; i < njets; ++i) {
       if (fnJet == kMaxJet) {
 	edm::LogInfo("JetBlock") << "Too many PAT Jets, fnJet = " << fnJet; 
 	break;
       }
+      const pat::Jet& jet = jets->at(i);
       retpf.set(false);
-      int passjetLoose = (pfjetIDLoose(*it, retpf)) ? 1 : 0;
+      int passjetLoose = (pfjetIDLoose(jet, retpf)) ? 1 : 0;
 
       retpf.set(false);
-      int passjetTight = (pfjetIDTight(*it, retpf)) ? 1 : 0;
+      int passjetTight = (pfjetIDTight(jet, retpf)) ? 1 : 0;
 
       double corr = 1.;
       if (applyResJECLocal && iEvent.isRealData() ) {
-        JEC->setJetEta(it->eta());
-        JEC->setJetPt(it->pt()); // here you put the L2L3 Corrected jet pt
+        JEC->setJetEta(jet.eta());
+        JEC->setJetPt(jet.pt()); // here you put the L2L3 Corrected jet pt
         corr = JEC->getCorrection();
       }
 
       if (jecUnc) {
-        jecUnc->setJetEta(it->eta());
-        jecUnc->setJetPt(it->pt()*corr); // the uncertainty is a function of the corrected pt
+        jecUnc->setJetEta(jet.eta());
+        jecUnc->setJetPt(jet.pt()*corr); // the uncertainty is a function of the corrected pt
       }
       jetB = new ((*cloneJet)[fnJet++]) vhtm::Jet();
 
       // fill in all the vectors
-      jetB->eta        = it->eta();
-      jetB->phi        = it->phi();
-      jetB->pt         = it->pt()*corr;
-      jetB->pt_raw     = it->correctedJet("Uncorrected").pt();
-      jetB->energy     = it->energy()*corr;
-      jetB->energy_raw = it->correctedJet("Uncorrected").energy();
+      jetB->eta        = jet.eta();
+      jetB->phi        = jet.phi();
+      jetB->pt         = jet.pt()*corr;
+      jetB->pt_raw     = jet.correctedJet("Uncorrected").pt();
+      jetB->energy     = jet.energy()*corr;
+      jetB->energy_raw = jet.correctedJet("Uncorrected").energy();
       jetB->jecUnc     = (jecUnc) ? jecUnc->getUncertainty(true) : -1;
       jetB->resJEC     = corr;
-      jetB->partonFlavour               = it->partonFlavour();
+      jetB->partonFlavour = jet.partonFlavour();
 
-      jetB->chargedEmEnergyFraction     = it->chargedEmEnergyFraction();
-      jetB->chargedHadronEnergyFraction = it->chargedHadronEnergyFraction();
-      jetB->chargedMuEnergyFraction     = it->chargedMuEnergyFraction();
-      jetB->electronEnergyFraction      = it->electronEnergy()/it->energy();
-      jetB->muonEnergyFraction          = it->muonEnergyFraction();
-      jetB->neutralEmEnergyFraction     = it->neutralEmEnergyFraction();
-      jetB->neutralHadronEnergyFraction = it->neutralHadronEnergyFraction();
-      jetB->photonEnergyFraction        = it->photonEnergyFraction();
+      // Jet identification in high pile-up environment
+      float mva    = (*puJetIdMVA)[jets->refAt(i)];
+      int   idflag = (*puJetIdFlag)[jets->refAt(i)];
+      jetB->puIdMVA  = mva;
+      jetB->puIdFlag = idflag;
+      int idsbit = 0; 
+      if (PileupJetIdentifier::passJetId(idflag, PileupJetIdentifier::kLoose))  idsbit |= (1 << 0); 
+      if (PileupJetIdentifier::passJetId(idflag, PileupJetIdentifier::kMedium)) idsbit |= (1 << 1); 
+      if (PileupJetIdentifier::passJetId(idflag, PileupJetIdentifier::kTight))  idsbit |= (1 << 2); 
+      jetB->puIdBits = idsbit;
+ 
+      jetB->chargedEmEnergyFraction     = jet.chargedEmEnergyFraction();
+      jetB->chargedHadronEnergyFraction = jet.chargedHadronEnergyFraction();
+      jetB->chargedMuEnergyFraction     = jet.chargedMuEnergyFraction();
+      jetB->electronEnergyFraction      = jet.electronEnergy()/jet.energy();
+      jetB->muonEnergyFraction          = jet.muonEnergyFraction();
+      jetB->neutralEmEnergyFraction     = jet.neutralEmEnergyFraction();
+      jetB->neutralHadronEnergyFraction = jet.neutralHadronEnergyFraction();
+      jetB->photonEnergyFraction        = jet.photonEnergyFraction();
 
-      jetB->chargedHadronMultiplicity   = it->chargedHadronMultiplicity();
-      jetB->chargedMultiplicity         = it->chargedMultiplicity();
-      jetB->electronMultiplicity        = it->electronMultiplicity();
-      jetB->muonMultiplicity            = it->muonMultiplicity();
-      jetB->neutralHadronMultiplicity   = it->neutralHadronMultiplicity();
-      jetB->neutralMultiplicity         = it->neutralMultiplicity();
-      jetB->photonMultiplicity          = it->photonMultiplicity();
+      jetB->chargedHadronMultiplicity   = jet.chargedHadronMultiplicity();
+      jetB->chargedMultiplicity         = jet.chargedMultiplicity();
+      jetB->electronMultiplicity        = jet.electronMultiplicity();
+      jetB->muonMultiplicity            = jet.muonMultiplicity();
+      jetB->neutralHadronMultiplicity   = jet.neutralHadronMultiplicity();
+      jetB->neutralMultiplicity         = jet.neutralMultiplicity();
+      jetB->photonMultiplicity          = jet.photonMultiplicity();
 
-      jetB->nConstituents               = it->numberOfDaughters();
-      jetB->trackCountingHighEffBTag    = it->bDiscriminator("trackCountingHighEffBJetTags");
-      jetB->trackCountingHighPurBTag    = it->bDiscriminator("trackCountingHighPurBJetTags");
-      jetB->simpleSecondaryVertexHighEffBTag = it->bDiscriminator("simpleSecondaryVertexHighEffBJetTags");
-      jetB->simpleSecondaryVertexHighPurBTag = it->bDiscriminator("simpleSecondaryVertexHighPurBJetTags");
-      jetB->jetProbabilityBTag               = it->bDiscriminator("jetProbabilityBJetTags");
-      jetB->jetBProbabilityBTag              = it->bDiscriminator("jetBProbabilityBJetTags");
+      jetB->nConstituents               = jet.numberOfDaughters();
+      jetB->trackCountingHighEffBTag    = jet.bDiscriminator("trackCountingHighEffBJetTags");
+      jetB->trackCountingHighPurBTag    = jet.bDiscriminator("trackCountingHighPurBJetTags");
+      jetB->simpleSecondaryVertexHighEffBTag = jet.bDiscriminator("simpleSecondaryVertexHighEffBJetTags");
+      jetB->simpleSecondaryVertexHighPurBTag = jet.bDiscriminator("simpleSecondaryVertexHighPurBJetTags");
+      jetB->jetProbabilityBTag               = jet.bDiscriminator("jetProbabilityBJetTags");
+      jetB->jetBProbabilityBTag              = jet.bDiscriminator("jetBProbabilityBJetTags");
       jetB->passLooseID = passjetLoose;
       jetB->passTightID = passjetTight;
       if (_verbosity > 0) 

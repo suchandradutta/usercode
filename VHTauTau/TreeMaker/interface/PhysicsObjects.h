@@ -61,6 +61,8 @@ namespace vhtm {
     double caloEnergy;
     double caloEnergyError;
        int charge;
+       int pixHits;
+       int trkHits;
        int nValidHits;
      float simpleEleId60cIso;
      float simpleEleId70cIso;
@@ -282,6 +284,11 @@ namespace vhtm {
     float byMediumIsolationDeltaBetaCorr;
     float byTightIsolationDeltaBetaCorr;
   
+    // MVA Isolation
+    float byLooseIsolationMVA;
+    float byMediumIsolationMVA;
+    float byTightIsolationMVA;
+
     // kinematic variables for PFJet associated to PFTau
     double jetPt;
     double jetEta;
@@ -424,6 +431,11 @@ namespace vhtm {
     double jecUnc;
     double resJEC;
        int partonFlavour;
+
+     float puIdMVA;
+       int puIdFlag;
+       int puIdBits;
+
     double chargedEmEnergyFraction;
     double chargedHadronEnergyFraction;
     double chargedMuEnergyFraction;
@@ -702,12 +714,23 @@ namespace vhtm {
   public:
     SVDiTau();
     ~SVDiTau() {}
-  
+
+    double LegNegPx;
+    double LegNegPy;
+    double LegNegPz;
+    double LegNegE;
+    double LegPosPx;
+    double LegPosPy;
+    double LegPosPz;
+    double LegPosE;
+    double MuonPx;
+    double MuonPy;
+    double MuonPz;
+    double MuonE;
     double mass;
     bool isValidSolution;
     double sigmaUp;
     double sigmaDn;
-    bool isGenMatched;
   
     ClassDef(SVDiTau, 1)
   };

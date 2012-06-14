@@ -11,6 +11,7 @@
 #include "FWCore/Framework/interface/ESHandle.h"
 #include "DataFormats/PatCandidates/interface/Electron.h"
 #include "DataFormats/GsfTrackReco/interface/GsfTrack.h"
+#include "DataFormats/TrackReco/interface/HitPattern.h"
 #include "DataFormats/EgammaCandidates/interface/GsfElectron.h"
 #include "DataFormats/EgammaCandidates/interface/GsfElectronFwd.h"
 #include "DataFormats/TrackReco/interface/Track.h"
@@ -179,6 +180,12 @@ void ElectronBlock::analyze(const edm::Event& iEvent, const edm::EventSetup& iSe
       if (hasGsfTrack) {
         electronB->trackPt      = tk->pt();
         electronB->trackPtError = tk->ptError();
+
+	// Hit pattern
+	const reco::HitPattern& hitp = tk->hitPattern();
+	electronB->pixHits = hitp.numberOfValidPixelHits();
+	electronB->trkHits = hitp.numberOfValidTrackerHits();
+
         electronB->nValidHits   = tk->numberOfValidHits(); 
         electronB->missingHits  = tk->trackerExpectedHitsInner().numberOfHits();
       }

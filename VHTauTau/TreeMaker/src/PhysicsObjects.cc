@@ -41,6 +41,8 @@ vhtm::Electron::Electron() :
   caloEnergy(-999),
   caloEnergyError(-999),
   charge(-999),
+  pixHits(-1),
+  trkHits(-1),
   nValidHits(-1),
   simpleEleId60cIso(-999),
   simpleEleId70cIso(-999),
@@ -211,6 +213,9 @@ vhtm::Tau::Tau() :
   byLooseIsolationDeltaBetaCorr(-1),
   byMediumIsolationDeltaBetaCorr(-1),
   byTightIsolationDeltaBetaCorr(-1),
+  byLooseIsolationMVA(-1),
+  byMediumIsolationMVA(-1),
+  byTightIsolationMVA(-1),
   jetPt(-999),
   jetEta(-999),
   jetPhi(-999),
@@ -319,6 +324,9 @@ vhtm::Jet::Jet() :
   jecUnc(-999),
   resJEC(-999),
   partonFlavour(-1),
+  puIdMVA(-999),
+  puIdFlag(-1),
+  puIdBits(-1),
   chargedEmEnergyFraction(-999),
   chargedHadronEnergyFraction(-999),
   chargedMuEnergyFraction(-999),
@@ -529,8 +537,20 @@ vhtm::CommonVertex::CommonVertex() :
   }
 }
 vhtm::SVDiTau::SVDiTau() :
+  LegNegPx(-999),
+  LegNegPy(-999),
+  LegNegPz(-999),
+  LegNegE(-999),
+  LegPosPx(-999),
+  LegPosPy(-999),
+  LegPosPz(-999),
+  LegPosE(-999),
+  MuonPx(-999),   
+  MuonPy(-999),
+  MuonPz(-999),
+  MuonE(-999),
   mass(-999),
   isValidSolution(false), 
   sigmaUp(-999),
-  sigmaDn(-999),
-  isGenMatched(false) {}
+  sigmaDn(-999)
+{}
