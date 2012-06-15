@@ -11,10 +11,14 @@
 #include "DataFormats/VertexReco/interface/Vertex.h"
 #include "DataFormats/VertexReco/interface/VertexFwd.h"
 #include "Math/GenVector/VectorUtil.h"
+#include "DataFormats/EgammaCandidates/interface/GsfElectron.h"
+#include "DataFormats/EgammaCandidates/interface/GsfElectronFwd.h"
 
 #include "DataFormats/RecoCandidate/interface/IsoDepositVetos.h"
 #include "DataFormats/RecoCandidate/interface/IsoDeposit.h"
 #include "DataFormats/PatCandidates/interface/Isolation.h"
+
+#include "Muon/MuonAnalysisTools/interface/MuonMVAEstimator.h"
 
 #include "VHTauTau/TreeMaker/plugins/MuonBlock.h"
 #include "VHTauTau/TreeMaker/interface/Utility.h"
@@ -27,7 +31,93 @@ MuonBlock::MuonBlock(const edm::ParameterSet& iConfig) :
   _beamSpotInputTag(iConfig.getParameter<edm::InputTag>("offlineBeamSpot")),
   _beamSpotCorr(iConfig.getParameter<bool>("beamSpotCorr")),
   _muonID(iConfig.getParameter<std::string>("muonID"))
-{}
+{
+  // ID
+  edm::FileInPath idBarrel1Weights = iConfig.getParameter<edm::FileInPath>("IdBarrel1Weights");
+  edm::FileInPath idBarrel2Weights = iConfig.getParameter<edm::FileInPath>("IdBarrel2Weights");
+  edm::FileInPath idEndcap1Weights = iConfig.getParameter<edm::FileInPath>("IdEndcap1Weights");
+  edm::FileInPath idEndcap2Weights = iConfig.getParameter<edm::FileInPath>("IdEndcap2Weights");
+  edm::FileInPath idTrackerWeights = iConfig.getParameter<edm::FileInPath>("IdTrackerWeights");
+  edm::FileInPath idGlobalWeights  = iConfig.getParameter<edm::FileInPath>("IdGlobalWeights");
+
+  std::vector<std::string> muonid_wtfiles;
+  muonid_wtfiles.push_back(idBarrel1Weights.fullPath());
+  muonid_wtfiles.push_back(idBarrel2Weights.fullPath());
+  muonid_wtfiles.push_back(idEndcap1Weights.fullPath());
+  muonid_wtfiles.push_back(idEndcap2Weights.fullPath());
+  muonid_wtfiles.push_back(idTrackerWeights.fullPath());
+  muonid_wtfiles.push_back(idGlobalWeights.fullPath());
+
+  fMuonIdMVA = new MuonMVAEstimator();
+  fMuonIdMVA->initialize("MuonID_BDTG",
+                         MuonMVAEstimator::kID,
+                         true,
+                         muonid_wtfiles);
+
+  // Rings isolation
+  edm::FileInPath isoBarrel1Weights = iConfig.getParameter<edm::FileInPath>("IsoBarrel1Weights");
+  edm::FileInPath isoBarrel2Weights = iConfig.getParameter<edm::FileInPath>("IsoBarrel2Weights");
+  edm::FileInPath isoEndcap1Weights = iConfig.getParameter<edm::FileInPath>("IsoEndcap1Weights");
+  edm::FileInPath isoEndcap2Weights = iConfig.getParameter<edm::FileInPath>("IsoEndcap2Weights");
+  edm::FileInPath isoTrackerWeights = iConfig.getParameter<edm::FileInPath>("IsoTrackerWeights");
+  edm::FileInPath isoGlobalWeights  = iConfig.getParameter<edm::FileInPath>("IsoGlobalWeights");
+
+  std::vector<std::string> muoniso_wtfiles;
+  muoniso_wtfiles.push_back(isoBarrel1Weights.fullPath());
+  muoniso_wtfiles.push_back(isoBarrel2Weights.fullPath());
+  muoniso_wtfiles.push_back(isoEndcap1Weights.fullPath());
+  muoniso_wtfiles.push_back(isoEndcap2Weights.fullPath());
+  muoniso_wtfiles.push_back(isoTrackerWeights.fullPath());
+  muoniso_wtfiles.push_back(isoGlobalWeights.fullPath());
+
+  fMuonIsoMVA = new MuonMVAEstimator();
+  fMuonIsoMVA->initialize("MuonIso_BDTG_IsoRings",
+                          MuonMVAEstimator::kIsoRings,
+                          true,
+                          muoniso_wtfiles);
+
+  // Radial + Rings ISO
+  edm::FileInPath isoRingsRadBarrel1Weights = iConfig.getParameter<edm::FileInPath>("IsoRingsRadBarrel1Weights");
+  edm::FileInPath isoRingsRadBarrel2Weights = iConfig.getParameter<edm::FileInPath>("IsoRingsRadBarrel2Weights");
+  edm::FileInPath isoRingsRadEndcap1Weights = iConfig.getParameter<edm::FileInPath>("IsoRingsRadEndcap1Weights");
+  edm::FileInPath isoRingsRadEndcap2Weights = iConfig.getParameter<edm::FileInPath>("IsoRingsRadEndcap2Weights");
+  edm::FileInPath isoRingsRadTrackerWeights = iConfig.getParameter<edm::FileInPath>("IsoRingsRadTrackerWeights");
+  edm::FileInPath isoRingsRadGlobalWeights  = iConfig.getParameter<edm::FileInPath>("IsoRingsRadGlobalWeights");
+
+  std::vector<std::string> muonisoRingsRad_wtfiles;
+  muonisoRingsRad_wtfiles.push_back(isoRingsRadBarrel1Weights.fullPath());
+  muonisoRingsRad_wtfiles.push_back(isoRingsRadBarrel2Weights.fullPath());
+  muonisoRingsRad_wtfiles.push_back(isoRingsRadEndcap1Weights.fullPath());
+  muonisoRingsRad_wtfiles.push_back(isoRingsRadEndcap2Weights.fullPath());
+  muonisoRingsRad_wtfiles.push_back(isoRingsRadTrackerWeights.fullPath());
+  muonisoRingsRad_wtfiles.push_back(isoRingsRadGlobalWeights.fullPath());
+
+  fMuonIsoRingsRadMVA = new MuonMVAEstimator();
+  fMuonIsoRingsRadMVA->initialize("MuonIso_BDTG_IsoRingsRad",
+                                  MuonMVAEstimator::kIsoRingsRadial,
+                                  true,
+                                  muonisoRingsRad_wtfiles);
+
+  std::string target = iConfig.getParameter<std::string>("target");
+  if (target == "2011Data") {
+    target_ = MuonEffectiveArea::kMuEAData2011;
+  } else if (target == "2012Data") {
+    target_ = MuonEffectiveArea::kMuEAData2012;
+  } else if (target == "Fall11MC") {
+    target_ = MuonEffectiveArea::kMuEAFall11MC;
+  } else if (target == "Summer11MC") {
+    target_ = MuonEffectiveArea::kMuEASummer11MC;
+  } else {
+    throw cms::Exception("UnknownTarget")
+      << "Bad eff. area option for muons: " << target
+      << " options are: 2011Data, 2012Data, Fall11MC, Summer11MC" << std::endl;
+  }
+}
+MuonBlock::~MuonBlock() {
+  delete fMuonIdMVA;
+  delete fMuonIsoMVA;
+  delete fMuonIsoRingsRadMVA;
+}
 void MuonBlock::beginJob() 
 {
   // Get TTree pointer
@@ -52,6 +142,18 @@ void MuonBlock::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
 
   edm::Handle<reco::PFCandidateCollection> pfMuons;
   iEvent.getByLabel(_pfMuonInputTag, pfMuons);
+
+  edm::Handle<double> hRho;
+  iEvent.getByLabel(_rhoInputTag, hRho);
+  double Rho = *hRho;
+
+  edm::Handle<reco::PFCandidateCollection> hPfCandProduct;
+  iEvent.getByLabel(_pfInputTag, hPfCandProduct);
+  const reco::PFCandidateCollection &inPfCands = *(hPfCandProduct.product());
+
+  // Just leave these blank.
+  reco::GsfElectronCollection identifiedElectrons;
+  reco::MuonCollection identifiedMuons;
 
   if (muons.isValid()) {
     edm::LogInfo("MuonBlock") << "Total # Muons: " << muons->size();
@@ -167,6 +269,27 @@ void MuonBlock::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
       muonB->vx = vertex.x();             
       muonB->vy = vertex.y();             
       muonB->vz = vertex.z();             
+
+      // Various MVA
+      const pat::Muon& muon = *it;
+      double idmva = fMuonIdMVA->mvaValue(muon, primaryVertices->at(0),
+                                          inPfCands, Rho,
+                                          target_,
+                                          identifiedElectrons, identifiedMuons);
+      
+      double isomva = fMuonIsoMVA->mvaValue(muon, primaryVertices->at(0),
+                                            inPfCands, Rho,
+                                            target_,
+                                            identifiedElectrons, identifiedMuons);
+
+      double isoringsradmva 
+         = fMuonIsoRingsRadMVA->mvaValue(muon, primaryVertices->at(0),
+                                         inPfCands, Rho,
+                                         target_,
+                                         identifiedElectrons, identifiedMuons);
+      muonB->idMVA  = idmva;
+      muonB->isoMVA = isomva;
+      muonB->isoRingsRadMVA = isoringsradmva;
 
       // Iso deposit and PF Isolaiton
       fillIsoDeposit(*it, muonB);

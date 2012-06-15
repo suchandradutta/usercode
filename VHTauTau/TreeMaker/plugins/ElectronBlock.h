@@ -21,7 +21,7 @@
 
 class TClonesArray;
 class Electron;
-class ElectronIDMVA;
+class EGammaMvaEleEstimator;
 
 class ElectronBlock : public edm::EDAnalyzer 
 {
@@ -54,11 +54,15 @@ private:
   edm::InputTag _pfElectronInputTag;
   edm::InputTag _ecalEBInputTag;
   edm::InputTag _ecalEEInputTag;
-  edm::InputTag _ebRecHits;
-  edm::InputTag _eeRecHits;
+  //  edm::InputTag _ebRecHits;
+  //edm::InputTag _eeRecHits;
+  edm::InputTag _rhoInputTag;
+  edm::InputTag _pfInputTag;
   
   vhtm::Electron* electronB;
 
-  ElectronIDMVA* fMVA;
+  EGammaMvaEleEstimator* fElectronIdMVA;
+  EGammaMvaEleEstimator* fElectronIsoMVA;
+  ElectronEffectiveArea::ElectronEffectiveAreaTarget target_;
 };
 #endif

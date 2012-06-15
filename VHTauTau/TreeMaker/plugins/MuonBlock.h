@@ -14,6 +14,7 @@
 
 class TClonesArray;
 class Muon;
+class MuonMVAEstimator;
 
 class MuonBlock : public edm::EDAnalyzer 
 {
@@ -25,7 +26,7 @@ private:
 
 public:
   explicit MuonBlock(const edm::ParameterSet& iConfig);
-  virtual ~MuonBlock() {}
+  virtual ~MuonBlock();
   void fillIsoDeposit(const pat::Muon& muo, vhtm::Muon* muonB);
 
   enum {
@@ -42,9 +43,16 @@ private:
   edm::InputTag _pfMuonInputTag;
   edm::InputTag _vtxInputTag;
   edm::InputTag _beamSpotInputTag;
+  edm::InputTag _rhoInputTag;
+  edm::InputTag _pfInputTag;
   bool _beamSpotCorr;
   std::string _muonID;
 
   vhtm::Muon* muonB;
+
+  MuonMVAEstimator* fMuonIsoMVA;
+  MuonMVAEstimator* fMuonIdMVA;
+  MuonMVAEstimator* fMuonIsoRingsRadMVA;
+  MuonEffectiveArea::MuonEffectiveAreaTarget target_;
 };
 #endif

@@ -139,7 +139,8 @@ namespace vhtm {
        int nBrems;
      float fbrem;
   
-    double mva;
+    double idMVA;
+    double isoMVA;
    
        int selbit;
        int fidFlag;
@@ -405,6 +406,10 @@ namespace vhtm {
        unsigned int stationGapMaskPull;
      
        int selbit;
+
+    double idMVA;
+    double isoMVA;
+    double isoRingsRadMVA;
 
      float pfRelIso03v1;
      float pfRelIso03v2;

@@ -10,6 +10,7 @@
 #include "FWCore/MessageLogger/interface/MessageLogger.h"
 #include "FWCore/Framework/interface/ESHandle.h"
 #include "DataFormats/PatCandidates/interface/Electron.h"
+#include "DataFormats/PatCandidates/interface/Muon.h"
 #include "DataFormats/GsfTrackReco/interface/GsfTrack.h"
 #include "DataFormats/TrackReco/interface/HitPattern.h"
 #include "DataFormats/EgammaCandidates/interface/GsfElectron.h"
@@ -28,11 +29,15 @@
 
 #include "RecoEcal/EgammaCoreTools/interface/EcalClusterLazyTools.h"
 #include "Utilities/General/interface/FileInPath.h"
-#include "HiggsAnalysis/HiggsToWW2Leptons/interface/ElectronIDMVA.h"
+#include "EGamma/EGammaAnalysisTools/interface/EGammaMvaEleEstimator.h"
 
 #include "DataFormats/RecoCandidate/interface/IsoDepositVetos.h"
 #include "DataFormats/RecoCandidate/interface/IsoDeposit.h"
 #include "DataFormats/PatCandidates/interface/Isolation.h"
+
+#include "TrackingTools/TransientTrack/interface/TransientTrack.h"
+#include "TrackingTools/TransientTrack/interface/TransientTrackBuilder.h"
+#include "TrackingTools/Records/interface/TransientTrackRecord.h"
 
 #include "VHTauTau/TreeMaker/plugins/ElectronBlock.h"
 #include "VHTauTau/TreeMaker/interface/Utility.h"
@@ -48,29 +53,68 @@ ElectronBlock::ElectronBlock(const edm::ParameterSet& iConfig) :
   _electronInputTag(iConfig.getParameter<edm::InputTag>("electronSrc")),
   _pfElectronInputTag(iConfig.getParameter<edm::InputTag>("pfElectronSrc")),
   _ecalEBInputTag(iConfig.getParameter<edm::InputTag>("ecalEBInputTag")),
-  _ecalEEInputTag(iConfig.getParameter<edm::InputTag>("ecalEEInputTag"))
+  _ecalEEInputTag(iConfig.getParameter<edm::InputTag>("ecalEEInputTag")),
+  _rhoInputTag(iConfig.getParameter<edm::InputTag>("rhoSrc")),  // kt6PFJets
+  _pfInputTag(iConfig.getParameter<edm::InputTag>("pfSrc"))  // particleFlow
 {
-  std::string method = iConfig.getParameter<std::string>("methodName");
-  edm::FileInPath Subdet0Pt10To20Weights = iConfig.getParameter<edm::FileInPath>("Subdet0LowPtWeights");
-  edm::FileInPath Subdet1Pt10To20Weights = iConfig.getParameter<edm::FileInPath>("Subdet1LowPtWeights");
-  edm::FileInPath Subdet2Pt10To20Weights = iConfig.getParameter<edm::FileInPath>("Subdet2LowPtWeights");
-  edm::FileInPath Subdet0HighPtWeights = iConfig.getParameter<edm::FileInPath>("Subdet0HighPtWeights");
-  edm::FileInPath Subdet1HighPtWeights = iConfig.getParameter<edm::FileInPath>("Subdet1HighPtWeights");
-  edm::FileInPath Subdet2HighPtWeights = iConfig.getParameter<edm::FileInPath>("Subdet2HighPtWeights");
-  ElectronIDMVA::MVAType mvaType = static_cast<ElectronIDMVA::MVAType>(iConfig.getParameter<unsigned int>("mvaType")); 
+  edm::FileInPath idCat1Weights = iConfig.getParameter<edm::FileInPath>("IdCat1Weights");
+  edm::FileInPath idCat2Weights = iConfig.getParameter<edm::FileInPath>("IdCat2Weights");
+  edm::FileInPath idCat3Weights = iConfig.getParameter<edm::FileInPath>("IdCat3Weights");
+  edm::FileInPath idCat4Weights = iConfig.getParameter<edm::FileInPath>("IdCat4Weights");
+  edm::FileInPath idCat5Weights = iConfig.getParameter<edm::FileInPath>("IdCat5Weights");
+  edm::FileInPath idCat6Weights = iConfig.getParameter<edm::FileInPath>("IdCat6Weights");
 
-  // Electron ID MVA against fake QCD
-  fMVA = new ElectronIDMVA();
-  fMVA->Initialize(method,
-		   Subdet0Pt10To20Weights.fullPath(),
-		   Subdet1Pt10To20Weights.fullPath(),
-		   Subdet2Pt10To20Weights.fullPath(),
-		   Subdet0HighPtWeights.fullPath(),
-		   Subdet1HighPtWeights.fullPath(),
-		   Subdet2HighPtWeights.fullPath(),
-                   mvaType);
+  // Electron ID MVA
+  std::vector<std::string> eleid_wtfiles;
+  eleid_wtfiles.push_back(idCat1Weights.fullPath());
+  eleid_wtfiles.push_back(idCat2Weights.fullPath());
+  eleid_wtfiles.push_back(idCat3Weights.fullPath());
+  eleid_wtfiles.push_back(idCat4Weights.fullPath());
+  eleid_wtfiles.push_back(idCat5Weights.fullPath());
+  eleid_wtfiles.push_back(idCat6Weights.fullPath());
+
+  fElectronIdMVA = new EGammaMvaEleEstimator();
+  fElectronIdMVA->initialize("BDT",
+                        EGammaMvaEleEstimator::kNonTrig,
+                        true, 
+                        eleid_wtfiles);
+
+  edm::FileInPath isoBarrelPt1Weights = iConfig.getParameter<edm::FileInPath>("IsoBarrelPt1Weights");
+  edm::FileInPath isoBarrelPt2Weights = iConfig.getParameter<edm::FileInPath>("IsoBarrelPt2Weights");
+  edm::FileInPath isoEndcapPt1Weights = iConfig.getParameter<edm::FileInPath>("IsoEndcapPt1Weights");
+  edm::FileInPath isoEndcapPt2Weights = iConfig.getParameter<edm::FileInPath>("IsoEndcapPt2Weights");
+
+  std::vector<std::string> eleiso_wtfiles;
+  eleiso_wtfiles.push_back(isoBarrelPt1Weights.fullPath());
+  eleiso_wtfiles.push_back(isoBarrelPt1Weights.fullPath());
+  eleiso_wtfiles.push_back(isoBarrelPt1Weights.fullPath());
+  eleiso_wtfiles.push_back(isoBarrelPt1Weights.fullPath());
+
+  std::string target = iConfig.getParameter<std::string>("target");
+  if (target == "2011Data") {
+    target_ = ElectronEffectiveArea::kEleEAData2011;
+  } else if (target == "2012Data") {
+    target_ = ElectronEffectiveArea::kEleEAData2012;
+  } else if (target == "Fall11MC") {
+    target_ = ElectronEffectiveArea::kEleEAFall11MC;
+  } else if (target == "Summer11MC") {
+    target_ = ElectronEffectiveArea::kEleEASummer11MC;
+  } 
+  else {
+    throw cms::Exception("UnknownTarget")
+      << "Bad eff. area option for electrons: " << target
+      << " options are: 2011Data, 2012Data, Fall11MC, Summer11MC" << std::endl;
+  }
+  fElectronIsoMVA = new EGammaMvaEleEstimator();
+  fElectronIsoMVA->initialize("EleIso_BDTG_IsoRings",
+			      EGammaMvaEleEstimator::kIsoRings,
+			      true,
+			      eleiso_wtfiles);
 }
-ElectronBlock::~ElectronBlock() { delete fMVA; }
+ElectronBlock::~ElectronBlock() { 
+  delete fElectronIdMVA; 
+  delete fElectronIsoMVA; 
+}
 void ElectronBlock::beginJob() 
 {
   // Get TTree pointer
@@ -105,6 +149,22 @@ void ElectronBlock::analyze(const edm::Event& iEvent, const edm::EventSetup& iSe
 
   edm::Handle<reco::PFCandidateCollection> pfElectrons;
   iEvent.getByLabel(_pfElectronInputTag, pfElectrons);
+
+  edm::ESHandle<TransientTrackBuilder> builder;
+  iSetup.get<TransientTrackRecord>().get("TransientTrackBuilder", builder);
+  TransientTrackBuilder ttrackBuilder = *(builder.product());
+
+  edm::Handle<double> hRho;
+  iEvent.getByLabel(_rhoInputTag, hRho);
+  double Rho = *hRho;
+
+  edm::Handle<reco::PFCandidateCollection> hPfCandProduct;
+  iEvent.getByLabel(_pfInputTag, hPfCandProduct);
+  const reco::PFCandidateCollection &inPfCands = *(hPfCandProduct.product());
+
+  // Just leave these blank.
+  reco::GsfElectronCollection identifiedElectrons;
+  reco::MuonCollection identifiedMuons;
 
   double evt_bField = 3.8;
   // need the magnetic field
@@ -234,7 +294,10 @@ void ElectronBlock::analyze(const edm::Event& iEvent, const edm::EventSetup& iSe
       electronB->dCotTheta = dcot;
 
       const reco::GsfElectron* aGsf = static_cast<const reco::GsfElectron*>(&(*it));
-      int hasMatchedConv = ConversionTools::hasMatchedConversion(*aGsf, hConversions, beamSpot->position(), true, 2.0, 1e-06,0);
+      bool hasMatchedConv = ConversionTools::hasMatchedConversion(*aGsf, 
+                                                                  hConversions, 
+                                                                  beamSpot->position(),
+                                                                  true, 2.0, 1e-06,0);
       electronB->hasMatchedConv = hasMatchedConv;
 
       // SC associated with electron
@@ -297,10 +360,22 @@ void ElectronBlock::analyze(const edm::Event& iEvent, const edm::EventSetup& iSe
       electronB->nBrems = it->numberOfBrems();
       electronB->fbrem  = it->fbrem();
 
-      // MIT Electron ID
+      // MIT MVA Electron ID
       EcalClusterLazyTools lazyTools(iEvent, iSetup, _ecalEBInputTag, _ecalEEInputTag);
-      const pat::Electron& ele = *it;
-      electronB->mva = fMVA->MVAValue(&ele,  lazyTools);
+      //const pat::Electron& ele = *it;
+      double idMVA = (primaryVertices->size()) 
+	? fElectronIdMVA->mvaValue(*aGsf, primaryVertices->at(0), ttrackBuilder, lazyTools, false) // &ele
+        : -1;
+      electronB->idMVA = idMVA;
+
+      // Isolation MVA
+      double isomva = (primaryVertices->size()) 
+        ? fElectronIsoMVA->mvaValue(*aGsf, primaryVertices->at(0),
+				    inPfCands, Rho,
+				    target_,
+				    identifiedElectrons, identifiedMuons)
+        : -1;
+      electronB->isoMVA = isomva;
 
       // Fiducial flag 
       int fidFlag = 0;
