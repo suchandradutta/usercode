@@ -33,7 +33,7 @@ process.GlobalTag.globaltag = 'GR_R_42_V19::All'
 # Output ROOT file
 #-------------
 process.TFileService = cms.Service("TFileService",
-     fileName = cms.string('SingleMu_2011B_V1.root')
+     fileName = cms.string('tree.root')
 )
 #--------------------------------------------------
 # VHTauTau Tree Specific
@@ -64,8 +64,11 @@ metTools.addPfMET(process, 'PF')
 import PhysicsTools.PatAlgos.tools.trigTools as trigTools
 trigTools.switchOnTrigger( process, outputModule='' ) # This is optional and can be omitted.
 
+# load the PU JetID sequence
+process.load("CMGTools.External.pujetidsequence_cff")
+
 jec = [ 'L1FastJet', 'L2Relative', 'L3Absolute' ]
-#jec.extend([ 'L2L3Residual' ])
+jec.extend([ 'L2L3Residual' ])
 jetTools.addJetCollection(process, cms.InputTag('ak5PFJets'),
      'AK5', 'PF',
      doJTA            = True,
@@ -140,8 +143,8 @@ process.fjSequence = cms.Sequence(process.kt6PFJets+process.ak5PFJets+process.kt
 process.load("RecoEgamma.EgammaIsolationAlgos.egammaIsolationSequence_cff")
 #process.patElectronIsolation = cms.Sequence(process.egammaIsolationSequence)
 
-process.patElectrons.isoDeposits = cms.PSet()
-process.patElectrons.userIsolation = cms.PSet()
+#process.patElectrons.isoDeposits = cms.PSet()
+#process.patElectrons.userIsolation = cms.PSet()
 process.patElectrons.addElectronID = cms.bool(True)
 process.patElectrons.electronIDSources = cms.PSet(
     simpleEleId95relIso = cms.InputTag("simpleEleId95relIso"),
@@ -180,13 +183,27 @@ process.simpleEleId60cIso.dataMagneticFieldSetUp = cms.bool(True)
 process.patElectronIDs = cms.Sequence(process.simpleEleIdSequence)
 process.makePatElectrons = cms.Sequence(process.patElectronIDs*process.patElectrons) 
 
+# MVA MET
+process.load("RecoMET/METProducers/python/mvaPFMET_cff")
+process.calibratedAK5PFJetsForPFMEtMVA.correctors = cms.vstring("ak5PFL1FastL2L3Residual")
+process.pfMEtMVA.srcLeptons = cms.VInputTag("selectedPatElectrons", "selectedPatMuons", "selectedPatTaus")
+##process.pfMEtMVA2.srcLeptons = cms.VInputTag("selectedPatElectrons", "selectedPatMuons", "selectedPatTaus")
+
+process.patPFMetByMVA = process.patMETs.clone(
+  metSource = cms.InputTag('pfMEtMVA'),
+  addMuonCorrections = cms.bool(False),
+  genMETSource = cms.InputTag('genMetTrue')
+)
+process.patDefaultSequence.replace(process.patMETS, process.patPFMetByMVA)
 process.p = cms.Path(
-    process.fjSequence +
-    process.PFTau +
-    process.patDefaultSequence +
-    process.treeCreator +
-    process.treeContentSequence +
-    process.treeWriter
+  process.fjSequence +
+  process.PFTau +
+  pfMEtMVAsequence + 
+  process.patDefaultSequence +
+  process.puJetIdSqeuence + 
+  process.treeCreator +
+  process.treeContentSequence +
+  process.treeWriter
 )
 
 import VHTauTau.TreeMaker.SwitchToData as stod

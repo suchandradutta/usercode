@@ -34,8 +34,8 @@ MuonBlock::MuonBlock(const edm::ParameterSet& iConfig) :
 {
   // ID
   edm::FileInPath idBarrel1Weights = iConfig.getParameter<edm::FileInPath>("IdBarrel1Weights");
-  edm::FileInPath idBarrel2Weights = iConfig.getParameter<edm::FileInPath>("IdBarrel2Weights");
   edm::FileInPath idEndcap1Weights = iConfig.getParameter<edm::FileInPath>("IdEndcap1Weights");
+  edm::FileInPath idBarrel2Weights = iConfig.getParameter<edm::FileInPath>("IdBarrel2Weights");
   edm::FileInPath idEndcap2Weights = iConfig.getParameter<edm::FileInPath>("IdEndcap2Weights");
   edm::FileInPath idTrackerWeights = iConfig.getParameter<edm::FileInPath>("IdTrackerWeights");
   edm::FileInPath idGlobalWeights  = iConfig.getParameter<edm::FileInPath>("IdGlobalWeights");
@@ -56,16 +56,16 @@ MuonBlock::MuonBlock(const edm::ParameterSet& iConfig) :
 
   // Rings isolation
   edm::FileInPath isoBarrel1Weights = iConfig.getParameter<edm::FileInPath>("IsoBarrel1Weights");
-  edm::FileInPath isoBarrel2Weights = iConfig.getParameter<edm::FileInPath>("IsoBarrel2Weights");
   edm::FileInPath isoEndcap1Weights = iConfig.getParameter<edm::FileInPath>("IsoEndcap1Weights");
+  edm::FileInPath isoBarrel2Weights = iConfig.getParameter<edm::FileInPath>("IsoBarrel2Weights");
   edm::FileInPath isoEndcap2Weights = iConfig.getParameter<edm::FileInPath>("IsoEndcap2Weights");
   edm::FileInPath isoTrackerWeights = iConfig.getParameter<edm::FileInPath>("IsoTrackerWeights");
   edm::FileInPath isoGlobalWeights  = iConfig.getParameter<edm::FileInPath>("IsoGlobalWeights");
 
   std::vector<std::string> muoniso_wtfiles;
   muoniso_wtfiles.push_back(isoBarrel1Weights.fullPath());
-  muoniso_wtfiles.push_back(isoBarrel2Weights.fullPath());
   muoniso_wtfiles.push_back(isoEndcap1Weights.fullPath());
+  muoniso_wtfiles.push_back(isoBarrel2Weights.fullPath());
   muoniso_wtfiles.push_back(isoEndcap2Weights.fullPath());
   muoniso_wtfiles.push_back(isoTrackerWeights.fullPath());
   muoniso_wtfiles.push_back(isoGlobalWeights.fullPath());
@@ -78,16 +78,16 @@ MuonBlock::MuonBlock(const edm::ParameterSet& iConfig) :
 
   // Radial + Rings ISO
   edm::FileInPath isoRingsRadBarrel1Weights = iConfig.getParameter<edm::FileInPath>("IsoRingsRadBarrel1Weights");
-  edm::FileInPath isoRingsRadBarrel2Weights = iConfig.getParameter<edm::FileInPath>("IsoRingsRadBarrel2Weights");
   edm::FileInPath isoRingsRadEndcap1Weights = iConfig.getParameter<edm::FileInPath>("IsoRingsRadEndcap1Weights");
+  edm::FileInPath isoRingsRadBarrel2Weights = iConfig.getParameter<edm::FileInPath>("IsoRingsRadBarrel2Weights");
   edm::FileInPath isoRingsRadEndcap2Weights = iConfig.getParameter<edm::FileInPath>("IsoRingsRadEndcap2Weights");
   edm::FileInPath isoRingsRadTrackerWeights = iConfig.getParameter<edm::FileInPath>("IsoRingsRadTrackerWeights");
   edm::FileInPath isoRingsRadGlobalWeights  = iConfig.getParameter<edm::FileInPath>("IsoRingsRadGlobalWeights");
 
   std::vector<std::string> muonisoRingsRad_wtfiles;
   muonisoRingsRad_wtfiles.push_back(isoRingsRadBarrel1Weights.fullPath());
-  muonisoRingsRad_wtfiles.push_back(isoRingsRadBarrel2Weights.fullPath());
   muonisoRingsRad_wtfiles.push_back(isoRingsRadEndcap1Weights.fullPath());
+  muonisoRingsRad_wtfiles.push_back(isoRingsRadBarrel2Weights.fullPath());
   muonisoRingsRad_wtfiles.push_back(isoRingsRadEndcap2Weights.fullPath());
   muonisoRingsRad_wtfiles.push_back(isoRingsRadTrackerWeights.fullPath());
   muonisoRingsRad_wtfiles.push_back(isoRingsRadGlobalWeights.fullPath());

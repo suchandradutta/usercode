@@ -52,8 +52,8 @@ ElectronBlock::ElectronBlock(const edm::ParameterSet& iConfig) :
   _convInputTag(iConfig.getParameter<edm::InputTag>("convSrc")),
   _electronInputTag(iConfig.getParameter<edm::InputTag>("electronSrc")),
   _pfElectronInputTag(iConfig.getParameter<edm::InputTag>("pfElectronSrc")),
-  _ecalEBInputTag(iConfig.getParameter<edm::InputTag>("ecalEBInputTag")),
-  _ecalEEInputTag(iConfig.getParameter<edm::InputTag>("ecalEEInputTag")),
+  _ecalEBInputTag(iConfig.getParameter<edm::InputTag>("ecalEBSrc")),
+  _ecalEEInputTag(iConfig.getParameter<edm::InputTag>("ecalEESrc")),
   _rhoInputTag(iConfig.getParameter<edm::InputTag>("rhoSrc")),  // kt6PFJets
   _pfInputTag(iConfig.getParameter<edm::InputTag>("pfSrc"))  // particleFlow
 {
@@ -80,15 +80,15 @@ ElectronBlock::ElectronBlock(const edm::ParameterSet& iConfig) :
                         eleid_wtfiles);
 
   edm::FileInPath isoBarrelPt1Weights = iConfig.getParameter<edm::FileInPath>("IsoBarrelPt1Weights");
-  edm::FileInPath isoBarrelPt2Weights = iConfig.getParameter<edm::FileInPath>("IsoBarrelPt2Weights");
   edm::FileInPath isoEndcapPt1Weights = iConfig.getParameter<edm::FileInPath>("IsoEndcapPt1Weights");
+  edm::FileInPath isoBarrelPt2Weights = iConfig.getParameter<edm::FileInPath>("IsoBarrelPt2Weights");
   edm::FileInPath isoEndcapPt2Weights = iConfig.getParameter<edm::FileInPath>("IsoEndcapPt2Weights");
 
   std::vector<std::string> eleiso_wtfiles;
   eleiso_wtfiles.push_back(isoBarrelPt1Weights.fullPath());
-  eleiso_wtfiles.push_back(isoBarrelPt1Weights.fullPath());
-  eleiso_wtfiles.push_back(isoBarrelPt1Weights.fullPath());
-  eleiso_wtfiles.push_back(isoBarrelPt1Weights.fullPath());
+  eleiso_wtfiles.push_back(isoEndcapPt1Weights.fullPath());
+  eleiso_wtfiles.push_back(isoBarrelPt2Weights.fullPath());
+  eleiso_wtfiles.push_back(isoEndcapPt2Weights.fullPath());
 
   std::string target = iConfig.getParameter<std::string>("target");
   if (target == "2011Data") {
