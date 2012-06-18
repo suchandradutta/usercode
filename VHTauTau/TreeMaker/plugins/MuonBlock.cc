@@ -30,7 +30,9 @@ MuonBlock::MuonBlock(const edm::ParameterSet& iConfig) :
   _vtxInputTag(iConfig.getParameter<edm::InputTag>("vertexSrc")),
   _beamSpotInputTag(iConfig.getParameter<edm::InputTag>("offlineBeamSpot")),
   _beamSpotCorr(iConfig.getParameter<bool>("beamSpotCorr")),
-  _muonID(iConfig.getParameter<std::string>("muonID"))
+  _muonID(iConfig.getParameter<std::string>("muonID")),
+  _rhoInputTag(iConfig.getParameter<edm::InputTag>("rhoSrc")),
+  _pfInputTag(iConfig.getParameter<edm::InputTag>("pfSrc"))
 {
   // ID
   edm::FileInPath idBarrel1Weights = iConfig.getParameter<edm::FileInPath>("IdBarrel1Weights");
