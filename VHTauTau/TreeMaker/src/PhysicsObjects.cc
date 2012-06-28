@@ -44,6 +44,8 @@ vhtm::Electron::Electron() :
   pixHits(-1),
   trkHits(-1),
   nValidHits(-1),
+  trkD0(-999),
+  trkD0Error(-999),
   simpleEleId60cIso(-999),
   simpleEleId70cIso(-999),
   simpleEleId80cIso(-999),

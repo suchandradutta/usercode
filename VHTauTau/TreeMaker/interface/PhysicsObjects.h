@@ -64,6 +64,8 @@ namespace vhtm {
        int pixHits;
        int trkHits;
        int nValidHits;
+     float trkD0;
+     float trkD0Error;
      float simpleEleId60cIso;
      float simpleEleId70cIso;
      float simpleEleId80cIso;
