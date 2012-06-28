@@ -54,8 +54,8 @@ ElectronBlock::ElectronBlock(const edm::ParameterSet& iConfig) :
   _pfElectronInputTag(iConfig.getParameter<edm::InputTag>("pfElectronSrc")),
   _ecalEBInputTag(iConfig.getParameter<edm::InputTag>("ecalEBSrc")),
   _ecalEEInputTag(iConfig.getParameter<edm::InputTag>("ecalEESrc")),
-  _rhoInputTag(iConfig.getParameter<edm::InputTag>("rhoSrc")),  // kt6PFJets
-  _pfInputTag(iConfig.getParameter<edm::InputTag>("pfSrc"))  // particleFlow
+  _rhoInputTag(iConfig.getParameter<edm::InputTag>("rhoSrc")),
+  _pfInputTag(iConfig.getParameter<edm::InputTag>("pfSrc"))
 {
   edm::FileInPath idCat1Weights = iConfig.getParameter<edm::FileInPath>("IdCat1Weights");
   edm::FileInPath idCat2Weights = iConfig.getParameter<edm::FileInPath>("IdCat2Weights");
@@ -248,6 +248,9 @@ void ElectronBlock::analyze(const edm::Event& iEvent, const edm::EventSetup& iSe
 
         electronB->nValidHits   = tk->numberOfValidHits(); 
         electronB->missingHits  = tk->trackerExpectedHitsInner().numberOfHits();
+
+        electronB->trkD0        = tk->d0();
+        electronB->trkD0Error   = tk->d0Error();
       }
       // ID variables
       electronB->hoe           = it->hcalOverEcal();
