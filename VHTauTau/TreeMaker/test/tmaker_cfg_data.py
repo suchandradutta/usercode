@@ -9,11 +9,11 @@ process.MessageLogger.cerr.FwkReport.reportEvery = 100
 # Event Source & # of Events to process
 #---------------------------------------
 process.source = cms.Source("PoolSource",
-                   fileNames = cms.untracked.vstring()
-                 )
+  fileNames = cms.untracked.vstring()
+)
 process.maxEvents = cms.untracked.PSet(
-                      input = cms.untracked.int32(-1)
-                    )
+  input = cms.untracked.int32(-1)
+)
 process.options = cms.untracked.PSet( wantSummary = cms.untracked.bool(False) )
 
 #-----------------------------
@@ -28,12 +28,12 @@ process.load('Configuration.StandardSequences.MagneticField_AutoFromDBCurrent_cf
 # Global Tag
 #-------------
 process.load('Configuration.StandardSequences.FrontierConditions_GlobalTag_cff')
-process.GlobalTag.globaltag = 'GR_R_42_V19::All'
+process.GlobalTag.globaltag = 'GR_R_42_V25::All'
 #-------------
 # Output ROOT file
 #-------------
 process.TFileService = cms.Service("TFileService",
-     fileName = cms.string('tree.root')
+  fileName = cms.string('tree.root')
 )
 #--------------------------------------------------
 # VHTauTau Tree Specific
@@ -66,34 +66,36 @@ trigTools.switchOnTrigger( process, outputModule='' ) # This is optional and can
 
 # load the PU JetID sequence
 process.load("CMGTools.External.pujetidsequence_cff")
+process.puJetId.jets = cms.InputTag("selectedPatJetsAK5PF")
+process.puJetMva.jets = cms.InputTag("selectedPatJetsAK5PF")
 
 jec = [ 'L1FastJet', 'L2Relative', 'L3Absolute' ]
 jec.extend([ 'L2L3Residual' ])
 jetTools.addJetCollection(process, cms.InputTag('ak5PFJets'),
-     'AK5', 'PF',
-     doJTA            = True,
-     doBTagging       = True,
-     jetCorrLabel     = ('AK5PF', cms.vstring(jec)),
-     doType1MET       = False,
-     doL1Cleaning     = True,
-     doL1Counters     = False,
-     genJetCollection = cms.InputTag("ak5GenJets"),
-     doJetID          = True,
-     jetIdLabel       = "ak5",
-     outputModule     = ''
+  'AK5', 'PF',
+   doJTA            = True,
+   doBTagging       = True,
+   jetCorrLabel     = ('AK5PF', cms.vstring(jec)),
+   doType1MET       = False,
+   doL1Cleaning     = True,
+   doL1Counters     = False,
+   genJetCollection = cms.InputTag("ak5GenJets"),
+   doJetID          = True,
+   jetIdLabel       = "ak5",
+   outputModule     = ''
 )
 jetTools.addJetCollection(process, cms.InputTag('ak5CaloJets'),
-     'AK5', 'Calo',
-     doJTA            = True,
-     doBTagging       = True,
-     jetCorrLabel     = ('AK5Calo', cms.vstring(jec)),
-     doType1MET       = True,
-     doL1Cleaning     = True,
-     doL1Counters     = False,
-     genJetCollection = cms.InputTag("ak5GenJets"),
-     doJetID          = True,
-     jetIdLabel       = "ak5",
-     outputModule     = ''
+   'AK5', 'Calo',
+   doJTA            = True,
+   doBTagging       = True,
+   jetCorrLabel     = ('AK5Calo', cms.vstring(jec)),
+   doType1MET       = True,
+   doL1Cleaning     = True,
+   doL1Counters     = False,
+   genJetCollection = cms.InputTag("ak5GenJets"),
+   doJetID          = True,
+   jetIdLabel       = "ak5",
+   outputModule     = ''
 )
 #--------------------------------------------------------------------------------
 #
@@ -184,23 +186,30 @@ process.patElectronIDs = cms.Sequence(process.simpleEleIdSequence)
 process.makePatElectrons = cms.Sequence(process.patElectronIDs*process.patElectrons) 
 
 # MVA MET
-process.load("RecoMET/METProducers/python/mvaPFMET_cff")
+process.load("RecoMET/METProducers/mvaPFMET_cff")
 process.calibratedAK5PFJetsForPFMEtMVA.correctors = cms.vstring("ak5PFL1FastL2L3Residual")
-process.pfMEtMVA.srcLeptons = cms.VInputTag("selectedPatElectrons", "selectedPatMuons", "selectedPatTaus")
-##process.pfMEtMVA2.srcLeptons = cms.VInputTag("selectedPatElectrons", "selectedPatMuons", "selectedPatTaus")
+#process.pfMEtMVA.srcLeptons = cms.VInputTag("selectedPatElectrons", "selectedPatMuons", "selectedPatTaus")
+process.pfMEtMVA.srcLeptons = cms.VInputTag('cleanPatElectrons', 'cleanPatMuons', 'cleanPatTaus')
 
 process.patPFMetByMVA = process.patMETs.clone(
   metSource = cms.InputTag('pfMEtMVA'),
   addMuonCorrections = cms.bool(False),
+  addGenMET = cms.bool(False),
   genMETSource = cms.InputTag('genMetTrue')
 )
-process.patDefaultSequence.replace(process.patMETS, process.patPFMetByMVA)
+
+# SVfit
+from VHTauTau.TreeMaker.customizeSVfit import configureSVfit
+process.SVND = configureSVfit(process)
+
 process.p = cms.Path(
   process.fjSequence +
   process.PFTau +
-  pfMEtMVAsequence + 
   process.patDefaultSequence +
   process.puJetIdSqeuence + 
+  process.pfMEtMVAsequence + 
+  process.patPFMetByMVA +
+  process.SVND + 
   process.treeCreator +
   process.treeContentSequence +
   process.treeWriter
