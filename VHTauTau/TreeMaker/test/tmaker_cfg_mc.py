@@ -9,11 +9,11 @@ process.MessageLogger.cerr.FwkReport.reportEvery = 200
 # Event Source & # of Events to process
 #---------------------------------------
 process.source = cms.Source("PoolSource",
-                   fileNames = cms.untracked.vstring()
-                 )
+  fileNames = cms.untracked.vstring()
+)
 process.maxEvents = cms.untracked.PSet(
-                      input = cms.untracked.int32(50)
-                    )
+  input = cms.untracked.int32(50)
+)
 process.options = cms.untracked.PSet( wantSummary = cms.untracked.bool(False) )
 #-----------------------------
 # Geometry
@@ -32,7 +32,7 @@ process.GlobalTag.globaltag = 'START42_V13::All'
 # Output ROOT file
 #-------------
 process.TFileService = cms.Service("TFileService",
-    fileName = cms.string('MC_RelValTTbar.root')
+  fileName = cms.string('MC_RelValTTbar.root')
 )
 #--------------------------------------------------
 # VHTauTau Tree Specific
@@ -67,53 +67,53 @@ trigTools.switchOnTrigger( process, outputModule='' ) # This is optional and can
 jec = [ 'L1FastJet', 'L2Relative', 'L3Absolute' ]
 JetCorrectionService = cms.string('ak5PFL1FastL2L3')
 jetTools.addJetCollection(process, cms.InputTag('ak5PFJets'),
-     'AK5', 'PF',
-     doJTA            = True,
-     doBTagging       = True,
-     jetCorrLabel     = ('AK5PF', cms.vstring(jec)),
-     doType1MET       = False,
-     doL1Cleaning     = True,
-     doL1Counters     = False,
-     genJetCollection = cms.InputTag("ak5GenJets"),
-     doJetID          = True,
-     jetIdLabel       = "ak5",
-     outputModule     = ''
+   'AK5', 'PF',
+   doJTA            = True,
+   doBTagging       = True,
+   jetCorrLabel     = ('AK5PF', cms.vstring(jec)),
+   doType1MET       = False,
+   doL1Cleaning     = True,
+   doL1Counters     = False,
+   genJetCollection = cms.InputTag("ak5GenJets"),
+   doJetID          = True,
+   jetIdLabel       = "ak5",
+   outputModule     = ''
 )
 jetTools.addJetCollection(process, cms.InputTag('ak5CaloJets'),
-     'AK5', 'Calo',
-     doJTA            = True,
-     doBTagging       = True,
-     jetCorrLabel     = ('AK5Calo', cms.vstring(jec)),
-     doType1MET       = True,
-     doL1Cleaning     = True,
-     doL1Counters     = False,
-     genJetCollection = cms.InputTag("ak5GenJets"),
-     doJetID          = True,
-     jetIdLabel       = "ak5",
-     outputModule     = ''
+   'AK5', 'Calo',
+   doJTA            = True,
+   doBTagging       = True,
+   jetCorrLabel     = ('AK5Calo', cms.vstring(jec)),
+   doType1MET       = True,
+   doL1Cleaning     = True,
+   doL1Counters     = False,
+   genJetCollection = cms.InputTag("ak5GenJets"),
+   doJetID          = True,
+   jetIdLabel       = "ak5",
+   outputModule     = ''
 )
 #---------------------------------------
 # configure Jet Energy Corrections
 #---------------------------------------
 process.load("CondCore.DBCommon.CondDBCommon_cfi")
 process.jec = cms.ESSource("PoolDBESSource",
-     DBParameters = cms.PSet(
-        messageLevel = cms.untracked.int32(0)
+   DBParameters = cms.PSet(
+     messageLevel = cms.untracked.int32(0)
+   ),
+   timetype = cms.string('runnumber'),
+   toGet = cms.VPSet(
+     cms.PSet(
+       record = cms.string('JetCorrectionsRecord'),
+       tag    = cms.string('JetCorrectorParametersCollection_Jec11V2_AK5PF'),
+       label  = cms.untracked.string('AK5PF')
      ),
-     timetype = cms.string('runnumber'),
-     toGet = cms.VPSet(
-       cms.PSet(
-           record = cms.string('JetCorrectionsRecord'),
-           tag    = cms.string('JetCorrectorParametersCollection_Jec11V2_AK5PF'),
-           label  = cms.untracked.string('AK5PF')
-       ),
-       cms.PSet(
-           record = cms.string('JetCorrectionsRecord'),
-           tag    = cms.string('JetCorrectorParametersCollection_Jec11V2_AK5Calo'),
-           label  = cms.untracked.string('AK5Calo')
-       )
-    ),
-    connect = cms.string('sqlite_fip:TauAnalysis/Configuration/data/Jec11V2.db')
+     cms.PSet(
+       record = cms.string('JetCorrectionsRecord'),
+       tag    = cms.string('JetCorrectorParametersCollection_Jec11V2_AK5Calo'),
+       label  = cms.untracked.string('AK5Calo')
+     )
+  ),
+  connect = cms.string('sqlite_fip:TauAnalysis/Configuration/data/Jec11V2.db')
 )
 process.es_prefer_jec = cms.ESPrefer('PoolDBESSource', 'jec')
 
@@ -138,8 +138,8 @@ process.kt6PFJetsCentral.Rho_EtaMax = cms.double(2.5)
 
 process.fjSequence = cms.Sequence(process.kt6PFJets+process.ak5PFJets+process.kt6PFJetsCentral)
 
-process.patElectrons.isoDeposits = cms.PSet()
-process.patElectrons.userIsolation = cms.PSet()
+#process.patElectrons.isoDeposits = cms.PSet()
+#process.patElectrons.userIsolation = cms.PSet()
 process.patElectrons.addElectronID = cms.bool(True)
 process.patElectrons.electronIDSources = cms.PSet(
   simpleEleId95relIso = cms.InputTag("simpleEleId95relIso"),
@@ -178,13 +178,34 @@ process.simpleEleId60cIso.dataMagneticFieldSetUp = cms.bool(True)
 process.patElectronIDs = cms.Sequence(process.simpleEleIdSequence)
 process.makePatElectrons = cms.Sequence(process.patElectronIDs*process.patElectrons)
 
+# MVA MET
+process.load("RecoMET/METProducers/mvaPFMET_cff")
+process.calibratedAK5PFJetsForPFMEtMVA.correctors = cms.vstring("ak5PFL1FastL2L3Residual")
+#process.pfMEtMVA.srcLeptons = cms.VInputTag("selectedPatElectrons", "selectedPatMuons", "selectedPatTaus")
+process.pfMEtMVA.srcLeptons = cms.VInputTag('cleanPatElectrons', 'cleanPatMuons', 'cleanPatTaus')
+
+process.patPFMetByMVA = process.patMETs.clone(
+  metSource = cms.InputTag('pfMEtMVA'),
+  addMuonCorrections = cms.bool(False),
+  addGenMET = cms.bool(False),
+  genMETSource = cms.InputTag('genMetTrue')
+)
+
+# SVfit
+from VHTauTau.TreeMaker.customizeSVfit import configureSVfit
+process.SVND = configureSVfit(process)
+
 process.p = cms.Path(
-   process.fjSequence +
-   process.PFTau +
-   process.patDefaultSequence +
-   process.treeCreator +
-   process.treeContentSequence +
-   process.treeWriter
+  process.fjSequence +
+  process.PFTau +
+  process.patDefaultSequence +
+  process.puJetIdSqeuence + 
+  process.pfMEtMVAsequence + 
+  process.patPFMetByMVA +
+  process.SVND + 
+  process.treeCreator +
+  process.treeContentSequence +
+  process.treeWriter
 )
 
 addPFMuonIsolation(process, process.patMuons)
