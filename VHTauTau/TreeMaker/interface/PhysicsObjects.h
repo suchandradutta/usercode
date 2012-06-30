@@ -141,8 +141,9 @@ namespace vhtm {
        int nBrems;
      float fbrem;
   
-    double idMVA;
-    double isoMVA;
+     float mva;
+     float idMVA;
+     float isoMVA;
    
        int selbit;
        int fidFlag;

@@ -21,6 +21,7 @@
 
 class TClonesArray;
 class Electron;
+class ElectronIDMVA;
 class EGammaMvaEleEstimator;
 
 class ElectronBlock : public edm::EDAnalyzer 
@@ -59,6 +60,7 @@ private:
   
   vhtm::Electron* electronB;
 
+  ElectronIDMVA* fMVA;
   EGammaMvaEleEstimator* fElectronIdMVA;
   EGammaMvaEleEstimator* fElectronIsoMVA;
   ElectronEffectiveArea::ElectronEffectiveAreaTarget target_;

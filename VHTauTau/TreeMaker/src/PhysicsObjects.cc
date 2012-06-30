@@ -102,6 +102,7 @@ vhtm::Electron::Electron() :
   scHEEPTrkIso(-999),
   nBrems(-1),
   fbrem(-999),
+  mva(-999),
   idMVA(-999),
   isoMVA(-999),
   selbit(0),

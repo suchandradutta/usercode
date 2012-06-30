@@ -30,6 +30,7 @@
 #include "RecoEcal/EgammaCoreTools/interface/EcalClusterLazyTools.h"
 #include "Utilities/General/interface/FileInPath.h"
 #include "EGamma/EGammaAnalysisTools/interface/EGammaMvaEleEstimator.h"
+#include "HiggsAnalysis/HiggsToWW2Leptons/interface/ElectronIDMVA.h"
 
 #include "DataFormats/RecoCandidate/interface/IsoDepositVetos.h"
 #include "DataFormats/RecoCandidate/interface/IsoDeposit.h"
@@ -57,6 +58,26 @@ ElectronBlock::ElectronBlock(const edm::ParameterSet& iConfig) :
   _rhoInputTag(iConfig.getParameter<edm::InputTag>("rhoSrc")),
   _pfInputTag(iConfig.getParameter<edm::InputTag>("pfSrc"))
 {
+  std::string method = iConfig.getParameter<std::string>("methodName");
+  edm::FileInPath Subdet0Pt10To20Weights = iConfig.getParameter<edm::FileInPath>("Subdet0LowPtWeights");
+  edm::FileInPath Subdet1Pt10To20Weights = iConfig.getParameter<edm::FileInPath>("Subdet1LowPtWeights");
+  edm::FileInPath Subdet2Pt10To20Weights = iConfig.getParameter<edm::FileInPath>("Subdet2LowPtWeights");
+  edm::FileInPath Subdet0HighPtWeights = iConfig.getParameter<edm::FileInPath>("Subdet0HighPtWeights");
+  edm::FileInPath Subdet1HighPtWeights = iConfig.getParameter<edm::FileInPath>("Subdet1HighPtWeights");
+  edm::FileInPath Subdet2HighPtWeights = iConfig.getParameter<edm::FileInPath>("Subdet2HighPtWeights");
+  ElectronIDMVA::MVAType mvaType = static_cast<ElectronIDMVA::MVAType>(iConfig.getParameter<unsigned int>("mvaType")); 
+
+  // Electron ID MVA against fake QCD
+  fMVA = new ElectronIDMVA();
+  fMVA->Initialize(method,
+		   Subdet0Pt10To20Weights.fullPath(),
+		   Subdet1Pt10To20Weights.fullPath(),
+		   Subdet2Pt10To20Weights.fullPath(),
+		   Subdet0HighPtWeights.fullPath(),
+		   Subdet1HighPtWeights.fullPath(),
+		   Subdet2HighPtWeights.fullPath(),
+                   mvaType);
+
   edm::FileInPath idCat1Weights = iConfig.getParameter<edm::FileInPath>("IdCat1Weights");
   edm::FileInPath idCat2Weights = iConfig.getParameter<edm::FileInPath>("IdCat2Weights");
   edm::FileInPath idCat3Weights = iConfig.getParameter<edm::FileInPath>("IdCat3Weights");
@@ -112,6 +133,7 @@ ElectronBlock::ElectronBlock(const edm::ParameterSet& iConfig) :
 			      eleiso_wtfiles);
 }
 ElectronBlock::~ElectronBlock() { 
+  delete fMVA;
   delete fElectronIdMVA; 
   delete fElectronIsoMVA; 
 }
@@ -363,9 +385,12 @@ void ElectronBlock::analyze(const edm::Event& iEvent, const edm::EventSetup& iSe
       electronB->nBrems = it->numberOfBrems();
       electronB->fbrem  = it->fbrem();
 
-      // MIT MVA Electron ID
+      // MIT Electron ID
       EcalClusterLazyTools lazyTools(iEvent, iSetup, _ecalEBInputTag, _ecalEEInputTag);
-      //const pat::Electron& ele = *it;
+      const pat::Electron& ele = *it;
+      electronB->mva = fMVA->MVAValue(&ele,  lazyTools);
+
+      // New MVA Electron ID
       double idMVA = (primaryVertices->size()) 
 	? fElectronIdMVA->mvaValue(*aGsf, primaryVertices->at(0), ttrackBuilder, lazyTools, false) // &ele
         : -1;
