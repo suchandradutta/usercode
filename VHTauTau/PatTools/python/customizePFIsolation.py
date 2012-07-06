@@ -51,7 +51,7 @@ def configurePFIsolation(process):
   )
   process.pfIsolationSequence = cms.Sequence(
     process.pfParticleSelectionSequence +
-    process.process.muIsoSequence +
+    process.muIsoSequence +
     process.electronIsoSequence
   )
   return process.pfIsolationSequence
