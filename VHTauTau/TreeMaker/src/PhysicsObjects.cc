@@ -34,6 +34,7 @@ vhtm::Electron::Electron() :
   eta(-999),
   phi(-999),
   pt(-999),
+  ecalDriven(false),
   hasGsfTrack(false),
   trackPt(-999),
   trackPtError(-999),

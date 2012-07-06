@@ -230,13 +230,12 @@ void ElectronBlock::analyze(const edm::Event& iEvent, const edm::EventSetup& iSe
                                       << fnElectron; 
 	break;
       }
-      // if electron is not ECAL driven, continue
-      if (!it->ecalDrivenSeed()) continue;
 
       bool hasGsfTrack  = it->gsfTrack().isNonnull() ? true : false;
       reco::GsfTrackRef tk = it->gsfTrack();
 
       electronB = new ((*cloneElectron)[fnElectron++]) vhtm::Electron();
+      electronB->ecalDriven = it->ecalDrivenSeed();
       electronB->eta         = it->eta();
       electronB->phi         = it->phi();
       electronB->pt          = it->pt();

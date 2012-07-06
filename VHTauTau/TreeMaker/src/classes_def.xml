@@ -6,10 +6,10 @@
     <version ClassVersion="1" checksum="3121422649" />
   </class>
   <class name="vhtm::Electron" ClassVersion="5">
-    <version ClassVersion="5" checksum="3284366117" />
+    <version ClassVersion="5" checksum="2871663077" />
   </class>
-  <class name="vhtm::GenParticle" ClassVersion="3">
-    <version ClassVersion="3" checksum="2970351518" />
+  <class name="vhtm::GenParticle" ClassVersion="4">
+    <version ClassVersion="4" checksum="2109007915" />
   </class>
   <class name="vhtm::GenJet" ClassVersion="1">
     <version ClassVersion="1" checksum="1304197886" />
@@ -21,16 +21,16 @@
     <version ClassVersion="1" checksum="1036931265" />
   </class>
   <class name="vhtm::Tau" ClassVersion="5">
-    <version ClassVersion="5" checksum="1043289623" />
+    <version ClassVersion="5" checksum="2639882672" />
   </class>
   <class name="vhtm::CaloJet" ClassVersion="2">
     <version ClassVersion="2" checksum="1958684311" />
   </class>
   <class name="vhtm::Muon" ClassVersion="5">
-    <version ClassVersion="5" checksum="832635318" />
+    <version ClassVersion="5" checksum="424891381" />
   </class>
   <class name="vhtm::Jet" ClassVersion="2">
-    <version ClassVersion="2" checksum="671778272" />
+    <version ClassVersion="2" checksum="2643621738" />
   </class>
   <class name="vhtm::SuperCluster" ClassVersion="2">
     <version ClassVersion="2" checksum="2834975247" />
@@ -54,6 +54,6 @@
     <version ClassVersion="1" checksum="134088440" />
   </class>
   <class name="vhtm::SVDiTau" ClassVersion="1">
-    <version ClassVersion="1" checksum="164088440" />
+    <version ClassVersion="1" checksum="4218446337" />
   </class>
 </lcgdict>

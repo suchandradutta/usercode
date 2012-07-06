@@ -54,6 +54,7 @@ namespace vhtm {
     double eta;
     double phi;
     double pt;
+      bool ecalDriven;
       bool hasGsfTrack;
     double trackPt;
     double trackPtError;
