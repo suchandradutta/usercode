@@ -224,7 +224,7 @@ process.p = cms.Path(
   process.treeWriter
 )
 
-import VHTauTau.TreeMaker.SwitchToData as stod
+import VHTauTau.TreeMaker.SwitchToDataV2 as stod
 stod.switchToData(process)
 
 # List File names here

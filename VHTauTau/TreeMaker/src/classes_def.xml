@@ -6,7 +6,7 @@
     <version ClassVersion="1" checksum="3121422649" />
   </class>
   <class name="vhtm::Electron" ClassVersion="5">
-    <version ClassVersion="5" checksum="2871663077" />
+    <version ClassVersion="5" checksum="3920046864" />
   </class>
   <class name="vhtm::GenParticle" ClassVersion="4">
     <version ClassVersion="4" checksum="2109007915" />
