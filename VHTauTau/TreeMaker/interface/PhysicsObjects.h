@@ -151,17 +151,23 @@ namespace vhtm {
 
      float pfRelIso03v1;
      float pfRelIso03v2;
+     float pfRelIso03v3;
      float pfRelIsoDB03v1;
      float pfRelIsoDB03v2;
+     float pfRelIsoDB03v2a;
      float pfRelIsoDB03v3;
+     float pfRelIsoDB03v3a;
        
      float pfRelIso04v1;
      float pfRelIso04v2;
+     float pfRelIso04v3;
      float pfRelIsoDB04v1;
      float pfRelIsoDB04v2;
+     float pfRelIsoDB04v2a;
      float pfRelIsoDB04v3;
+     float pfRelIsoDB04v3a;
 
-    ClassDef(Electron, 5) 
+    ClassDef(Electron, 6) 
   };
   class GenParticle: public TObject {
   public:
@@ -350,12 +356,18 @@ namespace vhtm {
     double simpleSecondaryVertexHighPurBTag;
     double jetProbabilityBTag;
     double jetBProbabilityBTag;
+
+    double combinedSecondaryVertexBTag;
+    double combinedSecondaryVertexMVABTag;
+    double combinedInclusiveSecondaryVertexBTag;
+    double combinedMVABTag;
+
        int passLooseID;
        int passTightID;
 
        int selbit;
   
-    ClassDef(CaloJet, 2)
+    ClassDef(CaloJet, 3)
   };
   class Muon: public TObject {
   public:
@@ -417,15 +429,19 @@ namespace vhtm {
 
      float pfRelIso03v1;
      float pfRelIso03v2;
+     float pfRelIso03v3;
      float pfRelIsoDB03v1;
      float pfRelIsoDB03v2;
+     float pfRelIsoDB03v3;
        
      float pfRelIso04v1;
      float pfRelIso04v2;
+     float pfRelIso04v3;
      float pfRelIsoDB04v1;
      float pfRelIsoDB04v2;
+     float pfRelIsoDB04v3;
 
-     ClassDef(Muon, 5)
+     ClassDef(Muon, 6)
   };
   class Jet: public TObject {
   public:
@@ -467,12 +483,16 @@ namespace vhtm {
     double simpleSecondaryVertexHighPurBTag;
     double jetProbabilityBTag;
     double jetBProbabilityBTag;
+    double combinedSecondaryVertexBTag;
+    double combinedSecondaryVertexMVABTag;
+    double combinedInclusiveSecondaryVertexBTag;
+    double combinedMVABTag;
        int passLooseID;
        int passTightID;
   
        int selbit;
 
-    ClassDef(Jet, 2)
+    ClassDef(Jet, 3)
   };
   class SuperCluster: public TObject {
   public: 

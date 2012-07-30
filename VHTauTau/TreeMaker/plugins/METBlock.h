@@ -29,16 +29,28 @@ public:
   virtual ~METBlock() {}
 
   enum {
-    kMaxMET = 100
+    kMaxMET = 5
   };
 
+  void fillMET(const edm::Event& iEvent, 
+               const edm::EventSetup& iSetup,
+               TClonesArray* cloneMET,
+               int fnMET,
+               edm::InputTag iTag,
+               vhtm::MET* metB);
+
 private:
-  TClonesArray* cloneMET; 
-  int  fnMET;
+  TClonesArray* clonePFMET; 
+  int  fnPFMET;
+
+  TClonesArray* cloneMVAMET; 
+  int  fnMVAMET;
 
   int _verbosity;
-  edm::InputTag _inputTag;
+  edm::InputTag _pfinputTag;
+  edm::InputTag _mvainputTag;
 
-  vhtm::MET* metB;
+  vhtm::MET* pfmetB;
+  vhtm::MET* mvametB;
 };
 #endif

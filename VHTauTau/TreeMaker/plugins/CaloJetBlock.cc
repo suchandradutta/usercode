@@ -178,6 +178,10 @@ void CaloJetBlock::analyze(const edm::Event& iEvent, const edm::EventSetup& iSet
       caloJetB->simpleSecondaryVertexHighPurBTag = it->bDiscriminator("simpleSecondaryVertexHighPurBJetTags");
       caloJetB->jetProbabilityBTag               = it->bDiscriminator("jetProbabilityBJetTags");
       caloJetB->jetBProbabilityBTag              = it->bDiscriminator("jetBProbabilityBJetTags");
+      caloJetB->combinedSecondaryVertexBTag      = it->bDiscriminator("combinedSecondaryVertexBJetTags");
+      caloJetB->combinedSecondaryVertexMVABTag   = it->bDiscriminator("combinedSecondaryVertexMVABJetTags");
+      caloJetB->combinedInclusiveSecondaryVertexBTag = it->bDiscriminator("combinedInclusiveSecondaryVertexBJetTags");
+      caloJetB->combinedMVABTag                  = it->bDiscriminator("combinedMVABJetTags");
       caloJetB->passLooseID = passjetLoose;
       caloJetB->passTightID = passjetTight;
     }

@@ -141,12 +141,16 @@ void JetBlock::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup) 
       jetB->photonMultiplicity          = jet.photonMultiplicity();
 
       jetB->nConstituents               = jet.numberOfDaughters();
-      jetB->trackCountingHighEffBTag    = jet.bDiscriminator("trackCountingHighEffBJetTags");
-      jetB->trackCountingHighPurBTag    = jet.bDiscriminator("trackCountingHighPurBJetTags");
+      jetB->trackCountingHighEffBTag         = jet.bDiscriminator("trackCountingHighEffBJetTags");
+      jetB->trackCountingHighPurBTag         = jet.bDiscriminator("trackCountingHighPurBJetTags");
       jetB->simpleSecondaryVertexHighEffBTag = jet.bDiscriminator("simpleSecondaryVertexHighEffBJetTags");
       jetB->simpleSecondaryVertexHighPurBTag = jet.bDiscriminator("simpleSecondaryVertexHighPurBJetTags");
       jetB->jetProbabilityBTag               = jet.bDiscriminator("jetProbabilityBJetTags");
       jetB->jetBProbabilityBTag              = jet.bDiscriminator("jetBProbabilityBJetTags");
+      jetB->combinedSecondaryVertexBTag      = jet.bDiscriminator("combinedSecondaryVertexBJetTags");
+      jetB->combinedSecondaryVertexMVABTag   = jet.bDiscriminator("combinedSecondaryVertexMVABJetTags");
+      jetB->combinedInclusiveSecondaryVertexBTag = jet.bDiscriminator("combinedInclusiveSecondaryVertexBJetTags");
+      jetB->combinedMVABTag                  = jet.bDiscriminator("combinedMVABJetTags");
       jetB->passLooseID = passjetLoose;
       jetB->passTightID = passjetTight;
       if (_verbosity > 0) 

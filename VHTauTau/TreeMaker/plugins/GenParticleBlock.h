@@ -29,7 +29,7 @@ public:
   virtual ~GenParticleBlock();
 
   enum {
-    kMaxGenParticle = 1300
+    kMaxGenParticle = 2500  
   };
 
 private:

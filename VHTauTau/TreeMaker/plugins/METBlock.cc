@@ -10,34 +10,51 @@
 
 METBlock::METBlock(const edm::ParameterSet& iConfig) :
   _verbosity(iConfig.getParameter<int>("verbosity")),
-  _inputTag(iConfig.getParameter<edm::InputTag>("metSrc"))
+  _pfinputTag(iConfig.getParameter<edm::InputTag>("metSrc")),
+  _mvainputTag(iConfig.getParameter<edm::InputTag>("mvametSrc"))
 {}
 void METBlock::beginJob() 
 {
   // Get TTree pointer
   TTree* tree = vhtm::Utility::getTree("vhtree");
-  cloneMET = new TClonesArray("vhtm::MET");
-  tree->Branch("MET", &cloneMET, 32000, 2);
-  tree->Branch("nMET", &fnMET,  "fnMET/I");
+
+  clonePFMET = new TClonesArray("vhtm::MET");
+  tree->Branch("MET", &clonePFMET, 32000, 2);
+  tree->Branch("nMET", &fnPFMET,  "fnPFMET/I");
+
+  cloneMVAMET = new TClonesArray("vhtm::MET");
+  tree->Branch("mvaMET", &cloneMVAMET, 32000, 2);
+  tree->Branch("mvanMET", &fnMVAMET,  "fnMVAMET/I");
 }
 void METBlock::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup) {
+  fillMET(iEvent, iSetup, clonePFMET, fnPFMET, _pfinputTag, pfmetB);
+  fillMET(iEvent, iSetup, cloneMVAMET, fnMVAMET, _mvainputTag, mvametB);
+}
+void METBlock::fillMET(const edm::Event& iEvent, 
+                       const edm::EventSetup& iSetup,
+                       TClonesArray* cloneMET,
+                       int nMET,
+                       edm::InputTag iTag,
+                       vhtm::MET* metB)
+{
   // Reset the TClonesArray and the nObj variables
   cloneMET->Clear();
-  fnMET = 0;
+  nMET = 0;
 
   edm::Handle<std::vector<pat::MET> > mets;
-  iEvent.getByLabel(_inputTag, mets);
+  iEvent.getByLabel(iTag, mets);
 
   if (mets.isValid()) {
     edm::LogInfo("METBlock") << "Total # PAT METs: " << mets->size();
 
     for (std::vector<pat::MET>::const_iterator it = mets->begin(); 
                                               it != mets->end(); ++it) {
-      if (fnMET == kMaxMET) {
-	edm::LogInfo("METBlock") << "Too many PAT MET, fnMET = " << fnMET; 
+      if (nMET == kMaxMET) {
+	edm::LogInfo("METBlock") << "Too many PAT MET, nMET = " << nMET 
+                                 << ", label: " << iTag; 
 	break;
       }
-      metB = new ((*cloneMET)[fnMET++]) vhtm::MET();
+      metB = new ((*cloneMET)[nMET++]) vhtm::MET();
 
       // fill in all the vectors
       metB->met          = it->pt();
@@ -50,7 +67,7 @@ void METBlock::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup) 
   } 
   else {
     edm::LogError("METBlock") << "Error >> Failed to get pat::MET collection for label: " 
-                              << _inputTag;
+                              << iTag;
   }
 }
 #include "FWCore/Framework/interface/MakerMacros.h"

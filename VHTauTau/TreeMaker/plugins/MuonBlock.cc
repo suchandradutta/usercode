@@ -310,9 +310,15 @@ void MuonBlock::fillIsoDeposit(const pat::Muon& muo, vhtm::Muon* muonB) {
   reco::isodeposit::AbsVetos v10Charged;
   reco::isodeposit::AbsVetos v10Neutral;  
   reco::isodeposit::AbsVetos v10Photons;
+
   reco::isodeposit::AbsVetos v11Charged; 
   reco::isodeposit::AbsVetos v11Neutral;  
   reco::isodeposit::AbsVetos v11Photons;
+
+  // Recommendation
+  reco::isodeposit::AbsVetos v12Charged; 
+  reco::isodeposit::AbsVetos v12Neutral;  
+  reco::isodeposit::AbsVetos v12Photons;
 
   v10Charged.push_back(new reco::isodeposit::ConeVeto(reco::isodeposit::Direction(eta, phi), 0.01));
   v10Charged.push_back(new reco::isodeposit::ThresholdVeto(0.5));
@@ -327,6 +333,14 @@ void MuonBlock::fillIsoDeposit(const pat::Muon& muo, vhtm::Muon* muonB) {
   v11Neutral.push_back(new reco::isodeposit::ThresholdVeto(0.5));
   v11Photons.push_back(new reco::isodeposit::ConeVeto(reco::isodeposit::Direction(eta, phi), 0.01));
   v11Photons.push_back(new reco::isodeposit::ThresholdVeto(0.5));
+
+  // New recommendation
+  v12Charged.push_back(new reco::isodeposit::ConeVeto(reco::isodeposit::Direction(eta, phi), 0.0001));
+  v12Charged.push_back(new reco::isodeposit::ThresholdVeto(0));
+  v12Neutral.push_back(new reco::isodeposit::ConeVeto(reco::isodeposit::Direction(eta, phi), 0.01));
+  v12Neutral.push_back(new reco::isodeposit::ThresholdVeto(0.5));
+  v12Photons.push_back(new reco::isodeposit::ConeVeto(reco::isodeposit::Direction(eta, phi), 0.01));
+  v12Photons.push_back(new reco::isodeposit::ThresholdVeto(0.5));
 
   float chIso03v1   = muo.isoDeposit(pat::PfChargedHadronIso)->depositAndCountWithin(0.3, v10Charged).first;
   float nhIso03v1   = muo.isoDeposit(pat::PfNeutralHadronIso)->depositAndCountWithin(0.3, v10Neutral).first;
@@ -352,15 +366,32 @@ void MuonBlock::fillIsoDeposit(const pat::Muon& muo, vhtm::Muon* muonB) {
   float nhIsoPU04v2 = muo.isoDeposit(pat::PfAllParticleIso)->depositAndCountWithin(0.4, v11Neutral).first;
   float phIsoPU04v2 = muo.isoDeposit(pat::PfAllParticleIso)->depositAndCountWithin(0.4, v11Photons).first;
 
+  // New recommendation
+  float chIso03v3   = muo.isoDeposit(pat::PfChargedHadronIso)->depositAndCountWithin(0.3, v12Charged).first;
+  float nhIso03v3   = muo.isoDeposit(pat::PfNeutralHadronIso)->depositAndCountWithin(0.3, v12Neutral).first;
+  float phIso03v3   = muo.isoDeposit(pat::PfGammaIso)->depositAndCountWithin(0.3, v12Photons).first;
+  float nhIsoPU03v3 = muo.isoDeposit(pat::PfAllParticleIso)->depositAndCountWithin(0.3, v12Neutral).first;
+  float phIsoPU03v3 = muo.isoDeposit(pat::PfAllParticleIso)->depositAndCountWithin(0.3, v12Photons).first;
+
+  float chIso04v3   = muo.isoDeposit(pat::PfChargedHadronIso)->depositAndCountWithin(0.4, v12Charged).first;
+  float nhIso04v3   = muo.isoDeposit(pat::PfNeutralHadronIso)->depositAndCountWithin(0.4, v12Neutral).first;
+  float phIso04v3   = muo.isoDeposit(pat::PfGammaIso)->depositAndCountWithin(0.4, v12Photons).first;
+  float nhIsoPU04v3 = muo.isoDeposit(pat::PfAllParticleIso)->depositAndCountWithin(0.4, v12Neutral).first;
+  float phIsoPU04v3 = muo.isoDeposit(pat::PfAllParticleIso)->depositAndCountWithin(0.4, v12Photons).first;
+
   muonB->pfRelIso03v1   = (chIso03v1 + nhIso03v1 + phIso03v1)/pt;
   muonB->pfRelIso03v2   = (chIso03v2 + nhIso03v2 + phIso03v2)/pt;
+  muonB->pfRelIso03v3   = (chIso03v3 + nhIso03v3 + phIso03v3)/pt;
   muonB->pfRelIsoDB03v1 = (chIso03v1 + std::max(nhIso03v1 + phIso03v1 - 0.5 * 0.5 * (nhIsoPU03v1 + phIsoPU03v1), 0.0))/pt;
   muonB->pfRelIsoDB03v2 = (chIso03v2 + std::max(nhIso03v2 + phIso03v2 - 0.5 * 0.5 * (nhIsoPU03v2 + phIsoPU03v2), 0.0))/pt;
+  muonB->pfRelIsoDB03v3 = (chIso03v3 + std::max(nhIso03v3 + phIso03v3 - 0.5 * 0.5 * (nhIsoPU03v3 + phIsoPU03v3), 0.0))/pt;
 
   muonB->pfRelIso04v1   = (chIso04v1 + nhIso04v1 + phIso04v1)/pt;
   muonB->pfRelIso04v2   = (chIso04v2 + nhIso04v2 + phIso04v2)/pt;
+  muonB->pfRelIso04v3   = (chIso04v3 + nhIso04v3 + phIso04v3)/pt;
   muonB->pfRelIsoDB04v1 = (chIso04v1 + std::max(nhIso04v1 + phIso04v1 - 0.5 * 0.5 * (nhIsoPU04v1 + phIsoPU04v1), 0.0))/pt;
   muonB->pfRelIsoDB04v2 = (chIso04v2 + std::max(nhIso04v2 + phIso04v2 - 0.5 * 0.5 * (nhIsoPU04v2 + phIsoPU04v2), 0.0))/pt;
+  muonB->pfRelIsoDB04v3 = (chIso04v3 + std::max(nhIso04v3 + phIso04v3 - 0.5 * 0.5 * (nhIsoPU04v3 + phIsoPU04v3), 0.0))/pt;
 
   // cleaning
   for (std::vector<reco::isodeposit::AbsVeto*>::const_iterator it  = v10Charged.begin();
@@ -385,6 +416,18 @@ void MuonBlock::fillIsoDeposit(const pat::Muon& muo, vhtm::Muon* muonB) {
   }
   for (std::vector<reco::isodeposit::AbsVeto*>::const_iterator it  = v11Photons.begin();
                                                                it != v11Photons.end(); ++it) {
+    delete (*it);
+  }
+  for (std::vector<reco::isodeposit::AbsVeto*>::const_iterator it  = v12Charged.begin();
+                                                               it != v12Charged.end(); ++it) {
+    delete (*it);
+  }
+  for (std::vector<reco::isodeposit::AbsVeto*>::const_iterator it  = v12Neutral.begin();
+                                                               it != v12Neutral.end(); ++it) {
+    delete (*it);
+  }
+  for (std::vector<reco::isodeposit::AbsVeto*>::const_iterator it  = v12Photons.begin();
+                                                               it != v12Photons.end(); ++it) {
     delete (*it);
   }
 }

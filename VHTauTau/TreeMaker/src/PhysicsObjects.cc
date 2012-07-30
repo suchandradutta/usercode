@@ -110,14 +110,20 @@ vhtm::Electron::Electron() :
   fidFlag(0), 
   pfRelIso03v1(-999),
   pfRelIso03v2(-999),
+  pfRelIso03v3(-999),
   pfRelIsoDB03v1(-999),
   pfRelIsoDB03v2(-999),
+  pfRelIsoDB03v2a(-999),
   pfRelIsoDB03v3(-999),
+  pfRelIsoDB03v3a(-999),
   pfRelIso04v1(-999),
   pfRelIso04v2(-999),
+  pfRelIso04v3(-999),
   pfRelIsoDB04v1(-999),
   pfRelIsoDB04v2(-999),
-  pfRelIsoDB04v3(-999) {}
+  pfRelIsoDB04v2a(-999),
+  pfRelIsoDB04v3(-999),
+  pfRelIsoDB04v3a(-999) {}
 
 vhtm::GenParticle::GenParticle() :
   eta(-999),
@@ -262,6 +268,10 @@ vhtm::CaloJet::CaloJet() :
   simpleSecondaryVertexHighPurBTag(-999),
   jetProbabilityBTag(-999),
   jetBProbabilityBTag(-999),
+  combinedSecondaryVertexBTag(-999),
+  combinedSecondaryVertexMVABTag(-999),
+  combinedInclusiveSecondaryVertexBTag(-999),
+  combinedMVABTag(-999),
   passLooseID(-1),
   passTightID(-1),
   selbit(0) {}
@@ -315,12 +325,16 @@ vhtm::Muon::Muon() :
   isoRingsRadMVA(-999),
   pfRelIso03v1(-999),
   pfRelIso03v2(-999),
+  pfRelIso03v3(-999),
   pfRelIsoDB03v1(-999),
   pfRelIsoDB03v2(-999),
+  pfRelIsoDB03v3(-999),
   pfRelIso04v1(-999),
   pfRelIso04v2(-999),
+  pfRelIso04v3(-999),
   pfRelIsoDB04v1(-999),
-  pfRelIsoDB04v2(-999) {}
+  pfRelIsoDB04v2(-999),
+  pfRelIsoDB04v3(-999) {}
 
 vhtm::Jet::Jet() :
   eta(-999),
@@ -357,6 +371,10 @@ vhtm::Jet::Jet() :
   simpleSecondaryVertexHighPurBTag(-999),
   jetProbabilityBTag(-999),
   jetBProbabilityBTag(-999),
+  combinedSecondaryVertexBTag(-999),
+  combinedSecondaryVertexMVABTag(-999),
+  combinedInclusiveSecondaryVertexBTag(-999),
+  combinedMVABTag(-999),
   passLooseID(-1),
   passTightID(-1),
   selbit(0) {}
