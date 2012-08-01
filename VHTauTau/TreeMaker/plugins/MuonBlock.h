@@ -40,7 +40,6 @@ private:
   int _verbosity;
 
   edm::InputTag _muonInputTag;
-  edm::InputTag _pfMuonInputTag;
   edm::InputTag _vtxInputTag;
   edm::InputTag _beamSpotInputTag;
   edm::InputTag _rhoInputTag;

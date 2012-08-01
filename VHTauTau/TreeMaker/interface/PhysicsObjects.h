@@ -398,8 +398,10 @@ namespace vhtm {
        int trkHits;
        int muoHits;
        int matches;
+       int trackerLayersWithMeasurement; 
     double pfRelIso;
       bool isTrackerMuon;
+      bool isPFMuon;
 
     double vx;
     double vy;

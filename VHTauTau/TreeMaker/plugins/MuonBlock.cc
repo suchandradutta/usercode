@@ -26,7 +26,6 @@
 MuonBlock::MuonBlock(const edm::ParameterSet& iConfig) :
   _verbosity(iConfig.getParameter<int>("verbosity")),
   _muonInputTag(iConfig.getParameter<edm::InputTag>("muonSrc")),
-  _pfMuonInputTag(iConfig.getParameter<edm::InputTag>("pfMuonSrc")),
   _vtxInputTag(iConfig.getParameter<edm::InputTag>("vertexSrc")),
   _beamSpotInputTag(iConfig.getParameter<edm::InputTag>("offlineBeamSpot")),
   _beamSpotCorr(iConfig.getParameter<bool>("beamSpotCorr")),
@@ -142,9 +141,6 @@ void MuonBlock::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
   edm::Handle<reco::BeamSpot> beamSpot;
   iEvent.getByLabel(_beamSpotInputTag, beamSpot);
 
-  edm::Handle<reco::PFCandidateCollection> pfMuons;
-  iEvent.getByLabel(_pfMuonInputTag, pfMuons);
-
   edm::Handle<double> hRho;
   iEvent.getByLabel(_rhoInputTag, hRho);
   double Rho = *hRho;
@@ -174,6 +170,7 @@ void MuonBlock::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
 
       muonB = new ((*cloneMuon)[fnMuon++]) vhtm::Muon();
       muonB->isTrackerMuon = (it->isTrackerMuon()) ? true : false;
+      muonB->isPFMuon      = (it->isPFMuon()) ? true : false;
 
       muonB->eta        = it->eta();
       muonB->phi        = it->phi();
@@ -234,6 +231,7 @@ void MuonBlock::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
       muonB->trkHits = hitp.numberOfValidTrackerHits();
       muonB->muoHits = hitp.numberOfValidMuonHits();
       muonB->matches = it->numberOfMatches();
+      muonB->trackerLayersWithMeasurement = hitp.trackerLayersWithMeasurement();
 
       // Isolation
       muonB->trkIso  = it->trackIso();
