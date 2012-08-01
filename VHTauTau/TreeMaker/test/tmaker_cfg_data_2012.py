@@ -109,16 +109,16 @@ process.jec = cms.ESSource("PoolDBESSource",
   toGet = cms.VPSet(
     cms.PSet(
       record = cms.string('JetCorrectionsRecord'),
-      tag    = cms.string('JetCorrectorParametersCollection_Jec11V2_AK5PF'),
+      tag    = cms.string('JetCorrectorParametersCollection_Summer12_V7_DATA_AK5PF'),
       label  = cms.untracked.string('AK5PF')
     ),
     cms.PSet(
       record = cms.string('JetCorrectionsRecord'),
-      tag    = cms.string('JetCorrectorParametersCollection_Jec11V2_AK5Calo'),
+      tag    = cms.string('JetCorrectorParametersCollection_Summer12_V7_DATA_AK5Calo'),
       label  = cms.untracked.string('AK5Calo')
     )
   ),
-  connect = cms.string('sqlite_fip:TauAnalysis/Configuration/data/Jec11V2.db')
+  connect = cms.string('sqlite_fip:VHTauTau/TreeMaker/data/Summer12_V7_DATA.db')
 )
 process.es_prefer_jec = cms.ESPrefer('PoolDBESSource', 'jec')
 #-------------------------------------------------------------------------------------------------------------------------
