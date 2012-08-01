@@ -172,13 +172,13 @@ void MuonBlock::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
       muonB->isTrackerMuon = (it->isTrackerMuon()) ? true : false;
       muonB->isPFMuon      = (it->isPFMuon()) ? true : false;
 
-      muonB->eta        = it->eta();
-      muonB->phi        = it->phi();
-      muonB->pt         = it->pt();
-      muonB->ptError    = tk->ptError();
-      muonB->p          = it->p();
-      muonB->energy     = it->energy();
-      muonB->charge     = it->charge();
+      muonB->eta     = it->eta();
+      muonB->phi     = it->phi();
+      muonB->pt      = it->pt();
+      muonB->ptError = tk->ptError();
+      muonB->p       = it->p();
+      muonB->energy  = it->energy();
+      muonB->charge  = it->charge();
 
       double trkd0 = tk->d0();
       double trkdz = tk->dz();
@@ -212,8 +212,8 @@ void MuonBlock::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
           double dist3D = std::sqrt(pow(dxy,2) + pow(dz,2));
           if (dist3D < minVtxDist3D) {
             minVtxDist3D = dist3D;
-            indexVtx = int(std::distance(primaryVertices->begin(), vit));
-            vertexDistZ = dz;
+            indexVtx     = int(std::distance(primaryVertices->begin(), vit));
+            vertexDistZ  = dz;
           }
         }
       } 

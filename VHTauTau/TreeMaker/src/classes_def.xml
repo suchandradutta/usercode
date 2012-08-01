@@ -29,7 +29,7 @@
     <version ClassVersion="2" checksum="1958684311" />
   </class>
   <class name="vhtm::Muon" ClassVersion="6">
-    <version ClassVersion="6" checksum="2648290665" />
+    <version ClassVersion="6" checksum="2749961827" />
     <version ClassVersion="5" checksum="424891381" />
   </class>
   <class name="vhtm::Jet" ClassVersion="3">
