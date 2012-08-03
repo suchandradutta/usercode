@@ -11,6 +11,7 @@
 METBlock::METBlock(const edm::ParameterSet& iConfig) :
   _verbosity(iConfig.getParameter<int>("verbosity")),
   _pfinputTag(iConfig.getParameter<edm::InputTag>("metSrc")),
+  _corrinputTag(iConfig.getParameter<edm::InputTag>("corrmetSrc")),
   _mvainputTag(iConfig.getParameter<edm::InputTag>("mvametSrc"))
 {}
 void METBlock::beginJob() 
@@ -22,12 +23,17 @@ void METBlock::beginJob()
   tree->Branch("MET", &clonePFMET, 32000, 2);
   tree->Branch("nMET", &fnPFMET,  "fnPFMET/I");
 
+  cloneCorrMET = new TClonesArray("vhtm::MET");
+  tree->Branch("corrMET", &cloneCorrMET, 32000, 2);
+  tree->Branch("corrnMET", &fnCorrMET,  "fnCorrMET/I");
+
   cloneMVAMET = new TClonesArray("vhtm::MET");
   tree->Branch("mvaMET", &cloneMVAMET, 32000, 2);
   tree->Branch("mvanMET", &fnMVAMET,  "fnMVAMET/I");
 }
 void METBlock::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup) {
   fillMET(iEvent, iSetup, clonePFMET, fnPFMET, _pfinputTag, pfmetB);
+  fillMET(iEvent, iSetup, cloneCorrMET, fnCorrMET, _corrinputTag, corrmetB);
   fillMET(iEvent, iSetup, cloneMVAMET, fnMVAMET, _mvainputTag, mvametB);
 }
 void METBlock::fillMET(const edm::Event& iEvent, 

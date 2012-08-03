@@ -57,6 +57,7 @@ addSelectedPFlowParticle(process)
 
 metTools.addTcMET(process, 'TC')
 metTools.addPfMET(process, 'PF')
+process.patMETsPF.metSource = cms.InputTag("pfMet")
 
 ## --
 ## Switch on PAT trigger
@@ -76,7 +77,7 @@ jetTools.addJetCollection(process, cms.InputTag('ak5PFJets'),
    doJTA            = True,
    doBTagging       = True,
    jetCorrLabel     = ('AK5PF', cms.vstring(jec)),
-   doType1MET       = False,
+   doType1MET       = True,
    doL1Cleaning     = True,
    doL1Counters     = False,
    genJetCollection = cms.InputTag("ak5GenJets"),
@@ -184,6 +185,17 @@ process.simpleEleId60cIso.dataMagneticFieldSetUp = cms.bool(True)
 #
 process.patElectronIDs = cms.Sequence(process.simpleEleIdSequence)
 process.makePatElectrons = cms.Sequence(process.patElectronIDs*process.patElectrons) 
+
+process.load("JetMETCorrections.Type1MET.pfMETCorrections_cff")
+process.pfJetMETcorr.jetCorrLabel = cms.string("ak5PFL1FastL2L3Residual")
+process.pfJetMETcorr.offsetCorrLabel = cms.string("ak5PFL1Fastjet")
+
+process.patPFMETsTypeIcorrected = process.patMETs.clone(
+   metSource = cms.InputTag('pfType1CorrectedMet'),
+   addMuonCorrections = cms.bool(False),
+   genMETSource = cms.InputTag('genMetTrue'),
+   addGenMET = cms.bool(False)
+)
 
 # MVA MET
 process.load("RecoMET/METProducers/mvaPFMET_cff")

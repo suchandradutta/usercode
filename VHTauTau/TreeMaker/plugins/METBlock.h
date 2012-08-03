@@ -43,14 +43,19 @@ private:
   TClonesArray* clonePFMET; 
   int  fnPFMET;
 
+  TClonesArray* cloneCorrMET; 
+  int  fnCorrMET;
+
   TClonesArray* cloneMVAMET; 
   int  fnMVAMET;
 
   int _verbosity;
   edm::InputTag _pfinputTag;
+  edm::InputTag _corrinputTag;
   edm::InputTag _mvainputTag;
 
   vhtm::MET* pfmetB;
+  vhtm::MET* corrmetB;
   vhtm::MET* mvametB;
 };
 #endif
