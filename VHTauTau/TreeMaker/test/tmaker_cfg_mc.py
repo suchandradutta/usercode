@@ -27,13 +27,18 @@ process.load('Configuration.StandardSequences.MagneticField_AutoFromDBCurrent_cf
 # Global Tag
 #-------------
 process.load('Configuration.StandardSequences.FrontierConditions_GlobalTag_cff')
-process.GlobalTag.globaltag = 'START42_V13::All'
+process.GlobalTag.globaltag = 'START42_V17::All'
 #-------------
 # Output ROOT file
 #-------------
 process.TFileService = cms.Service("TFileService",
   fileName = cms.string('MC_RelValTTbar.root')
 )
+process.load('JetMETCorrections.Configuration.DefaultJEC_cff')
+process.load("JetMETCorrections.Type1MET.pfMETCorrections_cff")
+process.pfJetMETcorr.offsetCorrLabel = cms.string("ak5PFL1Fastjet")
+process.pfJetMETcorr.jetCorrLabel = cms.string("ak5PFL1FastL2L3")
+
 #--------------------------------------------------
 # VHTauTau Tree Specific
 #--------------------------------------------------
@@ -56,12 +61,18 @@ addSelectedPFlowParticle(process)
 
 metTools.addTcMET(process, 'TC')
 metTools.addPfMET(process, 'PF')
+process.patMETsPF.metSource = cms.InputTag("pfMet")
 
 ## --
 ## Switch on PAT trigger
 ## --
 import PhysicsTools.PatAlgos.tools.trigTools as trigTools
 trigTools.switchOnTrigger( process, outputModule='' ) # This is optional and can be omitted.
+
+# load the PU JetID sequence
+process.load("CMGTools.External.pujetidsequence_cff")
+process.puJetId.jets = cms.InputTag("selectedPatJetsAK5PF")
+process.puJetMva.jets = cms.InputTag("selectedPatJetsAK5PF")
 
 # Add PF jets
 jec = [ 'L1FastJet', 'L2Relative', 'L3Absolute' ]
@@ -71,13 +82,13 @@ jetTools.addJetCollection(process, cms.InputTag('ak5PFJets'),
    doJTA            = True,
    doBTagging       = True,
    jetCorrLabel     = ('AK5PF', cms.vstring(jec)),
-   doType1MET       = False,
+   doType1MET       = True,
    doL1Cleaning     = True,
    doL1Counters     = False,
    genJetCollection = cms.InputTag("ak5GenJets"),
    doJetID          = True,
    jetIdLabel       = "ak5",
-   outputModule     = ''
+   outputModules    = ['']
 )
 jetTools.addJetCollection(process, cms.InputTag('ak5CaloJets'),
    'AK5', 'Calo',
@@ -90,56 +101,26 @@ jetTools.addJetCollection(process, cms.InputTag('ak5CaloJets'),
    genJetCollection = cms.InputTag("ak5GenJets"),
    doJetID          = True,
    jetIdLabel       = "ak5",
-   outputModule     = ''
+   outputModules    = ['']
 )
-#---------------------------------------
-# configure Jet Energy Corrections
-#---------------------------------------
-process.load("CondCore.DBCommon.CondDBCommon_cfi")
-process.jec = cms.ESSource("PoolDBESSource",
-   DBParameters = cms.PSet(
-     messageLevel = cms.untracked.int32(0)
-   ),
-   timetype = cms.string('runnumber'),
-   toGet = cms.VPSet(
-     cms.PSet(
-       record = cms.string('JetCorrectionsRecord'),
-       tag    = cms.string('JetCorrectorParametersCollection_Jec11V2_AK5PF'),
-       label  = cms.untracked.string('AK5PF')
-     ),
-     cms.PSet(
-       record = cms.string('JetCorrectionsRecord'),
-       tag    = cms.string('JetCorrectorParametersCollection_Jec11V2_AK5Calo'),
-       label  = cms.untracked.string('AK5Calo')
-     )
-  ),
-  connect = cms.string('sqlite_fip:TauAnalysis/Configuration/data/Jec11V2.db')
-)
-process.es_prefer_jec = cms.ESPrefer('PoolDBESSource', 'jec')
-
-##-------------------- Import the JEC services -----------------------
-process.load('JetMETCorrections.Configuration.DefaultJEC_cff')
-##-------------------- Import the Jet RECO modules -----------------------
-process.load('RecoJets.Configuration.RecoPFJets_cff')
 ##-------------------- Turn-on the FastJet density calculation
-process.kt6PFJets.doRhoFastjet = True
+process.kt6PFJets.doRhoFastjet = cms.bool(True)
 process.kt6PFJets.Rho_EtaMax = cms.double(4.4)
 ##-------------------- Turn-on the FastJet jet area calculation for your favorite algorithm
-process.ak5PFJets.doAreaFastjet = True
+process.ak5PFJets.doAreaFastjet = cms.bool(True)
 process.ak5PFJets.Rho_EtaMax = cms.double(4.4)
-
-process.load("RecoEgamma.EgammaIsolationAlgos.egammaIsolationSequence_cff")
-#process.patElectronIsolation = cms.Sequence(process.egammaIsolationSequence)
 
 ## re-run kt4PFJets within lepton acceptance to compute rho
 process.load('RecoJets.JetProducers.kt4PFJets_cfi')
-process.kt6PFJetsCentral = process.kt4PFJets.clone( rParam = 0.6, doRhoFastjet = True )
+process.kt6PFJetsCentral = process.kt4PFJets.clone( rParam = cms.double(0.6), doRhoFastjet = cms.bool(True) )
 process.kt6PFJetsCentral.Rho_EtaMax = cms.double(2.5)
 
 process.fjSequence = cms.Sequence(process.kt6PFJets+process.ak5PFJets+process.kt6PFJetsCentral)
 
-#process.patElectrons.isoDeposits = cms.PSet()
-#process.patElectrons.userIsolation = cms.PSet()
+process.load("RecoEgamma.EgammaIsolationAlgos.egammaIsolationSequence_cff")
+
+process.patElectrons.isoDeposits = cms.PSet()
+process.patElectrons.userIsolation = cms.PSet()
 process.patElectrons.addElectronID = cms.bool(True)
 process.patElectrons.electronIDSources = cms.PSet(
   simpleEleId95relIso = cms.InputTag("simpleEleId95relIso"),
@@ -158,7 +139,6 @@ process.patElectrons.electronIDSources = cms.PSet(
 
 process.patElectrons.addGenMatch = cms.bool(False)
 process.patElectrons.embedGenMatch = cms.bool(False)
-#process.patElectrons.usePV = cms.bool(False)
 ##
 process.load("ElectroWeakAnalysis.WENu.simpleEleIdSequence_cff")
 # you have to tell the ID that it is data
@@ -178,10 +158,17 @@ process.simpleEleId60cIso.dataMagneticFieldSetUp = cms.bool(True)
 process.patElectronIDs = cms.Sequence(process.simpleEleIdSequence)
 process.makePatElectrons = cms.Sequence(process.patElectronIDs*process.patElectrons)
 
+# Type1METCorrection
+process.patPFMETsTypeIcorrected = process.patMETs.clone(
+  metSource = cms.InputTag('pfType1CorrectedMet'),
+  addMuonCorrections = cms.bool(False),
+  genMETSource = cms.InputTag('genMetTrue'),
+  addGenMET = cms.bool(False)
+)
+
 # MVA MET
 process.load("RecoMET/METProducers/mvaPFMET_cff")
-process.calibratedAK5PFJetsForPFMEtMVA.correctors = cms.vstring("ak5PFL1FastL2L3Residual")
-#process.pfMEtMVA.srcLeptons = cms.VInputTag("selectedPatElectrons", "selectedPatMuons", "selectedPatTaus")
+process.calibratedAK5PFJetsForPFMEtMVA.correctors = cms.vstring("ak5PFL1FastL2L3")
 process.pfMEtMVA.srcLeptons = cms.VInputTag('cleanPatElectrons', 'cleanPatMuons', 'cleanPatTaus')
 
 process.patPFMetByMVA = process.patMETs.clone(
@@ -198,10 +185,12 @@ process.SVND = configureSVfit(process)
 process.p = cms.Path(
   process.fjSequence +
   process.PFTau +
+  process.producePFMETCorrections +
   process.patDefaultSequence +
   process.puJetIdSqeuence + 
   process.pfMEtMVAsequence + 
   process.patPFMetByMVA +
+  process.patPFMETsTypeIcorrected +
   process.SVND + 
   process.treeCreator +
   process.treeContentSequence +
@@ -213,6 +202,6 @@ addPFElectronIsolation(process, process.patElectrons)
 #--------------------------------------
 # List File names here
 #---------------------------------------
-process.PoolSource.fileNames = [   
-  'file:/home/data/sarkar/FCDB422C-A39C-E011-9E28-00261834B53C.root'
+process.PoolSource.fileNames = [  
+ '/store/mc/Fall11/DYToTauTau_M-10To20_TuneZ2_7TeV-pythia6-tauola/AODSIM/PU_S6_START42_V14B-v1/0000/E2946E67-F5F8-E011-B57F-90E6BA19A23E.root'
 ]
