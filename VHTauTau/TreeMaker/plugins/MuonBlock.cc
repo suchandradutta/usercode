@@ -20,6 +20,11 @@
 
 #include "Muon/MuonAnalysisTools/interface/MuonMVAEstimator.h"
 
+#include "DataFormats/ParticleFlowCandidate/interface/PFCandidate.h"
+#include "DataFormats/ParticleFlowCandidate/interface/PFCandidateFwd.h"
+#include "DataFormats/GeometryVector/interface/GlobalPoint.h"
+#include "DataFormats/GeometryVector/interface/VectorUtil.h"
+
 #include "VHTauTau/TreeMaker/plugins/MuonBlock.h"
 #include "VHTauTau/TreeMaker/interface/Utility.h"
 
@@ -145,9 +150,11 @@ void MuonBlock::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
   iEvent.getByLabel(_rhoInputTag, hRho);
   double Rho = *hRho;
 
-  edm::Handle<reco::PFCandidateCollection> hPfCandProduct;
-  iEvent.getByLabel(_pfInputTag, hPfCandProduct);
-  const reco::PFCandidateCollection &inPfCands = *(hPfCandProduct.product());
+  edm::Handle<reco::PFCandidateCollection> pfHandle;
+  iEvent.getByLabel(_pfInputTag, pfHandle);
+  if ( !pfHandle.isValid() )  
+    edm::LogError("DataNotAvailable") << "No pf particles label available \n";
+  const reco::PFCandidateCollection& pfCandidates = *(pfHandle.product());
 
   // Just leave these blank.
   reco::GsfElectronCollection identifiedElectrons;
@@ -170,7 +177,17 @@ void MuonBlock::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
 
       muonB = new ((*cloneMuon)[fnMuon++]) vhtm::Muon();
       muonB->isTrackerMuon = (it->isTrackerMuon()) ? true : false;
-      muonB->isPFMuon      = (it->isPFMuon()) ? true : false;
+      bool isPFMuon = false;
+      for (unsigned int j = 0; j < pfCandidates.size(); j++) {
+        if ( pfCandidates[j].particleId() == reco::PFCandidate::mu ) {
+	  reco::MuonRef muonRefToPFMuon = pfCandidates[j].muonRef();
+          if ( muonRefToPFMuon.isNonnull() &&
+	       Geom::deltaR( muonRefToPFMuon->p4(), it->p4()) < 1e-04 &&
+	       (muonRefToPFMuon->isGlobalMuon() || muonRefToPFMuon->isTrackerMuon() ) )
+            isPFMuon = true;
+        }
+      } 
+      muonB->isPFMuon = isPFMuon; // (it->isPFMuon()) ? true : false;
 
       muonB->eta     = it->eta();
       muonB->phi     = it->phi();
@@ -273,18 +290,18 @@ void MuonBlock::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
       // Various MVA
       const pat::Muon& muon = *it;
       double idmva = fMuonIdMVA->mvaValue(muon, primaryVertices->at(0),
-                                          inPfCands, Rho,
+                                          pfCandidates, Rho,
                                           target_,
                                           identifiedElectrons, identifiedMuons);
       
       double isomva = fMuonIsoMVA->mvaValue(muon, primaryVertices->at(0),
-                                            inPfCands, Rho,
+                                            pfCandidates, Rho,
                                             target_,
                                             identifiedElectrons, identifiedMuons);
 
       double isoringsradmva 
          = fMuonIsoRingsRadMVA->mvaValue(muon, primaryVertices->at(0),
-                                         inPfCands, Rho,
+                                         pfCandidates, Rho,
                                          target_,
                                          identifiedElectrons, identifiedMuons);
       muonB->idMVA  = idmva;

@@ -20,6 +20,7 @@ triggerObjectBlock = cms.EDAnalyzer("TriggerObjectBlock",
                                     "HLT_Ele1",
                                     "HLT_Ele2",
                                     "HLT_Ele3",
+                                    "HLT_Ele4",
                                     "IsoPFTau"),
   May10ReRecoData = cms.bool(False)
 )
