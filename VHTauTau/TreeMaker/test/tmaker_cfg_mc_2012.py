@@ -176,10 +176,6 @@ process.patPFMetByMVA = process.patMETs.clone(
   genMETSource = cms.InputTag('genMetTrue')
 )
 
-# SVfit
-from VHTauTau.TreeMaker.customizeSVfit import configureSVfit
-process.SVND = configureSVfit(process)
-
 # pfIsolation
 from VHTauTau.PatTools.customizePFIsolation import configurePFIsolation
 process.pfIsolationSeq = configurePFIsolation(process)
@@ -199,7 +195,6 @@ process.p = cms.Path(
   process.patPFMETsTypeIcorrected +
   process.pfMEtMVAsequence + 
   process.patPFMetByMVA +
-  process.SVND + 
   process.treeCreator +
   process.treeContentSequence +
   process.treeWriter

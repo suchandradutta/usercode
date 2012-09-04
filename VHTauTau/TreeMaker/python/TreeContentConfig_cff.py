@@ -12,7 +12,6 @@ from VHTauTau.TreeMaker.GenJetBlock_cfi import genJetBlock
 from VHTauTau.TreeMaker.GenMETBlock_cfi import genMETBlock
 from VHTauTau.TreeMaker.TriggerBlock_cfi import triggerBlock
 from VHTauTau.TreeMaker.TriggerObjectBlock_cfi import triggerObjectBlock
-from VHTauTau.TreeMaker.SVfitBlock_cfi import SVfitBlock
 
 treeContentSequence = cms.Sequence(
    eventBlock
@@ -27,5 +26,4 @@ treeContentSequence = cms.Sequence(
  + tauBlock
  + triggerBlock
  + triggerObjectBlock
- + SVfitBlock
 )

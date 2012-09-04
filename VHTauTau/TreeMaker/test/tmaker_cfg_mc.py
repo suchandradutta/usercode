@@ -178,10 +178,6 @@ process.patPFMetByMVA = process.patMETs.clone(
   genMETSource = cms.InputTag('genMetTrue')
 )
 
-# SVfit
-from VHTauTau.TreeMaker.customizeSVfit import configureSVfit
-process.SVND = configureSVfit(process)
-
 # Disable tau IsoDeposits
 process.patDefaultSequence.remove(process.patPFTauIsolation)
 process.patTaus.isoDeposits = cms.PSet()
@@ -196,7 +192,6 @@ process.p = cms.Path(
   process.pfMEtMVAsequence + 
   process.patPFMetByMVA +
   process.patPFMETsTypeIcorrected +
-  process.SVND + 
   process.treeCreator +
   process.treeContentSequence +
   process.treeWriter
