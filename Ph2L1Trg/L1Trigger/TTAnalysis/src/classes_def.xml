@@ -1,0 +1,33 @@
+<lcgdict>
+  <class name="TTStudy::Event" ClassVersion="1">
+    <version ClassVersion="1" checksum="3268543982"/>
+  </class>
+  <class name="TTStudy::SimTrack" ClassVersion="1">
+    <version ClassVersion="1" checksum="2469775594" />
+  </class>
+  <class name="TTStudy::Track" ClassVersion="1">
+    <version ClassVersion="1" checksum="1382456065" />
+  </class>
+  <class name="TTStudy::OfflineTrack" ClassVersion="1">
+    <version ClassVersion="1" checksum="330902227" />
+  </class>
+  <class name="TTStudy::GenParticle" ClassVersion="1">
+    <version ClassVersion="1" checksum="3473310076" />
+  </class>
+  <class name="TTStudy::L1Object" ClassVersion="1">
+    <version ClassVersion="1" checksum="612621497" />
+  </class>
+  <class name="TTStudy::L1TkObject" ClassVersion="1">
+    <version ClassVersion="1" checksum="3748946672" />
+  </class>
+  <class name="TTStudy::L1PFObject" ClassVersion="1">
+    <version ClassVersion="1" checksum="3003314096" />
+  </class>
+  <class name="std::vector<TTStudy::SimTrack>" persistent="true" />
+  <class name="std::vector<TTStudy::Track>" persistent="true" />
+  <class name="std::vector<TTStudy::OfflineTrack>" persistent="true" />
+  <class name="std::vector<TTStudy::GenParticle>" persistent="true" />
+  <class name="std::vector<TTStudy::L1Object>" persistent="true" />
+  <class name="std::vector<TTStudy::L1TkObject>" persistent="true" />
+  <class name="std::vector<TTStudy::L1PFObject>" persistent="true" />
+</lcgdict>
